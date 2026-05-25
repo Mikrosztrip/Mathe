@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 2 – Dezimalzahlen · Erklärus & Sterni</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03060f;
+  --card-bg:rgba(8,18,42,0.82);
+  --card-border:rgba(74,127,212,0.25);
+  --blue:#4a7fd4;--blue-mid:#2952a3;--blue-lt:#7db3f0;
+  --blue-pale:rgba(74,127,212,0.18);
+  --gold:#f5c842;--gold-pale:rgba(245,168,35,0.12);
+  --teal:#2ec4b6;--red:#e05a4e;--green:#2ecc71;
+  --gray4:#8896b0;--gray5:#a0aec0;
+  --text:#e8eeff;--text2:#b8c8e8;
+  --shadow:0 4px 24px rgba(0,0,10,0.5);
+  --shadow2:0 8px 40px rgba(0,0,10,0.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.75;position:relative;overflow-x:hidden}
+#galaxy-bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none}
+.nebula-layer{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.nebula-layer::before{content:'';position:absolute;width:70vw;height:60vh;top:-10%;left:-10%;background:radial-gradient(ellipse,rgba(106,13,173,0.18) 0%,transparent 70%);filter:blur(40px);animation:nebFloat1 18s ease-in-out infinite alternate}
+.nebula-layer::after{content:'';position:absolute;width:80vw;height:70vh;bottom:-20%;right:-15%;background:radial-gradient(ellipse,rgba(10,58,110,0.28) 0%,transparent 70%);filter:blur(50px);animation:nebFloat2 22s ease-in-out infinite alternate}
+.nebula-mid{position:fixed;width:60vw;height:50vh;top:30%;left:20%;background:radial-gradient(ellipse,rgba(26,10,78,0.22) 0%,transparent 70%);filter:blur(60px);animation:nebFloat3 26s ease-in-out infinite alternate;pointer-events:none;z-index:0}
+.nebula-pink{position:fixed;width:40vw;height:40vh;top:10%;right:0%;background:radial-gradient(ellipse,rgba(180,40,120,0.10) 0%,transparent 70%);filter:blur(45px);animation:nebFloat2 20s ease-in-out infinite alternate;pointer-events:none;z-index:0}
+@keyframes nebFloat1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(5vw,4vh) scale(1.12)}}
+@keyframes nebFloat2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-4vw,3vh) scale(1.08)}}
+@keyframes nebFloat3{0%{transform:translate(0,0) scale(1)}100%{transform:translate(3vw,-5vh) scale(1.15)}}
+.glitter-stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.gstar{position:absolute;border-radius:50%;background:#fff;animation:gtwinkle var(--gd,2s) ease-in-out infinite var(--gdel,0s);box-shadow:0 0 var(--gb,4px) var(--gc,2px) rgba(200,220,255,0.8)}
+@keyframes gtwinkle{0%,100%{opacity:0;transform:scale(0.2)}30%{opacity:var(--go,0.9);transform:scale(1.2)}50%{opacity:var(--go2,0.5);transform:scale(0.8)}70%{opacity:var(--go,0.9);transform:scale(1.1)}}
+.gstar.gold{background:#ffe566;box-shadow:0 0 var(--gb,5px) var(--gc,3px) rgba(255,220,80,0.7)}
+.gstar.blue{background:#aad4ff;box-shadow:0 0 var(--gb,4px) var(--gc,2px) rgba(100,180,255,0.8)}
+.gstar.sparkle::before,.gstar.sparkle::after{content:'';position:absolute;background:rgba(255,255,255,0.6);left:50%;top:50%;transform:translate(-50%,-50%)}
+.gstar.sparkle::before{width:1px;height:300%;border-radius:1px}
+.gstar.sparkle::after{width:300%;height:1px;border-radius:1px}
+.milkyway{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 120% 30% at 50% 55%,rgba(120,160,255,0.07) 0%,transparent 60%),radial-gradient(ellipse 80% 18% at 40% 58%,rgba(200,180,255,0.05) 0%,transparent 55%);transform:rotate(-18deg);transform-origin:center center;filter:blur(2px)}
+
+/* HEADER */
+.sky-header{background:linear-gradient(160deg,rgba(5,8,28,0.92) 0%,rgba(10,18,55,0.88) 60%,rgba(8,28,60,0.92) 100%);backdrop-filter:blur(4px);border-bottom:1px solid rgba(74,127,212,0.2);padding:3rem 1.5rem 2.5rem;text-align:center;position:relative;overflow:hidden;z-index:1}
+.sky-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(100,160,255,0.12) 0%,transparent 65%)}
+.sky-stars{position:absolute;inset:0;pointer-events:none}
+.s{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) ease-in-out infinite var(--del,0s);opacity:0}
+@keyframes tw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:var(--o,.6);transform:scale(1)}}
+.kap-badge{font-size:.72rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#7db3f0;margin-bottom:.6rem;position:relative}
+.kap-icon{font-size:3.2rem;display:block;margin-bottom:.75rem;position:relative;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(245,200,66,0.6))}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.kap-title{font-family:'Fredoka One',sans-serif;font-size:clamp(1.7rem,4.5vw,2.4rem);color:#fff;margin-bottom:.35rem;position:relative;text-shadow:0 0 30px rgba(120,160,255,0.5),0 2px 16px rgba(0,0,0,.5)}
+.kap-sub{color:#a8c4e8;font-size:.92rem;font-weight:600;position:relative;margin-bottom:1.5rem}
+.kap-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative}
+.nav-pill{background:rgba(74,127,212,0.15);border:1px solid rgba(74,127,212,0.35);color:#c8ddf8;border-radius:50px;padding:6px 18px;font-size:.8rem;font-weight:800;text-decoration:none;font-family:'Nunito',sans-serif;transition:all .2s;backdrop-filter:blur(4px)}
+.nav-pill:hover{background:rgba(74,127,212,0.3);color:#fff;box-shadow:0 0 16px rgba(74,127,212,0.3)}
+.nav-pill.here{background:linear-gradient(135deg,rgba(245,200,66,0.9),rgba(245,168,35,0.8));border-color:var(--gold);color:#1a1000;box-shadow:0 0 20px rgba(245,200,66,0.4)}
+
+/* LAYOUT */
+.wrap{max-width:740px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z-index:1}
+
+/* CARDS */
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:1.75rem 2rem;margin-bottom:1.5rem;box-shadow:var(--shadow);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(120,180,255,0.4),transparent)}
+.section-title{font-family:'Fredoka One',sans-serif;font-size:1.15rem;color:var(--blue-lt);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(74,127,212,0.25);text-shadow:0 0 20px rgba(120,180,255,0.3)}
+.story{font-size:1.03rem;line-height:1.9;color:var(--text)}
+.story p{margin-bottom:1.05rem}
+.story p:last-child{margin-bottom:0}
+
+/* SPEECH */
+.speech{border-left:3px solid var(--blue-lt);background:rgba(74,127,212,0.08);border-radius:0 12px 12px 0;padding:.75rem 1.25rem;margin:.9rem 0;font-style:italic;color:#c8ddf8}
+.speech strong{color:#7db3f0;font-style:normal;font-size:.95rem}
+.speech.sterni{border-color:var(--gold);background:rgba(245,168,35,0.07);color:#f5d08a}
+.speech.sterni strong{color:var(--gold)}
+.speech.learn{border-color:#2ecc71;background:rgba(46,204,113,0.08);color:#a0e8c0}
+.speech.learn strong{color:var(--green)}
+
+/* JOURNAL */
+.journal{background:rgba(245,168,35,0.08);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:.9rem 1.25rem;margin:1.1rem 0;font-style:italic;color:#f5d08a;font-size:.98rem;line-height:1.7;box-shadow:0 0 20px rgba(245,168,35,0.05)}
+
+/* INFOBOXES */
+.infobox{border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+.infobox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)}
+.infobox-label{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.6rem}
+.infobox.blue{background:rgba(74,127,212,0.10);border:1px solid rgba(74,127,212,0.3)}
+.infobox.blue .infobox-label{color:#7db3f0}
+.infobox.blue p{color:#b8d4f0;line-height:1.75;font-size:.96rem}
+.infobox.teal{background:rgba(46,196,182,0.08);border:1px solid rgba(46,196,182,0.25)}
+.infobox.teal .infobox-label{color:var(--teal)}
+.infobox.teal p{color:#a0e0da;line-height:1.75;font-size:.96rem}
+.infobox.red{background:rgba(224,90,78,0.08);border:1px solid rgba(224,90,78,0.25)}
+.infobox.red .infobox-label{color:var(--red)}
+.infobox.red p{color:#f0b8b0;line-height:1.75;font-size:.96rem}
+.infobox.gold{background:rgba(245,168,35,0.08);border:1px solid rgba(245,168,35,0.25)}
+.infobox.gold .infobox-label{color:var(--gold)}
+.infobox.gold p{color:#f5d08a;line-height:1.75;font-size:.96rem}
+
+/* FORMULA */
+.formula{background:linear-gradient(135deg,rgba(10,20,60,0.9),rgba(8,15,45,0.95));border:1px solid rgba(74,127,212,0.4);border-radius:14px;padding:1.5rem;margin:1rem 0;text-align:center;box-shadow:0 0 40px rgba(74,127,212,0.15),var(--shadow);position:relative;overflow:hidden}
+.formula::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(120,180,255,0.08) 0%,transparent 70%)}
+.formula-label{font-size:.68rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#7db3f0;margin-bottom:.5rem;position:relative}
+.formula-text{font-size:1.6rem;font-weight:900;color:#fff;font-family:'Courier New',monospace;letter-spacing:.06em;position:relative;text-shadow:0 0 30px rgba(120,180,255,0.6)}
+.formula-sub{font-size:.8rem;color:#a8c4e8;margin-top:.5rem;position:relative}
+
+/* STELLENWERT TABLE */
+.stellen-wrap{overflow-x:auto;margin:1.2rem 0}
+.stellen-table{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden}
+.stellen-table th{background:rgba(74,127,212,0.25);color:#7db3f0;font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.6rem .8rem;text-align:center;border-bottom:1px solid rgba(74,127,212,0.3)}
+.stellen-table td{background:rgba(255,255,255,0.04);color:var(--text);padding:.55rem .8rem;text-align:center;border-bottom:1px solid rgba(74,127,212,0.1);font-size:.95rem;transition:background .2s}
+.stellen-table tr:hover td{background:rgba(74,127,212,0.1)}
+.stellen-table td.vor{color:#7db3f0;font-weight:800}
+.stellen-table td.komma{color:var(--gold);font-weight:900;font-size:1.2rem}
+.stellen-table td.nach{color:#f5d08a;font-weight:700}
+.stellen-table th.vor{color:#7db3f0}
+.stellen-table th.nach{color:#f5c842}
+.stellen-table td.highlight{background:rgba(245,168,35,0.15);color:var(--gold);font-weight:900}
+
+/* INTERACTIVE STELLENWERT */
+.sv-display{
+  background:rgba(10,20,60,0.9);border:1px solid rgba(74,127,212,0.4);
+  border-radius:14px;padding:1.5rem;margin:1.2rem 0;text-align:center;
+  box-shadow:0 0 30px rgba(74,127,212,0.15);
+}
+.sv-number{font-family:'Fredoka One',sans-serif;font-size:3rem;letter-spacing:.1em;margin-bottom:.5rem}
+.sv-digit{display:inline-block;padding:.1em .15em;border-radius:6px;cursor:pointer;transition:all .25s}
+.sv-digit.vor{color:#7db3f0}
+.sv-digit.komma-sym{color:var(--gold);font-size:2.2rem}
+.sv-digit.nach{color:#f5d08a}
+.sv-digit:not(.komma-sym):hover{transform:scale(1.3);background:rgba(74,127,212,0.2)}
+.sv-digit.lit{transform:scale(1.35);background:rgba(74,127,212,0.3);box-shadow:0 0 20px rgba(74,127,212,0.5)}
+.sv-digit.nach.lit{background:rgba(245,168,35,0.2);box-shadow:0 0 20px rgba(245,200,66,0.4)}
+.sv-info{font-size:.92rem;color:var(--gold);font-weight:700;min-height:1.5em;text-shadow:0 0 12px rgba(245,200,66,0.3);margin-top:.3rem}
+
+/* UMRECHNUNG PUZZLE */
+.puzzle{background:var(--card-bg);border:1.5px solid rgba(74,127,212,0.4);border-radius:18px;padding:1.75rem 2rem;margin-bottom:1.5rem;box-shadow:0 0 40px rgba(74,127,212,0.12),var(--shadow2);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.puzzle::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(74,127,212,0.6),transparent)}
+.puzzle-label{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--blue-lt);margin-bottom:.85rem}
+.puzzle-q{font-size:1.05rem;font-weight:700;margin-bottom:1.2rem;line-height:1.6;color:var(--text)}
+.choices{display:flex;flex-wrap:wrap;gap:10px;margin:1rem 0}
+.choice{background:rgba(255,255,255,0.05);border:1.5px solid rgba(74,127,212,0.3);border-radius:10px;padding:.7rem 1.2rem;cursor:pointer;font-size:.95rem;font-weight:700;color:var(--text2);transition:all .2s;backdrop-filter:blur(4px)}
+.choice:hover{border-color:var(--blue-lt);background:rgba(74,127,212,0.15);transform:translateY(-2px)}
+.choice.ok{border-color:var(--green);background:rgba(46,204,113,0.12);color:#a0e8c0;pointer-events:none}
+.choice.err{border-color:var(--red);background:rgba(224,90,78,0.12);color:#f0b0a8;pointer-events:none}
+.fb{display:none;border-radius:12px;padding:1rem 1.25rem;font-weight:700;font-size:.95rem;line-height:1.6;margin-top:.85rem}
+.fb.show{display:block}
+.fb.ok{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);color:#a0e8c0}
+.fb.err{background:rgba(224,90,78,0.1);border:1px solid rgba(224,90,78,0.3);color:#f0b0a8}
+
+/* COMPLETE */
+.complete{display:none;text-align:center;padding:2.5rem;background:linear-gradient(135deg,rgba(10,20,60,0.95),rgba(8,12,40,0.95));border:1.5px solid rgba(74,127,212,0.4);border-radius:18px;margin-top:1.5rem;box-shadow:0 0 60px rgba(74,127,212,0.2),var(--shadow2);backdrop-filter:blur(12px);position:relative;overflow:hidden}
+.complete::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,200,66,0.5),transparent)}
+.complete.show{display:block}
+.complete h3{font-family:'Fredoka One',sans-serif;color:#fff;font-size:1.5rem;margin-bottom:.75rem;text-shadow:0 0 20px rgba(120,180,255,0.4)}
+.complete p{color:var(--gray5);margin-bottom:1.2rem;line-height:1.75}
+.note-box{background:rgba(74,127,212,0.08);border:1px solid rgba(74,127,212,0.25);border-radius:12px;padding:1rem 1.25rem;color:#c0d8f0;font-size:.93rem;line-height:1.7;margin-bottom:1.25rem;text-align:left}
+.note-box strong{color:var(--blue-lt)}
+.next-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(74,127,212,0.9),rgba(41,82,163,0.9));border:1px solid rgba(120,180,255,0.4);color:#fff;border-radius:50px;padding:13px 32px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .25s;text-decoration:none;box-shadow:0 0 30px rgba(74,127,212,0.3)}
+.next-btn:hover{background:linear-gradient(135deg,rgba(100,160,255,0.9),rgba(74,127,212,0.9));transform:translateY(-3px);box-shadow:0 0 45px rgba(74,127,212,0.5)}
+
+/* FOOTER */
+.footer{text-align:center;padding:2rem 1rem 1rem;font-size:.8rem;color:var(--gray4);border-top:1px solid rgba(74,127,212,0.15);margin-top:3rem;position:relative;z-index:1}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,0.3)}
+::-webkit-scrollbar-thumb{background:rgba(74,127,212,0.4);border-radius:3px}
+@media(max-width:500px){.card{padding:1.25rem}.choices{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<canvas id="galaxy-bg"></canvas>
+<div class="glitter-stars" id="glitterStars"></div>
+<div class="nebula-layer"></div>
+<div class="nebula-mid"></div>
+<div class="nebula-pink"></div>
+<div class="milkyway"></div>
+
+<div class="sky-header">
+  <div class="sky-stars" id="skyStars"></div>
+  <div class="kap-badge">Erklärus &amp; Sterni · Kapitel 2</div>
+  <span class="kap-icon">🔭</span>
+  <div class="kap-title">2. Dezimalzahlen &amp; Stellenwerte</div>
+  <div class="kap-sub">Eine Nacht im November · Die Reise geht weiter</div>
+  <div class="kap-nav">
+    <a class="nav-pill" href="https://mikrosztrip.github.io/Mathe/kapitel-01_02-natuerliche-zahlen.html">← Kapitel 1</a>
+    <span class="nav-pill here">2 – Dezimalzahlen</span>
+    <a class="nav-pill" href="https://mikrosztrip.github.io/Mathe/kapitel-03-vergleichszeichen.html">Kapitel 3 →</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- STORY INTRO -->
+  <div class="card">
+    <div class="section-title">Die zweite Nacht</div>
+    <div class="story">
+      <p>Sterni hatte die erste Nacht auf Zweistins Schulter verbracht. Sie war warm geblieben – und er hatte tatsächlich geschlafen. Zum ersten Mal seit Wochen.</p>
+      <p>Am nächsten Abend saß sie wieder auf dem Fensterbrett. Diesmal hatte sie etwas mitgebracht: eine winzige Karte. Darauf stand eine Zahl.</p>
+      <div class="speech sterni"><strong>Sterni:</strong> „Meine Galaxie ist 3,7 Lichtjahre entfernt. Was bedeutet das Komma?"</div>
+      <p>Erklärus setzte sich aufrecht. Er griff nach seinem Notizbuch. Er wusste genau, dass diese Frage größer war als sie klang.</p>
+      <div class="speech"><strong>Erklärus:</strong> „Das Komma teilt eine Zahl in zwei Welten. Links davon: das Ganze. Rechts davon: die Teile. Und diese Teile – die können unendlich klein werden."</div>
+      <div class="speech sterni"><strong>Sterni:</strong> „Kleiner als ein Stern?"</div>
+      <div class="speech"><strong>Erklärus:</strong> „Kleiner als ein Staubkorn auf einem Stern. Aber genauso wichtig. Ohne das Komma hätte niemand je einen Planeten berechnen können."</div>
+      <p>Er schlug das Notizbuch auf. <em style="color:var(--gray5)">Lektion zwei beginnt.</em></p>
+    </div>
+  </div>
+
+  <!-- WAS SIND DEZIMALZAHLEN -->
+  <div class="card">
+    <div class="section-title">Was ist eine Dezimalzahl?</div>
+    <div class="story">
+      <p>Natürliche Zahlen kennen wir: 1, 2, 3 … Sie beschreiben ganze Dinge. Aber was, wenn etwas nicht ganz ist?</p>
+      <p>Ein halber Apfel. Ein Dreiviertel Liter Wasser. 3,7 Lichtjahre bis zur Heimat.</p>
+      <p>Dafür brauchen wir <strong style="color:var(--blue-lt)">Dezimalzahlen</strong> – Zahlen mit einem Komma, das den ganzen Teil vom gebrochenen Teil trennt.</p>
+      <div class="speech"><strong>Erklärus:</strong> „'Dezimal' kommt vom lateinischen Wort 'decem' – das bedeutet zehn. Alles rechts vom Komma ist ein Bruchteil von Zehn, Hundert, Tausend…"</div>
+    </div>
+    <div class="formula">
+      <div class="formula-label">Aufbau einer Dezimalzahl</div>
+      <div class="formula-text">3 , 7 5</div>
+      <div class="formula-sub">Ganzer Teil &nbsp;,&nbsp; Zehntel · Hundertstel</div>
+    </div>
+    <div class="story">
+      <div class="speech sterni"><strong>Sterni:</strong> „Also ist 3,75 eigentlich: drei ganze, sieben Zehntel und fünf Hundertstel?"</div>
+      <div class="speech learn"><strong>Erklärus:</strong> „Genau! Du hast es auf Anhieb verstanden."</div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE STELLENWERT -->
+  <div class="card">
+    <div class="section-title">Klicke auf eine Ziffer – entdecke ihren Stellenwert!</div>
+    <div class="story">
+      <p>Jede Ziffer einer Zahl hat einen <strong style="color:var(--blue-lt)">Stellenwert</strong> – je nach ihrer Position bedeutet dieselbe Ziffer etwas völlig anderes. Klicke auf eine Ziffer und entdecke, was sie bedeutet:</p>
+    </div>
+    <div class="sv-display">
+      <div class="sv-number" id="svNum">
+        <span class="sv-digit vor" onclick="svClick(this,'Tausender','Die 2 steht an der Tausender-Stelle. Sie bedeutet: 2 × 1000 = 2000','#7db3f0')">2</span>
+        <span class="sv-digit vor" onclick="svClick(this,'Hunderter','Die 4 steht an der Hunderter-Stelle. Sie bedeutet: 4 × 100 = 400','#7db3f0')">4</span>
+        <span class="sv-digit vor" onclick="svClick(this,'Zehner','Die 7 steht an der Zehner-Stelle. Sie bedeutet: 7 × 10 = 70','#7db3f0')">7</span>
+        <span class="sv-digit vor" onclick="svClick(this,'Einer','Die 3 steht an der Einer-Stelle. Sie bedeutet einfach: 3','#7db3f0')">3</span>
+        <span class="sv-digit komma-sym">,</span>
+        <span class="sv-digit nach" onclick="svClick(this,'Zehntel','Die 5 steht an der Zehntel-Stelle. Sie bedeutet: 5 ÷ 10 = 0,5','#f5c842')">5</span>
+        <span class="sv-digit nach" onclick="svClick(this,'Hundertstel','Die 1 steht an der Hundertstel-Stelle. Sie bedeutet: 1 ÷ 100 = 0,01','#f5c842')">1</span>
+        <span class="sv-digit nach" onclick="svClick(this,'Tausendstel','Die 8 steht an der Tausendstel-Stelle. Sie bedeutet: 8 ÷ 1000 = 0,008','#f5c842')">8</span>
+      </div>
+      <div class="sv-info" id="svInfo">← Klicke eine Ziffer an!</div>
+    </div>
+
+    <!-- Stellenwert Tabelle -->
+    <div class="stellen-wrap">
+      <table class="stellen-table">
+        <thead>
+          <tr>
+            <th class="vor">Tausender</th>
+            <th class="vor">Hunderter</th>
+            <th class="vor">Zehner</th>
+            <th class="vor">Einer</th>
+            <th style="color:var(--gold)">,</th>
+            <th class="nach">Zehntel</th>
+            <th class="nach">Hundertstel</th>
+            <th class="nach">Tausendstel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="vor">2</td><td class="vor">4</td><td class="vor">7</td><td class="vor">3</td>
+            <td class="komma">,</td>
+            <td class="nach highlight">5</td><td class="nach">1</td><td class="nach">8</td>
+          </tr>
+          <tr>
+            <td class="vor">×1000</td><td class="vor">×100</td><td class="vor">×10</td><td class="vor">×1</td>
+            <td class="komma">,</td>
+            <td class="nach">÷10</td><td class="nach">÷100</td><td class="nach">÷1000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="story">
+      <div class="journal">„Die Zahl 2473,518 bedeutet: 2000 + 400 + 70 + 3 + 0,5 + 0,01 + 0,008. Das Komma ist nicht nur ein Zeichen – es ist eine Grenze zwischen zwei Welten."</div>
+    </div>
+  </div>
+
+  <!-- DEZIMALZAHLEN AM ZAHLENSTRAHL -->
+  <div class="card">
+    <div class="section-title">Dezimalzahlen auf dem Zahlenstrahl</div>
+    <div class="story">
+      <p>Dezimalzahlen haben einen festen Platz auf dem Zahlenstrahl – zwischen den ganzen Zahlen. Klicke auf einen Punkt:</p>
+    </div>
+    <div style="overflow-x:auto;padding:.75rem 0;margin:1rem 0">
+      <div style="display:flex;align-items:center;min-width:520px;position:relative">
+        <!-- Linie -->
+        <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(74,127,212,0.2),rgba(74,127,212,0.5),rgba(74,127,212,0.2));transform:translateY(-50%)"></div>
+        <!-- Punkte -->
+        <div style="flex:1;display:flex;justify-content:space-around;position:relative">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px" onclick="nlDot(this,'1,0 – eine ganze Zahl auf dem Zahlenstrahl.')">
+            <div class="nl-btn" style="width:36px;height:36px;border-radius:50%;background:rgba(74,127,212,0.15);border:2px solid rgba(74,127,212,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:.82rem;font-weight:900;color:var(--gray5)">1</div>
+            <span style="font-size:.65rem;color:var(--gray4);font-weight:700">ganz</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px" onclick="nlDot(this,'1,25 – ein Viertel mehr als 1. Liegt genau zwischen 1 und 1,5.')">
+            <div class="nl-btn" style="width:36px;height:36px;border-radius:50%;background:rgba(74,127,212,0.15);border:2px solid rgba(74,127,212,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:.72rem;font-weight:900;color:var(--gray5)">1,25</div>
+            <span style="font-size:.65rem;color:var(--gray4);font-weight:700"></span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px" onclick="nlDot(this,'1,5 – die Hälfte zwischen 1 und 2. Das ist ein halber Schritt.')">
+            <div class="nl-btn" style="width:36px;height:36px;border-radius:50%;background:rgba(245,168,35,0.1);border:2px solid rgba(245,168,35,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:.72rem;font-weight:900;color:var(--gold)">1,5</div>
+            <span style="font-size:.65rem;color:var(--gold);font-weight:700">Mitte!</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px" onclick="nlDot(this,'1,75 – drei Viertel des Weges von 1 nach 2.')">
+            <div class="nl-btn" style="width:36px;height:36px;border-radius:50%;background:rgba(74,127,212,0.15);border:2px solid rgba(74,127,212,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:.72rem;font-weight:900;color:var(--gray5)">1,75</div>
+            <span style="font-size:.65rem;color:var(--gray4);font-weight:700"></span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px" onclick="nlDot(this,'2,0 – der nächste ganze Schritt. Die Reise geht weiter!')">
+            <div class="nl-btn" style="width:36px;height:36px;border-radius:50%;background:rgba(74,127,212,0.15);border:2px solid rgba(74,127,212,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:.82rem;font-weight:900;color:var(--gray5)">2</div>
+            <span style="font-size:.65rem;color:var(--gray4);font-weight:700">ganz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="nlInfo" style="text-align:center;font-size:.88rem;color:var(--blue-lt);font-weight:700;min-height:1.4em;margin-top:.25rem;text-shadow:0 0 10px rgba(74,127,212,0.4)">← Klicke auf eine Zahl!</div>
+
+    <div class="story" style="margin-top:1rem">
+      <div class="speech sterni"><strong>Sterni:</strong> „Also liegt 3,7 genau zwischen 3 und 4 – aber näher bei 4?"</div>
+      <div class="speech"><strong>Erklärus:</strong> „Genau! Sieben Zehntel des Weges von 3 nach 4. Fast dort."</div>
+      <div class="speech sterni"><strong>Sterni:</strong> „So wie ich fast zuhause bin."</div>
+      <p>Erklärus schwieg einen Moment. Dann schrieb er etwas ins Notizbuch.</p>
+    </div>
+  </div>
+
+  <div class="infobox teal">
+    <div class="infobox-label">🌌 Dezimalzahlen im Universum</div>
+    <p>Die Entfernung von der Erde zur Sonne beträgt <strong>149.597.870,7 km</strong> – eine Dezimalzahl! Die Lichtgeschwindigkeit ist <strong>299.792.458 m/s</strong>. Die Masse eines Protons ist <strong>0,000000000000000000000000001672 kg</strong>. Ohne Dezimalzahlen könnte kein Mensch das Universum beschreiben.</p>
+  </div>
+
+  <!-- RUNDEN -->
+  <div class="card">
+    <div class="section-title">Dezimalzahlen runden</div>
+    <div class="story">
+      <p>Manchmal brauchen wir nicht alle Nachkommastellen. Dann <strong style="color:var(--blue-lt)">runden</strong> wir.</p>
+      <div class="speech"><strong>Erklärus:</strong> „Die Regel ist einfach: Schau dir die Stelle an, die nach der Rundungsstelle kommt. Ist sie 5 oder größer – aufrunden. Ist sie kleiner als 5 – abrunden."</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1.1rem 0">
+      <div style="background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.25);border-radius:12px;padding:.9rem 1rem">
+        <div style="font-size:.7rem;font-weight:800;color:#2ecc71;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem">Aufrunden ↑</div>
+        <div style="font-size:.95rem;color:#a0e8c0;line-height:1.7">
+          3,<strong style="color:#2ecc71">7</strong> → <strong>4</strong><br>
+          2,<strong style="color:#2ecc71">85</strong> → <strong>2,9</strong><br>
+          1,<strong style="color:#2ecc71">999</strong> → <strong>2,0</strong>
+        </div>
+      </div>
+      <div style="background:rgba(224,90,78,0.08);border:1px solid rgba(224,90,78,0.25);border-radius:12px;padding:.9rem 1rem">
+        <div style="font-size:.7rem;font-weight:800;color:#e05a4e;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem">Abrunden ↓</div>
+        <div style="font-size:.95rem;color:#f0b8b0;line-height:1.7">
+          3,<strong style="color:#e05a4e">2</strong> → <strong>3</strong><br>
+          2,<strong style="color:#e05a4e">34</strong> → <strong>2,3</strong><br>
+          7,<strong style="color:#e05a4e">001</strong> → <strong>7,0</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="story">
+      <div class="speech sterni"><strong>Sterni:</strong> „Also wäre 3,7 Lichtjahre – gerundet auf eine ganze Zahl – 4 Lichtjahre?"</div>
+      <div class="speech"><strong>Erklärus:</strong> „Richtig. Aber das macht einen Unterschied von 0,3 Lichtjahren – das sind fast 2,8 Billionen Kilometer. Runden ist praktisch, aber man muss wissen, was man dabei verliert."</div>
+      <div class="speech sterni"><strong>Sterni:</strong> „Ich möchte lieber nicht 2,8 Billionen Kilometer falsch abbiegen."</div>
+    </div>
+  </div>
+
+  <!-- PUZZLE 1 -->
+  <div class="puzzle">
+    <div class="puzzle-label">🔭 Aufgabe 1 – Stellenwert erkennen</div>
+    <div class="puzzle-q">In der Zahl <strong style="color:var(--gold)">25,38</strong> – welchen Wert hat die Ziffer <strong style="color:var(--blue-lt)">3</strong>?</div>
+    <div class="choices" id="c1">
+      <div class="choice" onclick="check(this,'c1','fb1',false)">3 Einer</div>
+      <div class="choice" onclick="check(this,'c1','fb1',true)">3 Zehntel = 0,3</div>
+      <div class="choice" onclick="check(this,'c1','fb1',false)">3 Hundertstel = 0,03</div>
+      <div class="choice" onclick="check(this,'c1','fb1',false)">3 Zehner = 30</div>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <!-- PUZZLE 2 -->
+  <div class="puzzle">
+    <div class="puzzle-label">🔭 Aufgabe 2 – Runden</div>
+    <div class="puzzle-q">Sterni muss die Entfernung <strong style="color:var(--gold)">3,74 Lichtjahre</strong> auf eine Stelle nach dem Komma runden. Was ist das Ergebnis?</div>
+    <div class="choices" id="c2">
+      <div class="choice" onclick="check(this,'c2','fb2',true)">3,7</div>
+      <div class="choice" onclick="check(this,'c2','fb2',false)">4,0</div>
+      <div class="choice" onclick="check(this,'c2','fb2',false)">3,5</div>
+      <div class="choice" onclick="check(this,'c2','fb2',false)">3,8</div>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <!-- PUZZLE 3 -->
+  <div class="puzzle" id="puzzle3">
+    <div class="puzzle-label">🔭 Aufgabe 3 – Dezimalzahl lesen</div>
+    <div class="puzzle-q">Was bedeutet die Zahl <strong style="color:var(--gold)">0,005</strong>?</div>
+    <div class="choices" id="c3">
+      <div class="choice" onclick="check(this,'c3','fb3',false)">Fünf Zehntel</div>
+      <div class="choice" onclick="check(this,'c3','fb3',false)">Fünf Hundertstel</div>
+      <div class="choice" onclick="check(this,'c3','fb3',true)">Fünf Tausendstel</div>
+      <div class="choice" onclick="check(this,'c3','fb3',false)">Fünf Ganze</div>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="infobox red">
+    <div class="infobox-label">❌ Häufiger Denkfehler</div>
+    <p>Viele denken: <em>„0,5 ist kleiner als 0,12 – weil 5 kleiner als 12 ist."</em><br><br>
+    Das ist falsch! <strong>0,5 = 0,50</strong> – das sind fünfzig Hundertstel. <strong>0,12</strong> sind nur zwölf Hundertstel. Also: <strong>0,5 &gt; 0,12</strong>.<br><br>
+    Dezimalzahlen vergleicht man Stelle für Stelle – nicht die gesamten Nachkommastellen als ganze Zahl.</p>
+  </div>
+
+  <!-- STORY ENDE -->
+  <div class="card">
+    <div class="section-title">Das Ende dieser Nacht</div>
+    <div class="story">
+      <p>Erklärus lehnte sich zurück. Draußen war es schon tief in der Nacht.</p>
+      <div class="speech sterni"><strong>Sterni:</strong> „Also weiß ich jetzt, wie weit ich von zuhause entfernt bin. 3,7 Lichtjahre. Das ist sehr weit."</div>
+      <div class="speech"><strong>Erklärus:</strong> „Oder sehr nah – je nachdem, wie man rechnet."</div>
+      <div class="speech sterni"><strong>Sterni:</strong> „Wie meinst du das?"</div>
+      <div class="speech"><strong>Erklärus:</strong> „Wenn man die Zahl in Tausendstel zerlegt: 3,7 = 3700 Tausendstel Lichtjahre. Klingt viel mehr – aber es ist dasselbe. Mathematik kann Entfernungen kleiner oder größer wirken lassen. Deshalb ist es wichtig, die Einheit zu kennen."</div>
+      <p>Sterni dachte lange nach. Dann leuchtete sie ein bisschen heller.</p>
+      <div class="speech sterni"><strong>Sterni:</strong> „Dann werde ich in Tausendstel denken. Damit der Weg kürzer klingt."</div>
+      <p>Erklärus lächelte. Er schrieb ins Notizbuch:</p>
+      <div class="journal">„Zweite Lektion: Dezimalzahlen beschreiben die Welt zwischen den ganzen Zahlen. Das Komma ist keine Schwäche – es ist Präzision. Ohne Dezimalzahlen wäre das Universum nicht berechenbar."</div>
+    </div>
+  </div>
+
+  <div class="formula">
+    <div class="formula-label">Was du heute gelernt hast</div>
+    <div class="formula-text" style="font-size:1.1rem;letter-spacing:.03em">Ganzer Teil , Zehntel Hundertstel Tausendstel …</div>
+    <div class="formula-sub">Jede Stelle rechts vom Komma ist 10× kleiner als die vorherige &nbsp;·&nbsp; Runden: ≥5 auf, &lt;5 ab</div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="complete" id="complete">
+    <div style="font-size:2.5rem;margin-bottom:.75rem;filter:drop-shadow(0 0 15px rgba(245,200,66,0.7))">🌟</div>
+    <h3>Kapitel 2 gemeistert!</h3>
+    <p>Erklärus und Sterni kennen jetzt den Unterschied zwischen Ganzen und Teilen. Die Reise geht weiter – Schritt für Schritt, Ziffer für Ziffer.</p>
+    <div class="note-box">
+      <strong>Zweistins Notizbuch – Seite 2:</strong><br>
+      „Dezimalzahlen: links vom Komma das Ganze, rechts davon die Teile. Die Zehntel-Stelle ist zehnmal kleiner als die Einer-Stelle. Runden hilft – aber man muss wissen, was man dabei verliert. Sterni denkt jetzt in Tausendstel. Ich finde das klug."
+    </div>
+    <a class="next-btn" href="https://mikrosztrip.github.io/Mathe/kapitel-03-vergleichszeichen.html">Weiter zu Kapitel 3 →</a>
+  </div>
+
+</div>
+
+<div class="footer">© 2025 Timea Tóth · toth.services &nbsp;·&nbsp; Erklärus &amp; Sterni · Kapitel 2</div>
+
+<script>
+/* GLITTER STARS */
+(function(){
+  var c=document.getElementById('glitterStars');
+  for(var i=0;i<220;i++){
+    var el=document.createElement('div');
+    var lg=Math.random()<0.12,md=Math.random()<0.25;
+    var sz=lg?(Math.random()*3+2.5):md?(Math.random()*1.5+1.2):(Math.random()*0.8+0.4);
+    var blur=(lg?sz*2.5:md?sz*2:sz*1.5)+'px';
+    var spread=(lg?sz*1.2:sz*0.8)+'px';
+    var type=lg?(Math.random()<0.4?'sparkle':''):(Math.random()<0.1?'gold':Math.random()<0.1?'blue':'');
+    el.className='gstar '+(type||'');
+    el.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;--gd:'+(1.2+Math.random()*4).toFixed(2)+'s;--gdel:'+(Math.random()*8).toFixed(2)+'s;--go:'+(0.5+Math.random()*0.5).toFixed(2)+';--go2:'+(0.2+Math.random()*0.4).toFixed(2)+';--gb:'+blur+';--gc:'+spread+';';
+    c.appendChild(el);
+  }
+})();
+
+/* HEADER STARS */
+(function(){
+  var c=document.getElementById('skyStars');
+  for(var i=0;i<80;i++){
+    var s=document.createElement('div');s.className='s';
+    var sz=Math.random()*2+.4;
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;--d:'+(2+Math.random()*5)+'s;--o:'+(0.3+Math.random()*.7)+';--del:'+Math.random()*6+'s';
+    c.appendChild(s);
+  }
+})();
+
+/* GALAXY CANVAS */
+(function(){
+  var canvas=document.getElementById('galaxy-bg');
+  var ctx=canvas.getContext('2d');
+  var W,H,stars=[],shootingStars=[];
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function initStars(){
+    stars=[];
+    for(var i=0;i<500;i++){
+      var sz=Math.random()<0.85?rnd(0.2,0.9):rnd(0.9,2.2);
+      stars.push({x:Math.random()*W,y:Math.random()*H,r:sz,baseAlpha:rnd(0.15,0.9),alpha:0,ts:rnd(0.003,0.012),to:Math.random()*Math.PI*2,color:Math.random()<0.1?'#ffeedd':Math.random()<0.08?'#ddeeff':'#ffffff'});
+    }
+  }
+  var t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#010208');g.addColorStop(0.4,'#03060f');g.addColorStop(1,'#020508');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    t+=0.016;
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i];
+      s.alpha=s.baseAlpha*(0.6+0.4*Math.sin(t*s.ts*60+s.to));
+      ctx.save();ctx.globalAlpha=Math.max(0,s.alpha);
+      if(s.r>1.2){
+        var sg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);
+        sg.addColorStop(0,'rgba(255,255,255,0.8)');
+        sg.addColorStop(0.3,'rgba(200,220,255,0.3)');
+        sg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=sg;ctx.beginPath();ctx.arc(s.x,s.y,s.r*4,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle=s.color;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+    if(Math.random()<0.004&&shootingStars.length<3){
+      shootingStars.push({x:Math.random()*W*0.7,y:Math.random()*H*0.5,vx:rnd(4,9),vy:rnd(1.5,4),life:1});
+    }
+    for(var s2=shootingStars.length-1;s2>=0;s2--){
+      var ss=shootingStars[s2];
+      ss.x+=ss.vx;ss.y+=ss.vy;ss.life-=0.025;
+      if(ss.life<=0){shootingStars.splice(s2,1);continue;}
+      ctx.save();ctx.globalAlpha=ss.life*0.8;
+      var sg2=ctx.createLinearGradient(ss.x-ss.vx*10,ss.y-ss.vy*10,ss.x,ss.y);
+      sg2.addColorStop(0,'rgba(255,255,255,0)');sg2.addColorStop(1,'rgba(255,255,255,0.9)');
+      ctx.strokeStyle=sg2;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(ss.x-ss.vx*10,ss.y-ss.vy*10);ctx.lineTo(ss.x,ss.y);ctx.stroke();
+      ctx.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',function(){resize();initStars();});
+  resize();initStars();draw();
+})();
+
+/* STELLENWERT CLICK */
+function svClick(el, name, desc, color){
+  document.querySelectorAll('.sv-digit').forEach(function(d){d.classList.remove('lit');});
+  el.classList.add('lit');
+  var info = document.getElementById('svInfo');
+  info.style.color = color;
+  info.textContent = name + ' – ' + desc;
+}
+
+/* ZAHLENSTRAHL */
+function nlDot(el, msg){
+  document.querySelectorAll('.nl-btn').forEach(function(d){
+    d.style.background='rgba(74,127,212,0.15)';
+    d.style.borderColor='rgba(74,127,212,0.4)';
+    d.style.color='var(--gray5)';
+    d.style.transform='scale(1)';
+  });
+  var btn = el.querySelector('.nl-btn');
+  btn.style.background='rgba(74,127,212,0.3)';
+  btn.style.borderColor='#7db3f0';
+  btn.style.color='#fff';
+  btn.style.transform='scale(1.2)';
+  document.getElementById('nlInfo').textContent = msg;
+}
+
+/* PUZZLE */
+var solved = {c1:false, c2:false, c3:false};
+function check(el, groupId, fbId, correct){
+  var group = document.getElementById(groupId);
+  group.querySelectorAll('.choice').forEach(function(c){c.style.pointerEvents='none';});
+  var fb = document.getElementById(fbId);
+  if(correct){
+    el.classList.add('ok');
+    fb.className='fb ok show';
+    if(groupId==='c1') fb.innerHTML='✅ Richtig! Die 3 steht an der Zehntel-Stelle – sie bedeutet 3 ÷ 10 = <strong>0,3</strong>.';
+    if(groupId==='c2') fb.innerHTML='✅ Richtig! 3,74 gerundet auf eine Stelle: die 4 ist kleiner als 5, also bleibt es <strong>3,7</strong>.';
+    if(groupId==='c3') fb.innerHTML='✅ Richtig! 0,005 bedeutet 5 Tausendstel. Die dritte Stelle nach dem Komma!';
+    solved[groupId]=true;
+    if(solved.c1 && solved.c2 && solved.c3){
+      setTimeout(function(){
+        var comp=document.getElementById('complete');
+        comp.classList.add('show');
+        comp.scrollIntoView({behavior:'smooth',block:'center'});
+      },600);
+    }
+  } else {
+    el.classList.add('err');
+    fb.className='fb err show';
+    if(groupId==='c1') fb.innerHTML='❌ Nicht ganz. Zähle die Stelle ab dem Komma: erste Stelle = Zehntel. Die 3 bedeutet also <strong>0,3</strong>.';
+    if(groupId==='c2') fb.innerHTML='❌ Noch einmal: Schau dir die zweite Stelle (4) an. Sie ist kleiner als 5 – also abrunden! Das Ergebnis ist <strong>3,7</strong>.';
+    if(groupId==='c3') fb.innerHTML='❌ Zähle die Stellen: 0,0<em>0</em><em>5</em> – die 5 ist die dritte Stelle nach dem Komma = Tausendstel.';
+    setTimeout(function(){
+      group.querySelectorAll('.choice').forEach(function(c){c.style.pointerEvents='';});
+      el.style.pointerEvents='none';
+      fb.className='fb';
+    },2000);
+  }
+}
+</script>
+</body>
+</html>
