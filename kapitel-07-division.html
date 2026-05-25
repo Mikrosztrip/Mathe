@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 7 – Division · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a;
+  --dig-gold:#f5c842; --dig-green:#4caf88; --dig-blue:#5ba4cf; --dig-red:#e05a5a;
+}
+html { scroll-behavior: smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size:17px; line-height:1.75; min-height:100vh; overflow-x:hidden; }
+#starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.above { position:relative; z-index:1; }
+
+.site-header { text-align:center; padding:1.1rem 2rem .9rem; font-family:'Courier New',monospace; font-size:.78rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; border-bottom:1px solid var(--border); background:rgba(7,13,31,.88); backdrop-filter:blur(10px); position:sticky; top:0; z-index:100; }
+.site-header strong { color:var(--gold); }
+
+.hero { text-align:center; padding:3.5rem 1.5rem 2rem; background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size:3.6rem; display:block; margin-bottom:.5rem; }
+.hero h1 { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; color:var(--cyan); text-shadow:0 0 30px rgba(78,205,196,.4); margin-bottom:.3rem; }
+.hero .subtitle { font-size:.88rem; color:var(--muted); font-style:italic; font-family:'Courier New',monospace; }
+
+.ch-nav { display:flex; justify-content:center; align-items:center; gap:.8rem; padding:.9rem 1.5rem 1.6rem; }
+.ch-nav a, .ch-nav .cur { display:inline-flex; align-items:center; padding:.45rem 1.2rem; border-radius:50px; font-size:.88rem; font-family:'Courier New',monospace; text-decoration:none; transition:all .2s; }
+.ch-nav a { background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text); }
+.ch-nav a:hover { background:rgba(255,255,255,.12); color:var(--gold); }
+.ch-nav .cur { background:var(--cyan); color:#060f14; font-weight:700; border:none; }
+
+.wrap { max-width:780px; margin:0 auto; padding:0 1.2rem 6rem; }
+
+.section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem 2.2rem; margin-bottom:1.4rem; }
+.section h2 { font-size:1.15rem; font-weight:700; color:var(--cyan); margin-bottom:.9rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+.section p { margin-bottom:.85rem; }
+.section p:last-child { margin-bottom:0; }
+
+.dlg { border-left:4px solid; border-radius:0 10px 10px 0; padding:.85rem 1.1rem; margin:.7rem 0; font-style:italic; font-size:1rem; line-height:1.6; }
+.dlg.sterni    { border-color:var(--gold);  background:rgba(245,200,66,.07); color:var(--gold); }
+.dlg.zweistein { border-color:var(--blue);  background:rgba(91,164,207,.07); color:var(--blue); }
+.dlg.lektion   { border-color:var(--cyan);  background:rgba(78,205,196,.06); color:#a0e8e4; font-style:italic; }
+.dlg .who { font-style:normal; font-weight:700; font-size:.82rem; letter-spacing:.04em; display:inline; }
+
+.formula-box { background:var(--card3); border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin:1rem 0; text-align:center; }
+.formula-box .f-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--cyan); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.6rem; }
+.formula-box .f-main { font-size:1.7rem; font-weight:800; color:#fff; letter-spacing:.04em; font-family:'Courier New',monospace; }
+.formula-box .f-main .fc1  { color:var(--gold);   }
+.formula-box .f-main .fc2  { color:var(--cyan);   }
+.formula-box .f-main .fop  { color:var(--purple); }
+.formula-box .f-main .feq  { color:var(--muted);  }
+.formula-box .f-main .fres { color:var(--green);  }
+.formula-box .f-sub  { font-size:.85rem; color:var(--muted); margin-top:.5rem; display:block; }
+.formula-box .f-row  { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin-top:.8rem; }
+.formula-box .f-term { font-size:.82rem; color:var(--muted); text-align:center; }
+.formula-box .f-term strong { display:block; color:var(--text); font-size:.95rem; }
+
+/* ── SCHRIFTLICHE RECHNUNG ── */
+.calc-wrap { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.3rem 1.5rem; margin:1rem 0; overflow-x:auto; }
+.calc-wrap .cw-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--cyan); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.9rem; }
+
+/* Ziffer-Box */
+.dbox { width:44px; height:44px; border-radius:8px; border:1px solid transparent; background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; font-family:'Courier New',monospace; font-size:1.3rem; font-weight:700; cursor:default; transition:all .2s; position:relative; flex-shrink:0; }
+.dbox.clickable { cursor:pointer; }
+.dbox.clickable:hover { border-color:var(--cyan); background:rgba(78,205,196,.12); transform:scale(1.08); }
+.dbox.active { border-color:var(--cyan) !important; background:rgba(78,205,196,.2) !important; }
+.dbox.c-gold   { color:var(--dig-gold);  }
+.dbox.c-blue   { color:var(--dig-blue);  }
+.dbox.c-cyan   { color:var(--cyan);      }
+.dbox.c-orange { color:var(--orange);    }
+.dbox.c-result { color:var(--cyan); background:rgba(78,205,196,.08); border-color:rgba(78,205,196,.2); }
+.dbox.c-sub1   { color:var(--gold);    }
+.dbox.c-sub2   { color:var(--green);   }
+.dbox.c-sub3   { color:var(--orange);  }
+.dbox.c-rem    { color:var(--red);     }
+.dbox.c-muted  { color:var(--muted);   }
+.dbox.c-empty  { background:transparent; border-color:transparent; }
+.dbox.comma    { width:18px; background:transparent; border-color:transparent; font-size:1.5rem; color:var(--muted); }
+
+/* ── DIVISIONS-LAYOUT: Dividend ÷ Divisor = Quotient nebeneinander ── */
+.div-problem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+}
+.div-sep {
+  /* vertikale Trennlinie zwischen Divisor und Quotient */
+  width: 3px;
+  height: 48px;
+  background: var(--cyan);
+  border-radius: 2px;
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+.div-hline {
+  /* horizontale Linie unter dem Dividenden */
+  height: 2px;
+  background: var(--cyan);
+  border-radius: 2px;
+  margin: 2px 0 4px 0;
+}
+.div-steps-wrap {
+  margin-top: 6px;
+}
+.div-step-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+}
+.div-step-row .step-indent { flex-shrink:0; }
+.div-minus {
+  width: 20px;
+  text-align: right;
+  color: var(--purple);
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+.div-thin-line {
+  height: 1px;
+  background: rgba(78,205,196,.4);
+  margin: 1px 0 1px 0;
+  border-radius: 1px;
+}
+.div-lbl {
+  font-family:'Courier New',monospace;
+  font-size:.7rem;
+  color:var(--muted);
+  margin-left:10px;
+  white-space:nowrap;
+}
+
+.calc-info { background:rgba(78,205,196,.08); border:1px solid rgba(78,205,196,.2); border-radius:8px; padding:.65rem 1rem; font-size:.9rem; color:var(--text); min-height:2.5rem; margin-top:.6rem; }
+.calc-result-note { text-align:center; font-size:.88rem; color:var(--cyan); margin-top:.7rem; font-weight:600; }
+
+/* ── SCHRITT-NAVIGATOR ── */
+.step-nav-wrap { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.3rem 1.5rem; margin:1rem 0; }
+.step-nav-wrap .sn-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--cyan); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.9rem; }
+.step-item { display:flex; gap:.8rem; align-items:flex-start; padding:.5rem 0 .5rem .9rem; border-left:3px solid var(--border); margin-bottom:.3rem; opacity:.3; transition:opacity .35s,border-color .35s; font-size:.93rem; }
+.step-item.on { opacity:1; border-color:var(--cyan); }
+.step-item .st-n { color:var(--cyan); font-family:'Courier New',monospace; font-weight:700; min-width:5.5rem; }
+.step-item .st-t { color:var(--muted); }
+.step-item .st-t strong { color:var(--gold); }
+.step-item .st-tag { font-size:.64rem; background:rgba(78,205,196,.15); color:var(--cyan); border-radius:4px; padding:.1rem .4rem; white-space:nowrap; margin-top:.18rem; }
+.step-btns { display:flex; gap:.5rem; margin-top:1rem; }
+.step-btns button { background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:8px; padding:.4rem .95rem; color:var(--text); font-size:.88rem; cursor:pointer; transition:all .18s; }
+.step-btns button:hover:not(:disabled) { border-color:var(--cyan); color:var(--cyan); }
+.step-btns button:disabled { opacity:.3; cursor:default; }
+
+/* ── TRICKS ── */
+.tricks { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:.9rem; margin:1rem 0; }
+@media(max-width:720px){ .tricks { grid-template-columns:1fr 1fr; } }
+@media(max-width:520px){ .tricks { grid-template-columns:1fr; } }
+.trick { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
+.trick .tr-icon  { font-size:1.4rem; display:block; margin-bottom:.3rem; }
+.trick .tr-name  { font-weight:700; color:var(--text); font-size:.95rem; display:block; margin-bottom:.25rem; }
+.trick .tr-ex    { font-family:'Courier New',monospace; font-size:.9rem; color:var(--cyan); display:block; }
+.trick .tr-desc  { font-size:.82rem; color:var(--muted); margin-top:.25rem; }
+
+/* ── RECHNER ── */
+.calculator { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.2rem; max-width:380px; margin:1rem 0; }
+.calc-display { background:#060a1a; border:1px solid var(--border); border-radius:10px; padding:.7rem 1rem; font-family:'Courier New',monospace; font-size:1.7rem; color:var(--cyan); text-align:right; margin-bottom:.9rem; min-height:3.2rem; }
+.calc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.45rem; }
+.calc-btn { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:.7rem .3rem; font-size:1rem; font-weight:600; color:var(--text); cursor:pointer; transition:all .15s; }
+.calc-btn:hover   { background:rgba(78,205,196,.15); color:var(--cyan); }
+.calc-btn.op      { color:var(--cyan); }
+.calc-btn.eq      { background:var(--green); color:#fff; border-color:var(--green); font-size:1.1rem; }
+.calc-btn.eq:hover{ background:#3d9870; }
+.calc-btn.cl      { background:rgba(224,90,90,.18); color:var(--red); border-color:rgba(224,90,90,.3); }
+
+/* ── AUFGABEN ── */
+.task-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:1rem; }
+.task-card .tc-head { display:flex; align-items:center; gap:.5rem; padding:.6rem 1.3rem; font-family:'Courier New',monospace; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); }
+.task-card .tc-head.green { background:rgba(76,175,136,.12); color:var(--green); }
+.task-card .tc-head.blue  { background:rgba(91,164,207,.12); color:var(--blue); }
+.task-card .tc-head.gold  { background:rgba(245,200,66,.1);  color:var(--gold); }
+.task-card .tc-head.cyan  { background:rgba(78,205,196,.1);  color:var(--cyan); }
+.task-card .tc-body { padding:1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom:.8rem; }
+.q-opts { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+.q-btn { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:.55rem 1.1rem; font-size:.95rem; color:var(--text); cursor:pointer; transition:all .18s; font-weight:600; }
+.q-btn:hover:not(:disabled) { border-color:var(--cyan); color:var(--cyan); }
+.q-btn.ok   { background:rgba(76,175,136,.2);  border-color:var(--green); color:var(--green); }
+.q-btn.fail { background:rgba(224,90,90,.15);  border-color:var(--red);   color:var(--red); }
+.q-fb { font-size:.86rem; margin-top:.4rem; min-height:1.2rem; }
+.q-fb.ok   { color:var(--green); }
+.q-fb.fail { color:var(--red); }
+
+/* ── INFO-KARTEN ── */
+.info-card { border-radius:12px; padding:1.2rem 1.4rem; margin:1rem 0; }
+.info-card .ic-title { font-size:.78rem; font-family:'Courier New',monospace; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.65rem; }
+.info-card p { font-size:.95rem; margin-bottom:.55rem; }
+.info-card p:last-child { margin-bottom:0; }
+.info-card.uni   { background:rgba(78,205,196,.08);  border:1px solid rgba(78,205,196,.25); }
+.info-card.uni   .ic-title { color:var(--cyan); }
+.info-card.uni   p         { color:#a8e8e4; }
+.info-card.err   { background:rgba(224,90,90,.1);   border:1px solid rgba(224,90,90,.3); }
+.info-card.err   .ic-title { color:var(--red); }
+.info-card.err   p         { color:#ecc; }
+.info-card.nb    { background:rgba(245,200,66,.07);  border:1px solid rgba(245,200,66,.25); }
+.info-card.nb    .ic-title { color:var(--gold); }
+.info-card.nb    p         { color:#e8dfa0; }
+.info-card.tip   { background:rgba(155,137,224,.1);  border:1px solid rgba(155,137,224,.3); }
+.info-card.tip   .ic-title { color:var(--purple); }
+.info-card.tip   p         { color:#ccc8f0; }
+.info-card.brain { background:rgba(91,164,207,.08);  border:1px solid rgba(91,164,207,.25); }
+.info-card.brain .ic-title { color:var(--blue); }
+.info-card.brain p         { color:#b8d8ec; }
+
+/* ── DIVISIONS-TABELLE ── */
+.div-table-wrap { overflow-x:auto; margin:1rem 0; }
+.div-table-wrap table { border-collapse:collapse; font-family:'Courier New',monospace; font-size:.88rem; min-width:100%; }
+.div-table-wrap td, .div-table-wrap th { width:48px; height:40px; text-align:center; border:1px solid rgba(100,120,200,.15); border-radius:4px; transition:all .15s; cursor:pointer; }
+.div-table-wrap th { background:rgba(78,205,196,.12); color:var(--cyan); font-weight:700; cursor:default; }
+.div-table-wrap td { color:var(--text); background:rgba(255,255,255,.03); }
+.div-table-wrap td:hover { background:rgba(78,205,196,.15); color:var(--cyan); transform:scale(1.08); z-index:2; position:relative; }
+.div-table-wrap td.hl-res { background:rgba(78,205,196,.25); color:var(--cyan); font-weight:700; }
+.div-table-wrap .corner { background:rgba(78,205,196,.2); color:var(--cyan); font-weight:700; cursor:default; }
+
+/* ── ABSCHLUSS ── */
+.summary-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; margin:1.4rem 0; }
+.summary-box .sb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--cyan); text-transform:uppercase; letter-spacing:.14em; display:block; margin-bottom:1rem; }
+.summary-box .sb-formula { font-family:'Courier New',monospace; font-size:1.55rem; font-weight:800; color:#fff; margin-bottom:.8rem; }
+.summary-box .sb-formula span { color:var(--cyan); }
+.summary-box .sb-sub { font-size:.88rem; color:var(--muted); line-height:1.7; }
+.ch-end { text-align:center; margin:1.4rem 0; }
+.ch-end .big-star { font-size:3rem; display:block; margin-bottom:.5rem; }
+.ch-end h2 { font-size:1.5rem; font-weight:800; color:var(--cyan); margin-bottom:.35rem; }
+.ch-end p { color:var(--muted); font-size:.95rem; }
+
+.bot-nav { display:flex; justify-content:center; margin-top:2rem; }
+.bot-nav a { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.4rem; background:rgba(78,205,196,.1); border:1px solid rgba(78,205,196,.3); border-radius:50px; color:var(--cyan); text-decoration:none; font-size:.9rem; font-family:'Courier New',monospace; transition:all .2s; }
+.bot-nav a:hover { background:rgba(78,205,196,.2); }
+
+footer { text-align:center; font-size:.76rem; color:var(--muted); font-family:'Courier New',monospace; padding:1.5rem; margin-top:2rem; border-top:1px solid var(--border); }
+@media(max-width:600px){ .wrap { padding:0 .8rem 5rem; } .section { padding:1.3rem 1.1rem; } }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 7
+</header>
+
+<div class="hero">
+  <span class="hero-icon">➗</span>
+  <h1>7. Division</h1>
+  <p class="subtitle">Teilen, aufteilen, verstehen – die Umkehr der Multiplikation</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-06-multiplikation.html">← Kapitel 6</a>
+  <span class="cur">7 – Division</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-08-mal-durch-10-100-1000.html">Kapitel 8 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE SIEBTE NACHT ═══ -->
+<div class="section">
+  <h2>Die siebte Nacht – wenn Teilen zur Frage wird</h2>
+
+  <p>Es war die siebte Nacht. Sterni hatte die 144 Sterne in Sektor A hinter sich gelassen – gezählt, verstanden, multipliziert. Aber sie war noch nicht am Ziel. Die Reise würde noch viele Nächte dauern, und jede Nacht wartete eine neue Frage auf sie. Erklärus hatte in sein Notizbuch eine neue Aufgabe geschrieben.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Du hast 144 Sterne in 4 gleiche Gruppen aufgeteilt. Wie viele Sterne sind in jeder Gruppe?"
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„144 geteilt durch 4... das ist das Gegenteil von dem, was wir gestern gemacht haben!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Division ist die Umkehroperation der Multiplikation. Wenn 4 · 36 = 144, dann ist 144 ÷ 4 = 36."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also frage ich mich: welche Zahl, mal 4 multipliziert, ergibt 144?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist der eleganteste Weg, über Division nachzudenken. Du suchst den fehlenden Faktor. Und keine Sorge – wir haben noch viele Stationen vor uns. Bleib bei mir, es gibt noch viel zu lernen."
+  </div>
+</div>
+
+<!-- ═══ 2. WAS IST DIVISION ═══ -->
+<div class="section">
+  <h2>Was ist Division?</h2>
+
+  <p>Die Division ist die <strong>vierte Grundrechenart</strong> – und die Umkehrung der Multiplikation. Wenn du weißt, dass 3 · 8 = 24, dann weißt du sofort, dass 24 ÷ 3 = 8 und 24 ÷ 8 = 3.</p>
+  <p>Division beantwortet zwei verschiedene Fragen: <em>„Wie viele Gruppen?"</em> und <em>„Wie viele in jeder Gruppe?"</em> – je nachdem, was du weißt und was du suchst.</p>
+
+  <div class="formula-box">
+    <span class="f-label">Die Grundformel</span>
+    <div class="f-main">
+      <span class="fc1">Dividend</span>
+      <span class="fop"> ÷ </span>
+      <span class="fc2">Divisor</span>
+      <span class="feq"> = </span>
+      <span class="fres">Quotient</span>
+    </div>
+    <span class="f-sub">Beispiel: 144 ÷ 4 = 36 &nbsp;·&nbsp; Probe: 36 · 4 = 144 ✓</span>
+    <div class="f-row">
+      <div class="f-term"><strong style="color:var(--gold)">Dividend</strong>die Zahl, die geteilt wird</div>
+      <div class="f-term"><strong style="color:var(--cyan)">Divisor</strong>durch diese Zahl wird geteilt</div>
+      <div class="f-term"><strong style="color:var(--green)">Quotient</strong>das Ergebnis</div>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Dividend, Divisor, Quotient... das klingt komplizierter als es ist."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Die Wörter klingen gelehrt, aber die Idee ist einfach: du teilst etwas auf. Dividend ist das Ganze – Divisor ist die Anzahl der Teile – Quotient ist, wie groß jeder Teil ist."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wie 144 Sterne, aufgeteilt auf 4 Sektoren – jeder Sektor bekommt 36."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Exakt. Und im Gegensatz zur Multiplikation – Division ist <em>nicht</em> kommutativ. 144 ÷ 4 ≠ 4 ÷ 144."
+  </div>
+</div>
+
+<!-- ═══ 3. DIVISIONS-TABELLE ═══ -->
+<div class="section">
+  <h2>Das kleine Einmaleins – rückwärts gelesen</h2>
+
+  <p>Wer das Einmaleins kennt, kennt auch die Division. Klicke auf eine Zelle – und sieh das Ergebnis:</p>
+
+  <div class="div-table-wrap" id="dt-wrap">
+    <table id="dt"></table>
+  </div>
+  <div class="calc-info" id="dt-info">← Klicke: Dividend ÷ Divisor = Quotient</div>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Division zu lernen heißt: das Einmaleins rückwärts lesen. Wenn du 7 · 8 = 56 kennst, weißt du sofort 56 ÷ 7 = 8 und 56 ÷ 8 = 7."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das Wissen sitzt schon dort – ich muss es nur von der anderen Seite lesen!"
+  </div>
+</div>
+
+<!-- ═══ 4. EINFACHE DIVISION ═══ -->
+<div class="section">
+  <h2>Einfache Division – ein Beispiel</h2>
+
+  <p>Sterni entdeckt in Sektor C eine Sternengruppe: <strong>72 Sterne</strong>, gleichmäßig auf <strong>3 Felder</strong> verteilt. Wie viele Sterne hat jedes Feld?</p>
+  <p>Das schriftliche Schema zeigt: Dividend und Divisor nebeneinander – das Ergebnis (Quotient) steht rechts daneben. Darunter werden die Zwischenschritte notiert. Klicke auf eine Quotient-Ziffer:</p>
+
+  <!-- 72 ÷ 3 = 24: klassisches Schema -->
+  <div class="calc-wrap">
+    <span class="cw-label">➗ Einfaches Beispiel: 72 ÷ 3 = ?</span>
+
+    <!-- Zeile 1: Dividend ÷ Divisor = Quotient nebeneinander -->
+    <div style="display:flex; align-items:stretch; gap:0; margin-bottom:4px;">
+      <!-- Dividend -->
+      <div style="display:flex; flex-direction:column; gap:0;">
+        <div style="display:flex; gap:4px; align-items:center; padding-bottom:3px;">
+          <div class="dbox c-gold">7</div>
+          <div class="dbox c-gold">2</div>
+        </div>
+        <div style="height:2px; background:var(--cyan); border-radius:2px;"></div>
+      </div>
+      <!-- ÷ Divisor -->
+      <div style="display:flex; align-items:center; padding:0 6px 3px 8px; font-size:1.4rem; color:var(--purple); font-weight:700; align-self:flex-start;">÷</div>
+      <div style="display:flex; align-items:flex-start; padding-bottom:3px;">
+        <div class="dbox c-blue" style="align-self:flex-start;">3</div>
+      </div>
+      <!-- = -->
+      <div style="display:flex; align-items:center; padding:0 8px 3px 8px; font-size:1.4rem; color:var(--muted); align-self:flex-start;">=</div>
+      <!-- Quotient klickbar -->
+      <div style="display:flex; align-items:flex-start; gap:4px; padding-bottom:3px;">
+        <div class="dbox c-result clickable" onclick="showDiv72('Z',this)" title="Klicke!">2</div>
+        <div class="dbox c-result clickable" onclick="showDiv72('E',this)" title="Klicke!">4</div>
+      </div>
+      <span style="font-family:'Courier New',monospace; font-size:.7rem; color:var(--muted); margin-left:10px; align-self:center;">← Quotient · Klicke!</span>
+    </div>
+
+    <!-- Zwischenschritte darunter -->
+    <div class="div-steps-wrap">
+      <!-- Schritt 1: 7 ÷ 3 = 2 R 1 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-sub1" style="width:44px;">7</div>
+        <span class="div-lbl">7 ÷ 3 = 2, Rest 1</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-sub2">6</div>
+        <span class="div-lbl">3 × 2 = 6</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:48px; border-radius:1px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-rem">1</div>
+        <div class="dbox c-sub1">2</div>
+        <span class="div-lbl">Rest 1, nächste Ziffer 2 → 12</span>
+      </div>
+      <!-- Schritt 2: 12 ÷ 3 = 4 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-sub2">1</div>
+        <div class="dbox c-sub2">2</div>
+        <span class="div-lbl">3 × 4 = 12</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:92px; border-radius:1px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-muted" style="background:rgba(78,205,196,.05);">0</div>
+        <span class="div-lbl">Rest 0 – kein Rest!</span>
+      </div>
+    </div>
+
+    <div class="calc-info" id="box72">← Klicke eine Quotient-Ziffer an!</div>
+    <div class="calc-result-note">Probe: 24 · 3 = <strong>72</strong> ✓</div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich nehme immer eine Ziffer vom Dividenden, teile durch den Divisor – und den Rest nehme ich mit zur nächsten Stelle. Wie eine Staffel!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. 7 ÷ 3 = 2 Rest 1. Die 1 gehört zur nächsten Stelle: 12 ÷ 3 = 4. Kein Rest. Ergebnis: 24. Und das Schema zeigt alles auf einen Blick."
+  </div>
+</div>
+
+<!-- ═══ 5. SCHRIFTLICHE DIVISION MIT KOMMA ═══ -->
+<div class="section">
+  <h2>Schriftliche Division – Schritt für Schritt</h2>
+
+  <p>Erklärus entdeckt etwas Besonderes in Sektor D: <strong>184,32 Lichteinheiten</strong> müssen gleichmäßig auf <strong>4 Routen</strong> aufgeteilt werden. Das Ergebnis steht rechts neben dem Dividenden und Divisor – darunter kommen die Zwischenschritte.</p>
+  <p><strong>Wichtig:</strong> Das Komma im Ergebnis steht genau unter dem Komma im Dividenden – es wird einfach mitgezogen!</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„184,32 ÷ 4. Wir arbeiten von links nach rechts. Sobald wir beim Komma ankommen, setzen wir es auch im Ergebnis. Es wandert einfach mit."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also das Komma bleibt genau an seiner Stelle – anders als bei der Multiplikation, wo ich am Ende zähle?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Bei der Division: Komma einfach mitziehen. Bei der Multiplikation: Nachkommastellen zählen. Zwei verschiedene Regeln."
+  </div>
+
+  <!-- Schritt-Navigator -->
+  <div class="step-nav-wrap">
+    <span class="sn-label">➗ Schriftliche Division: 184,32 ÷ 4 = ? · Schritt für Schritt</span>
+    <div id="div-steps">
+      <div class="step-item on" id="ds0">
+        <span class="st-n">Vorbereitung</span>
+        <span class="st-t">Schema aufschreiben: <strong>184,32 ÷ 4 = ?</strong> – Dividend links, Divisor rechts daneben, Quotient rechts vom Gleichheitszeichen. Wir arbeiten von links nach rechts.</span>
+        <span class="st-tag">Aufstellung</span>
+      </div>
+      <div class="step-item" id="ds1">
+        <span class="st-n">Schritt 1</span>
+        <span class="st-t"><strong>1</strong> ÷ 4 geht 0 Mal. Nimm die nächste Ziffer dazu: <strong>18</strong> ÷ 4 = <strong>4</strong> Rest 2. Erste Quotient-Ziffer: <strong>4</strong>.</span>
+        <span class="st-tag">Hundert</span>
+      </div>
+      <div class="step-item" id="ds2">
+        <span class="st-n">Schritt 2</span>
+        <span class="st-t">Rest 2, nächste Ziffer: <strong>24</strong> ÷ 4 = <strong>6</strong>. Kein Rest. Zweite Quotient-Ziffer: <strong>6</strong>.</span>
+        <span class="st-tag">Zehner</span>
+      </div>
+      <div class="step-item" id="ds3">
+        <span class="st-n">Komma</span>
+        <span class="st-t">Jetzt kommt das Komma im Dividenden – wir setzen das <strong>Komma</strong> sofort auch im Quotient. Es wandert einfach mit.</span>
+        <span class="st-tag">Komma</span>
+      </div>
+      <div class="step-item" id="ds4">
+        <span class="st-n">Schritt 3</span>
+        <span class="st-t">Erste Nachkommastelle: <strong>3</strong> ÷ 4 geht 0 Mal. Nimm die nächste Ziffer dazu: <strong>32</strong> ÷ 4 = <strong>8</strong>. Kein Rest.</span>
+        <span class="st-tag">Zehntel</span>
+      </div>
+      <div class="step-item" id="ds5">
+        <span class="st-n">Ergebnis</span>
+        <span class="st-t" style="color:var(--cyan);font-family:'Courier New',monospace;">184,32 ÷ 4 = <strong>46,08</strong> ✓ &nbsp;· Probe: 46,08 · 4 = 184,32</span>
+        <span class="st-tag">Fertig</span>
+      </div>
+    </div>
+    <div class="step-btns">
+      <button id="dp" onclick="divNav(-1)" disabled>← Zurück</button>
+      <button id="dn" onclick="divNav(1)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- Vollständige Rechnung: 184,32 ÷ 4 = 46,08 im klassischen Schema -->
+  <div class="calc-wrap">
+    <span class="cw-label">✍️ Vollständige Rechnung: 184,32 ÷ 4 = 46,08</span>
+
+    <!-- Zeile 1: Dividend ÷ Divisor = Quotient -->
+    <div style="display:flex; align-items:stretch; gap:0; margin-bottom:4px; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column;">
+        <div style="display:flex; gap:4px; align-items:center; padding-bottom:3px;">
+          <div class="dbox c-gold">1</div>
+          <div class="dbox c-gold">8</div>
+          <div class="dbox c-gold">4</div>
+          <div class="dbox comma c-muted">,</div>
+          <div class="dbox c-gold">3</div>
+          <div class="dbox c-gold">2</div>
+        </div>
+        <div style="height:2px; background:var(--cyan); border-radius:2px;"></div>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 6px 3px 8px; font-size:1.4rem; color:var(--purple); font-weight:700; align-self:flex-start;">÷</div>
+      <div style="display:flex; align-items:flex-start; padding-bottom:3px;">
+        <div class="dbox c-blue" style="align-self:flex-start;">4</div>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 8px 3px 8px; font-size:1.4rem; color:var(--muted); align-self:flex-start;">=</div>
+      <div style="display:flex; align-items:flex-start; gap:4px; padding-bottom:3px;">
+        <div class="dbox c-result">4</div>
+        <div class="dbox c-result">6</div>
+        <div class="dbox comma c-muted">,</div>
+        <div class="dbox c-result">0</div>
+        <div class="dbox c-result">8</div>
+      </div>
+      <span style="font-family:'Courier New',monospace; font-size:.7rem; color:var(--muted); margin-left:10px; align-self:center;">← Quotient</span>
+    </div>
+
+    <!-- Zwischenschritte -->
+    <div class="div-steps-wrap" style="margin-top:8px;">
+
+      <!-- 18 ÷ 4 = 4 R 2 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-sub1">1</div>
+        <div class="dbox c-sub1">8</div>
+        <span class="div-lbl">18 ÷ 4 = 4, Rest 2</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-sub2">1</div>
+        <div class="dbox c-sub2">6</div>
+        <span class="div-lbl">4 × 4 = 16</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:92px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0 4px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-rem">2</div>
+        <div class="dbox c-sub1">4</div>
+        <span class="div-lbl">Rest 2, nächste Ziffer 4 → 24</span>
+      </div>
+
+      <!-- 24 ÷ 4 = 6 R 0 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-sub2">2</div>
+        <div class="dbox c-sub2">4</div>
+        <span class="div-lbl">4 × 6 = 24</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:92px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0 4px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-muted" style="background:rgba(78,205,196,.05);">0</div>
+        <div style="font-family:'Courier New',monospace; font-size:.7rem; color:var(--cyan); margin-left:10px;">← Komma! → nächste: 3</div>
+      </div>
+
+      <!-- 32 ÷ 4 = 8 R 0 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-sub1">3</div>
+        <div class="dbox c-sub1">2</div>
+        <span class="div-lbl">32 ÷ 4 = 8, kein Rest</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-sub2">3</div>
+        <div class="dbox c-sub2">2</div>
+        <span class="div-lbl">4 × 8 = 32</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:236px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-muted" style="background:rgba(78,205,196,.05);">0</div>
+        <span class="div-lbl">Rest 0 – fertig!</span>
+      </div>
+    </div>
+
+    <div class="calc-result-note">
+      Probe: 46,08 · 4 = <strong>184,32</strong> ✓ &nbsp;·&nbsp; Das Komma im Ergebnis steht unter dem Komma im Dividenden.
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich nehme immer eine Ziffer vom Dividenden, teile – und den Rest nehme ich mit zur nächsten Stelle. Und das Komma wandert einfach mit!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Und die Probe macht die Division zur sichersten Rechenart – du kannst dein Ergebnis immer sofort überprüfen."
+  </div>
+</div>
+
+<!-- ═══ 6. DIVISION MIT REST ═══ -->
+<div class="section">
+  <h2>Division mit Rest – wenn es nicht glatt aufgeht</h2>
+
+  <p>Nicht jede Division geht glatt auf. Wenn der Dividend nicht ohne Rest durch den Divisor teilbar ist, bleibt ein <strong>Rest</strong> übrig. Das ist vollkommen normal – und wichtig zu verstehen.</p>
+
+  <div class="formula-box">
+    <span class="f-label">Division mit Rest</span>
+    <div class="f-main" style="font-size:1.3rem;">
+      <span class="fc1">Dividend</span>
+      <span class="fop"> = </span>
+      <span class="fc2">Divisor</span>
+      <span class="fop"> · </span>
+      <span class="fres">Quotient</span>
+      <span class="fop"> + </span>
+      <span style="color:var(--red)">Rest</span>
+    </div>
+    <span class="f-sub">Beispiel: 17 ÷ 5 = 3 Rest 2 &nbsp;·&nbsp; Probe: 5 · 3 + 2 = 17 ✓</span>
+  </div>
+
+  <!-- 17 ÷ 5 = 3 R 2 im klassischen Schema -->
+  <div class="calc-wrap">
+    <span class="cw-label">➗ Beispiel mit Rest: 17 ÷ 5 = ?</span>
+
+    <div style="display:flex; align-items:stretch; gap:0; margin-bottom:4px; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column;">
+        <div style="display:flex; gap:4px; align-items:center; padding-bottom:3px;">
+          <div class="dbox c-gold">1</div>
+          <div class="dbox c-gold">7</div>
+        </div>
+        <div style="height:2px; background:var(--cyan); border-radius:2px;"></div>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 6px 3px 8px; font-size:1.4rem; color:var(--purple); font-weight:700; align-self:flex-start;">÷</div>
+      <div style="display:flex; align-items:flex-start; padding-bottom:3px;">
+        <div class="dbox c-blue" style="align-self:flex-start;">5</div>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 8px 3px 8px; font-size:1.4rem; color:var(--muted); align-self:flex-start;">=</div>
+      <div style="display:flex; align-items:flex-start; gap:6px; padding-bottom:3px;">
+        <div class="dbox c-result">3</div>
+        <div style="display:flex; align-items:center; color:var(--muted); font-size:1rem; font-weight:700; padding:0 2px;">R</div>
+        <div class="dbox c-rem">2</div>
+      </div>
+      <span style="font-family:'Courier New',monospace; font-size:.7rem; color:var(--muted); margin-left:10px; align-self:center;">← Quotient 3, Rest 2</span>
+    </div>
+
+    <div class="div-steps-wrap" style="margin-top:6px;">
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-sub1">1</div>
+        <div class="dbox c-sub1">7</div>
+        <span class="div-lbl">17 ÷ 5 = 3, Rest 2</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-sub2">1</div>
+        <div class="dbox c-sub2">5</div>
+        <span class="div-lbl">5 × 3 = 15</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:92px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-rem">2</div>
+        <span class="div-lbl">Rest 2 – keine weiteren Ziffern</span>
+      </div>
+    </div>
+
+    <div class="calc-result-note">Probe: 5 · 3 + 2 = 15 + 2 = <strong>17</strong> ✓</div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„17 Sterne auf 5 Felder – 3 Sterne pro Feld, und 2 übrig. Was mache ich mit den 2 übrigen?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das hängt vom Problem ab. Im Alltag: 2 Sterne bleiben unverteilt. In der Mathematik: du kannst den Rest als Bruch schreiben – 17 ÷ 5 = 3 Rest 2 = 3 und 2/5 = 3,4. Das lernst du in Kapitel 11."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Die Division verbindet sich also mit den Brüchen!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Alles hängt zusammen. Das ist das Schöne an der Mathematik. Und wir haben noch viele Kapitel vor uns – du wirst sehen, wie alles zusammenwächst."
+  </div>
+</div>
+
+<!-- ═══ 7. GROSSES BEISPIEL ═══ -->
+<div class="section">
+  <h2>Größeres Beispiel – 2660 ÷ 25</h2>
+
+  <p>Sterni muss die Entfernung zu Sektor E berechnen: <strong>2660 Lichteinheiten</strong> aufgeteilt auf <strong>25 Abschnitte</strong>. Das zeigt, wie das Schema auch mit größeren Zahlen funktioniert – Ziffer für Ziffer vom Dividenden nehmen.</p>
+
+  <div class="calc-wrap">
+    <span class="cw-label">➗ Größeres Beispiel: 2660 ÷ 25 = 1064</span>
+
+    <!-- Aufgabe + Ergebnis nebeneinander -->
+    <div style="display:flex; align-items:stretch; gap:0; margin-bottom:4px; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column;">
+        <div style="display:flex; gap:4px; align-items:center; padding-bottom:3px;">
+          <div class="dbox c-gold">2</div>
+          <div class="dbox c-gold">6</div>
+          <div class="dbox c-gold">6</div>
+          <div class="dbox c-gold">0</div>
+        </div>
+        <div style="height:2px; background:var(--cyan); border-radius:2px;"></div>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 6px 3px 8px; font-size:1.4rem; color:var(--purple); font-weight:700; align-self:flex-start;">÷</div>
+      <div style="display:flex; align-items:flex-start; gap:4px; padding-bottom:3px;">
+        <div class="dbox c-blue" style="align-self:flex-start;">2</div>
+        <div class="dbox c-blue" style="align-self:flex-start;">5</div>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 8px 3px 8px; font-size:1.4rem; color:var(--muted); align-self:flex-start;">=</div>
+      <div style="display:flex; align-items:flex-start; gap:4px; padding-bottom:3px;">
+        <div class="dbox c-result">1</div>
+        <div class="dbox c-result">0</div>
+        <div class="dbox c-result">6</div>
+        <div class="dbox c-result">4</div>
+      </div>
+      <span style="font-family:'Courier New',monospace; font-size:.7rem; color:var(--muted); margin-left:10px; align-self:center;">← Quotient</span>
+    </div>
+
+    <div class="div-steps-wrap" style="margin-top:8px;">
+      <!-- 26 ÷ 25 = 1 R 1 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-sub1">2</div>
+        <div class="dbox c-sub1">6</div>
+        <span class="div-lbl">26 ÷ 25 = 1, Rest 1</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-sub2">2</div>
+        <div class="dbox c-sub2">5</div>
+        <span class="div-lbl">25 × 1 = 25</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:92px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0 4px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-rem">1</div>
+        <div class="dbox c-sub1">6</div>
+        <span class="div-lbl">Rest 1, nächste Ziffer 6 → 16</span>
+      </div>
+      <!-- 16 ÷ 25 = 0 R 16 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-sub1">1</div>
+        <div class="dbox c-sub1">6</div>
+        <span class="div-lbl">16 ÷ 25 = 0, Rest 16 → nächste Ziffer holen</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0 4px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-rem">1</div>
+        <div class="dbox c-rem">6</div>
+        <div class="dbox c-sub1">0</div>
+        <span class="div-lbl">Rest 16, nächste Ziffer 0 → 160</span>
+      </div>
+      <!-- 160 ÷ 25 = 6 R 10 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-sub2">1</div>
+        <div class="dbox c-sub2">5</div>
+        <div class="dbox c-sub2">0</div>
+        <span class="div-lbl">25 × 6 = 150</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:188px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0 4px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-rem">1</div>
+        <div class="dbox c-rem">0</div>
+        <div class="dbox c-sub1">0</div>
+        <span class="div-lbl">Rest 10, nächste Ziffer 0 → 100</span>
+      </div>
+      <!-- 100 ÷ 25 = 4 R 0 -->
+      <div style="display:flex; align-items:center; gap:4px; margin:2px 0;">
+        <div style="width:20px;min-width:20px; text-align:right; color:var(--purple); font-size:1.1rem; font-weight:700; padding-right:2px;">−</div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-sub2">1</div>
+        <div class="dbox c-sub2">0</div>
+        <div class="dbox c-sub2">0</div>
+        <span class="div-lbl">25 × 4 = 100</span>
+      </div>
+      <div style="height:1px; background:rgba(78,205,196,.4); margin:2px 0 2px 24px; width:236px;"></div>
+      <div style="display:flex; align-items:center; gap:4px; margin:1px 0;">
+        <div class="dbox c-empty" style="width:20px;min-width:20px;"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-empty"></div>
+        <div class="dbox c-muted" style="background:rgba(78,205,196,.05);">0</div>
+        <span class="div-lbl">Rest 0 – fertig!</span>
+      </div>
+    </div>
+
+    <div class="calc-result-note">
+      Probe: 1064 · 25 = <strong>2660</strong> ✓
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Bei der 0 in der Mitte – 16 ÷ 25 geht 0 Mal, aber ich muss trotzdem die 0 als Quotient-Ziffer schreiben!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Sehr gut beobachtet! Wenn der Teiler größer ist als die aktuelle Zahl, schreibst du eine 0 in den Quotient und nimmst sofort die nächste Ziffer vom Dividenden dazu."
+  </div>
+</div>
+
+<!-- ═══ 8. KOPFRECHNEN ═══ -->
+<div class="section">
+  <h2>🧠 Kopfrechnen – Tricks für die Division</h2>
+
+  <p>Mit einfachen Regeln erkennst du sofort, durch welche Zahlen eine Zahl teilbar ist – ohne zu rechnen:</p>
+
+  <div class="tricks">
+    <div class="trick">
+      <span class="tr-icon">2️⃣</span>
+      <span class="tr-name">Teilbar durch 2</span>
+      <span class="tr-ex">148 → letzte Ziffer: 8 ✓</span>
+      <span class="tr-desc">Die letzte Ziffer ist gerade (0, 2, 4, 6 oder 8).</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">3️⃣</span>
+      <span class="tr-name">Teilbar durch 3</span>
+      <span class="tr-ex">123 → 1+2+3 = 6, durch 3 ✓</span>
+      <span class="tr-desc">Die Quersumme (Summe aller Ziffern) ist durch 3 teilbar. Da 6 durch 3 teilbar ist, ist es auch 123.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">4️⃣</span>
+      <span class="tr-name">Teilbar durch 4</span>
+      <span class="tr-ex">316 → letzte zwei Ziffern: 16 ÷ 4 = 4 ✓</span>
+      <span class="tr-desc">Die Zahl aus den letzten beiden Ziffern ist durch 4 teilbar.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">5️⃣</span>
+      <span class="tr-name">Teilbar durch 5</span>
+      <span class="tr-ex">185 → letzte Ziffer: 5 ✓</span>
+      <span class="tr-desc">Die letzte Ziffer ist 0 oder 5.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">6️⃣</span>
+      <span class="tr-name">Teilbar durch 6</span>
+      <span class="tr-ex">144 → gerade ✓ und 1+4+4=9 durch 3 ✓</span>
+      <span class="tr-desc">Die Zahl ist sowohl durch 2 als auch durch 3 teilbar.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">8️⃣</span>
+      <span class="tr-name">Teilbar durch 8</span>
+      <span class="tr-ex">1312 → letzte drei Ziffern: 312 ÷ 8 = 39 ✓</span>
+      <span class="tr-desc">Die Zahl aus den letzten drei Ziffern ist durch 8 teilbar.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">9️⃣</span>
+      <span class="tr-name">Teilbar durch 9</span>
+      <span class="tr-ex">144 → 1+4+4 = 9, durch 9 ✓</span>
+      <span class="tr-desc">Die Quersumme (Summe aller Ziffern) ist durch 9 teilbar.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">🔟</span>
+      <span class="tr-name">Teilbar durch 10</span>
+      <span class="tr-ex">360 → endet auf 0 ✓</span>
+      <span class="tr-desc">Die letzte Ziffer ist 0. Eine Null streichen = durch 10 dividiert.</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„144 Sterne, teilbar durch 4? Ich teile durch 2: 72. Nochmal durch 2: 36. Fertig!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Ausgezeichnet. Durch 4 teilen = zweimal durch 2 teilen. Das Universum mag Hälften."
+  </div>
+</div>
+
+<!-- ═══ 9. UNIVERSUM ═══ -->
+<div class="section">
+  <div class="info-card uni">
+    <span class="ic-title">🌌 Division im Universum &amp; in der Logik</span>
+    <p>Division ist überall. Das Licht der Sonne ist 150.000.000 km entfernt. Es reist mit 300.000 km/s. Wie lange braucht es? <strong>150.000.000 ÷ 300.000 = 500 Sekunden</strong> – also etwa 8 Minuten. Eine Division beantwortet die Frage in Sekundenbruchteilen.</p>
+    <p>In der Informatik ist Division die Grundlage des Modulo-Operators – dem Rest nach der Division. Damit prüft man, ob Zahlen gerade oder ungerade sind, ob sie durch eine bestimmte Zahl teilbar sind, oder ob ein Datum auf ein Schaltjahr fällt. Division mit Rest ist keine Schwäche – sie ist ein mächtiges Werkzeug.</p>
+    <p>Sterni verteilt 184,32 Lichteinheiten gleichmäßig auf 4 Routen: <strong>184,32 ÷ 4 = 46,08</strong> Lichteinheiten pro Route. Das Universum teilt fair.</p>
+  </div>
+</div>
+
+<!-- ═══ 10. RECHNER ═══ -->
+<div class="section">
+  <h2>🧮 Probiere es selbst – Divisions-Rechner</h2>
+  <p>Rechne zuerst im Kopf oder auf Papier – dann prüfe dein Ergebnis:</p>
+  <div class="calculator">
+    <div class="calc-display" id="disp">0</div>
+    <div class="calc-grid">
+      <button class="calc-btn" onclick="kc('7')">7</button>
+      <button class="calc-btn" onclick="kc('8')">8</button>
+      <button class="calc-btn" onclick="kc('9')">9</button>
+      <button class="calc-btn cl" onclick="kClear()">C</button>
+      <button class="calc-btn" onclick="kc('4')">4</button>
+      <button class="calc-btn" onclick="kc('5')">5</button>
+      <button class="calc-btn" onclick="kc('6')">6</button>
+      <button class="calc-btn op" onclick="kOp('÷')">÷</button>
+      <button class="calc-btn" onclick="kc('1')">1</button>
+      <button class="calc-btn" onclick="kc('2')">2</button>
+      <button class="calc-btn" onclick="kc('3')">3</button>
+      <button class="calc-btn op" onclick="kOp('×')">×</button>
+      <button class="calc-btn" onclick="kc('0')" style="grid-column:span 2;">0</button>
+      <button class="calc-btn" onclick="kc('.')">.</button>
+      <button class="calc-btn eq" onclick="kEqual()">=</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 11. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head green">➗ Aufgabe 1 – Grundbegriffe</div>
+  <div class="tc-body">
+    <p>Was ist der <strong>Quotient</strong> von 56 ÷ 7?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 49 ÷ 7 = 7. Hier ist der Dividend 56.')">7</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! 56 ÷ 7 = 8 ✓ Probe: 8 · 7 = 56')">8</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – überprüfe: 9 · 7 = 63 ≠ 56.')">9</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – das wäre 56 − 7. Wir dividieren!')">49</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">➗ Aufgabe 2 – Division mit Rest</div>
+  <div class="tc-body">
+    <p>Sterni verteilt <strong>29 Sterne</strong> auf <strong>4 Felder</strong>. Wie viele Sterne bekommt jedes Feld, und wie viele bleiben übrig?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Prüfe: 4 · 7 = 28. Was ist 29 − 28?')">7 R 0</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! 4 · 7 = 28, Rest 1. Probe: 4·7+1 = 29 ✓')">7 R 1</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Prüfe: 4 · 8 = 32 > 29. Das ist zu groß.')">8 R 3</button>
+      <button class="q-btn" onclick="q(this,false,'q2','4 · 6 = 24, Rest wäre 5 – aber 5 > 4, also geht noch ein Mal rein!')">6 R 5</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">🌌 Aufgabe 3 – Sternis Routen</div>
+  <div class="tc-body">
+    <p>Sterni hat in Kapitel 6 <strong>184,32 Lichteinheiten</strong> berechnet (36 · 5,12). Jetzt teilt sie diese Strecke auf <strong>4 gleiche Routen</strong> auf. Was ergibt 184,32 ÷ 4?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q3','Prüfe das Komma: es steht unter dem Komma im Dividenden.')">4,608</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Fast! Aber 46,80 = 46,8. Stimmt die 0 in der Mitte?')">46,80</button>
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! Schema: 18÷4=4R2, 24÷4=6, Komma, 32÷4=8 → 46,08 ✓')">46,08</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Überprüfe: 460,8 · 4 = 1843,2 ≠ 184,32.')">460,8</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ 12. HÄUFIGE FEHLER ═══ -->
+<div class="section">
+  <div class="info-card err">
+    <span class="ic-title">❌ Häufige Fehler bei der Division</span>
+    <p><strong>Fehler 1 – Reihenfolge vertauscht:</strong> 144 ÷ 4 ≠ 4 ÷ 144. Der Dividend steht immer links, der Divisor rechts. Division ist nicht kommutativ!</p>
+    <p><strong>Fehler 2 – Rest vergessen:</strong> 17 ÷ 5 = 3 ist unvollständig. Richtig: 17 ÷ 5 = 3 Rest 2. Immer die Probe machen: 3 · 5 + 2 = 17 ✓</p>
+    <p><strong>Fehler 3 – 0 im Quotient vergessen:</strong> Bei 2660 ÷ 25 – wenn 16 ÷ 25 nicht geht, muss trotzdem eine 0 in den Quotient! Nie eine Stelle überspringen.</p>
+    <p><strong>Fehler 4 – Komma falsch gesetzt:</strong> Bei 184,32 ÷ 4 steht das Komma im Ergebnis genau unter dem Komma im Dividenden – einfach mitziehen.</p>
+    <p><strong>Fehler 5 – Division durch 0:</strong> Durch 0 zu dividieren ist unmöglich. Es gibt keine Zahl, die mit 0 multipliziert 144 ergibt.</p>
+  </div>
+
+  <div class="info-card tip">
+    <span class="ic-title">💡 Die Probe – dein bestes Werkzeug</span>
+    <p>Die Division ist die einzige Grundrechenart, bei der du das Ergebnis immer sofort überprüfen kannst: Quotient × Divisor (+ Rest) = Dividend. Wer die Probe macht, macht keinen Fehler – er entdeckt ihn.</p>
+  </div>
+</div>
+
+<!-- ═══ 13. ENDE DIESER NACHT ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Erklärus trug die Rechnung ins Notizbuch ein: 184,32 ÷ 4 = 46,08. Dann machte er die Probe: 46,08 · 4 = 184,32. Er lächelte – und blätterte zur nächsten leeren Seite. Es gab noch viel zu rechnen.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich verstehe jetzt, warum Multiplikation und Division zusammengehören. Sie sind wie Hin- und Rückweg auf derselben Route."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Addition und Subtraktion sind ein Paar. Multiplikation und Division sind ein Paar. Die vier Grundrechenarten sind eigentlich nur zwei Paare von Umkehroperationen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und der Rest – der ist nicht Versagen. Der ist der Anfang der nächsten Frage."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist der klügste Satz dieser Nacht. Der Rest wird zum Bruch – und Brüche warten in Kapitel 11. Aber zuerst schlafen. Morgen geht die Reise weiter."
+  </div>
+
+  <p>Sterni schaute auf die Sternenkarte. Vier Routen, 46,08 Lichteinheiten jede. Noch viele Sektoren lagen vor ihr – und Erklärus würde an ihrer Seite bleiben, Schritt für Schritt, Kapitel für Kapitel.</p>
+
+  <div class="dlg lektion">
+    „Siebte Lektion: Division ist die Umkehr der Multiplikation. Schema: Dividend ÷ Divisor = Quotient nebeneinander – darunter die Zwischenschritte. Von links nach rechts: eine Ziffer nehmen, dividieren, Rest mitnehmen, nächste Ziffer holen. Komma einfach mitziehen. 0 im Quotient nie vergessen. Probe: Quotient · Divisor + Rest = Dividend. Division durch 0: unmöglich."
+  </div>
+</div>
+
+<!-- ZUSAMMENFASSUNG -->
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-formula">
+    <span>a</span> ÷ <span>b</span> = <span>q</span> &nbsp;·&nbsp; Probe: <span>q</span> · <span>b</span> = <span>a</span>
+  </div>
+  <div class="sb-sub">
+    Division = Umkehr der Multiplikation · Dividend ÷ Divisor = Quotient<br>
+    Schema: Ergebnis rechts neben dem Dividenden · Zwischenschritte darunter<br>
+    Komma: einfach mitziehen · 0 im Quotient nicht vergessen · Probe immer!
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Zweistins Notizbuch – Seite 7</span>
+    <p>„Division: Dividend ÷ Divisor = Quotient. Die Umkehr der Multiplikation. Schema: Ergebnis rechts neben den Aufgabe – Zwischenschritte darunter. Ziffer für Ziffer vom Dividenden nehmen. Rest immer mitführen. Komma wandert mit. 0 im Quotient niemals vergessen. Probe immer. Sterni hat gesagt: Der Rest ist der Anfang der nächsten Frage. Die Reise geht weiter."</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 7 gemeistert!</h2>
+  <p>184,32 ÷ 4 = 46,08 – geteilt, verstanden, weitergemacht.<br>
+     Der Rest wartet in Kapitel 11: die Welt der Brüche.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-08-mal-durch-10-100-1000.html">
+    Weiter zu Kapitel 8 – Brüche →
+  </a>
+</div>
+
+</main>
+
+<footer>
+  © 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 7
+</footer>
+
+</div><!-- /above -->
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'), cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){ cv.width=window.innerWidth; cv.height=window.innerHeight; }
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08, med=Math.random()<0.18;
+      stars.push({ x:Math.random()*cv.width, y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()*1.0):(0.2+Math.random()*0.8),
+        o:big?0.95:med?(0.6+Math.random()*0.35):(0.25+Math.random()*0.5),
+        sp:big?(0.003+Math.random()*0.004):(0.004+Math.random()*0.012),
+        ph:Math.random()*Math.PI*2, big, med });
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({ x:Math.random()*cv.width*1.5, y:-10,
+      vx:-3.5-Math.random()*3, vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120, alpha:1, fade:0.012+Math.random()*0.008 });
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(0.45+0.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath(); cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`; cx.fill();
+      if(s.big&&a>0.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*0.5})`; cx.lineWidth=0.7;
+        cx.beginPath(); cx.moveTo(s.x-g,s.y); cx.lineTo(s.x+g,s.y); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x,s.y-g); cx.lineTo(s.x,s.y+g); cx.stroke();
+        const g2=g*0.6; cx.strokeStyle=`rgba(255,240,180,${a*0.25})`;
+        cx.beginPath(); cx.moveTo(s.x-g2,s.y-g2); cx.lineTo(s.x+g2,s.y+g2); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x+g2,s.y-g2); cx.lineTo(s.x-g2,s.y+g2); cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const len=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/len*m.len,m.y-m.vy/len*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath(); cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/len*m.len,m.y-m.vy/len*m.len);
+      cx.strokeStyle=grd; cx.lineWidth=1.8; cx.stroke();
+      m.x+=m.vx; m.y+=m.vy; m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20) meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize(); initStars();
+  window.addEventListener('resize',()=>{ resize(); initStars(); });
+  requestAnimationFrame(draw);
+  function sched(){ spawnMeteor(); setTimeout(sched,4000+Math.random()*5000); }
+  setTimeout(sched,1500);
+})();
+
+/* ─── Divisions-Tabelle ─── */
+(function(){
+  const t=document.getElementById('dt');
+  let h='<tr><th class="corner">÷</th>';
+  for(let d=1;d<=10;d++) h+=`<th>${d}</th>`;
+  t.innerHTML=h+'</tr>';
+  for(let r=1;r<=10;r++){
+    let row=`<tr><th>${r}</th>`;
+    for(let d=1;d<=10;d++) row+=`<td onclick="dtClick(${r*d},${d},this)">${r}</td>`;
+    t.innerHTML+=row+'</tr>';
+  }
+})();
+function dtClick(dividend,divisor,el){
+  document.querySelectorAll('#dt td').forEach(td=>td.classList.remove('hl-res'));
+  el.classList.add('hl-res');
+  const q=dividend/divisor;
+  document.getElementById('dt-info').innerHTML=
+    `<strong style="color:var(--cyan)">${dividend} ÷ ${divisor} = ${q}</strong> &nbsp;·&nbsp; Probe: ${q} · ${divisor} = ${dividend} ✓`;
+}
+
+/* ─── 72 ÷ 3 Ziffern ─── */
+const D72={
+  Z:'Zehnerstelle: Wir nehmen die <strong style="color:var(--gold)">7</strong> aus der Zahl 7<span style="color:var(--muted)">2</span>. <strong style="color:var(--cyan)">7 ÷ 3 = 2</strong>, Rest 1. Die <strong style="color:var(--cyan)">2</strong> schreiben wir als erste Ergebnisziffer (Zehnerstelle). Den Rest 1 nehmen wir mit zur nächsten Stelle: 1 vor die <strong style="color:var(--gold)">2</strong> (Einerstelle des Dividenden) → <strong style="color:var(--cyan)">12</strong>.',
+  E:'Einerstelle: Wir rechnen jetzt mit <strong style="color:var(--cyan)">12</strong> (= Rest 1 + Einerstelle <strong style="color:var(--gold)">2</strong> des Dividenden). <strong style="color:var(--cyan)">12 ÷ 3 = 4</strong>, kein Rest. Die <strong style="color:var(--cyan)">4</strong> ist die zweite Ergebnisziffer (Einerstelle). Ergebnis: <strong style="color:var(--cyan)">24</strong>.'
+};
+let active72=null;
+function showDiv72(k,btn){
+  if(active72) active72.classList.remove('active');
+  btn.classList.add('active'); active72=btn;
+  document.getElementById('box72').innerHTML=D72[k];
+}
+
+/* ─── Schritt-Navigator Division ─── */
+let dStep=0; const dMax=6;
+function divNav(dir){
+  document.getElementById('ds'+dStep).classList.remove('on');
+  dStep=Math.max(0,Math.min(dMax-1,dStep+dir));
+  document.getElementById('ds'+dStep).classList.add('on');
+  document.getElementById('dp').disabled=(dStep===0);
+  document.getElementById('dn').disabled=(dStep===dMax-1);
+}
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+
+/* ─── Rechner ─── */
+let dv='0',op=null,fNum=null,fresh=false;
+function kc(v){
+  if(v==='.'&&dv.includes('.')) return;
+  if(fresh){ dv=''; fresh=false; }
+  dv=(dv==='0')?v:dv+v;
+  if(dv.length>14) dv=dv.slice(0,-1);
+  document.getElementById('disp').textContent=dv;
+}
+function kOp(o){ fNum=parseFloat(dv); op=o; fresh=true; }
+function kEqual(){
+  if(op===null||fNum===null) return;
+  const n2=parseFloat(dv);
+  let r=op==='÷'?(n2!==0?fNum/n2:NaN):fNum*n2;
+  r=isNaN(r)?'÷ 0 nicht möglich':String(Math.round(r*1e10)/1e10);
+  dv=r; document.getElementById('disp').textContent=dv;
+  op=null; fNum=null; fresh=true;
+}
+function kClear(){
+  dv='0'; op=null; fNum=null; fresh=false;
+  document.getElementById('disp').textContent='0';
+}
+</script>
+</body>
+</html>
