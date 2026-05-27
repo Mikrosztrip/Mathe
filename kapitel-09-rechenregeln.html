@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 9 – Rechenregeln · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size:17px; line-height:1.75; min-height:100vh; overflow-x:hidden; }
+#starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.above { position:relative; z-index:1; }
+
+.site-header { text-align:center; padding:1.1rem 2rem .9rem; font-family:'Courier New',monospace; font-size:.78rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; border-bottom:1px solid var(--border); background:rgba(7,13,31,.88); backdrop-filter:blur(10px); position:sticky; top:0; z-index:100; }
+.site-header strong { color:var(--gold); }
+
+.hero { text-align:center; padding:3.5rem 1.5rem 2rem; background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size:3.6rem; display:block; margin-bottom:.5rem; }
+.hero h1 { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; color:var(--gold); text-shadow:0 0 30px rgba(245,200,66,.35); margin-bottom:.3rem; }
+.hero .subtitle { font-size:.88rem; color:var(--muted); font-style:italic; font-family:'Courier New',monospace; }
+
+.ch-nav { display:flex; justify-content:center; align-items:center; gap:.8rem; padding:.9rem 1.5rem 1.6rem; flex-wrap:wrap; }
+.ch-nav a, .ch-nav .cur { display:inline-flex; align-items:center; padding:.45rem 1.2rem; border-radius:50px; font-size:.88rem; font-family:'Courier New',monospace; text-decoration:none; transition:all .2s; }
+.ch-nav a { background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text); }
+.ch-nav a:hover { background:rgba(255,255,255,.12); color:var(--gold); }
+.ch-nav .cur { background:var(--gold); color:#1a0e00; font-weight:700; border:none; }
+
+.wrap { max-width:780px; margin:0 auto; padding:0 1.2rem 6rem; }
+
+.section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem 2.2rem; margin-bottom:1.4rem; }
+.section h2 { font-size:1.15rem; font-weight:700; color:var(--gold); margin-bottom:.9rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+.section p { margin-bottom:.85rem; }
+.section p:last-child { margin-bottom:0; }
+
+.dlg { border-left:4px solid; border-radius:0 10px 10px 0; padding:.85rem 1.1rem; margin:.7rem 0; font-style:italic; font-size:1rem; line-height:1.6; }
+.dlg.sterni    { border-color:var(--gold);  background:rgba(245,200,66,.07); color:var(--gold); }
+.dlg.zweistein { border-color:var(--blue);  background:rgba(91,164,207,.07); color:var(--blue); }
+.dlg.lektion   { border-color:var(--cyan);  background:rgba(78,205,196,.06); color:#a0e8e4; }
+.dlg .who { font-style:normal; font-weight:700; font-size:.82rem; letter-spacing:.04em; display:inline; }
+
+/* ── RECHENREGEL-VISUALISIERUNG ── */
+.rule-vis { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; margin:1rem 0; }
+.rule-vis .rv-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1rem; }
+.rule-steps { display:flex; flex-direction:column; gap:.6rem; }
+.rule-step { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
+.rs-expr { font-family:'Courier New',monospace; font-size:1.15rem; font-weight:700; color:var(--text); }
+.rs-expr .hi-bracket { color:var(--orange); }
+.rs-expr .hi-point    { color:var(--purple); }
+.rs-expr .hi-line     { color:var(--blue); }
+.rs-expr .hi-res      { color:var(--cyan); }
+.rs-arrow { color:var(--muted); font-size:1.1rem; }
+.rs-note  { font-size:.82rem; color:var(--muted); font-style:italic; }
+.rs-note strong { color:var(--gold); }
+
+/* ── PRIORITÄTS-PYRAMIDE ── */
+.priority-pyramid { margin:1rem 0; }
+.prio-level { border-radius:10px; padding:.8rem 1.2rem; margin-bottom:.5rem; display:flex; align-items:center; gap:1rem; }
+.prio-level.p1 { background:rgba(245,200,66,.12); border:1px solid rgba(245,200,66,.3); }
+.prio-level.p2 { background:rgba(155,137,224,.1);  border:1px solid rgba(155,137,224,.3); }
+.prio-level.p3 { background:rgba(91,164,207,.09);  border:1px solid rgba(91,164,207,.3); }
+.prio-num { font-family:'Courier New',monospace; font-size:1.6rem; font-weight:800; min-width:2rem; text-align:center; }
+.prio-level.p1 .prio-num { color:var(--gold); }
+.prio-level.p2 .prio-num { color:var(--purple); }
+.prio-level.p3 .prio-num { color:var(--blue); }
+.prio-text { flex:1; }
+.prio-text strong { display:block; font-size:.95rem; margin-bottom:.15rem; }
+.prio-text span { font-size:.82rem; color:var(--muted); }
+
+/* ── GESETZ-KARTEN ── */
+.law-grid { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; margin:1rem 0; }
+@media(max-width:580px){ .law-grid { grid-template-columns:1fr; } }
+.law-card { background:var(--card3); border:1px solid var(--border); border-radius:12px; padding:1.1rem 1.2rem; }
+.law-card .lc-name { font-family:'Courier New',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.5rem; }
+.law-card.comm .lc-name { color:var(--green); }
+.law-card.asso .lc-name { color:var(--purple); }
+.law-card.dist .lc-name { color:var(--orange); }
+.law-card .lc-formula { font-family:'Courier New',monospace; font-size:.95rem; color:var(--text); line-height:2; }
+.law-card .lc-formula .eq { color:var(--cyan); }
+.law-card .lc-note { font-size:.8rem; color:var(--muted); margin-top:.4rem; }
+
+/* ── INTERAKTIVER RECHNER ── */
+.calc-wrap { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; margin:1rem 0; }
+.calc-wrap .cl-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1rem; }
+.calc-expr { font-family:'Courier New',monospace; font-size:1.4rem; font-weight:700; color:var(--text); text-align:center; padding:.8rem; background:rgba(0,0,0,.2); border-radius:10px; margin-bottom:.8rem; min-height:3rem; letter-spacing:.04em; }
+.calc-steps-list { list-style:none; padding:0; margin:.5rem 0; }
+.calc-steps-list li { font-family:'Courier New',monospace; font-size:.9rem; padding:.35rem .7rem; border-radius:7px; margin:.25rem 0; display:flex; align-items:center; gap:.6rem; opacity:.4; transition:opacity .4s, background .4s; }
+.calc-steps-list li.active { opacity:1; background:rgba(245,200,66,.07); }
+.calc-steps-list li .step-num { width:1.4rem; height:1.4rem; border-radius:50%; background:var(--card2); border:1px solid var(--border); display:inline-flex; align-items:center; justify-content:center; font-size:.72rem; flex-shrink:0; color:var(--muted); }
+.calc-steps-list li.active .step-num { background:rgba(245,200,66,.2); border-color:var(--gold); color:var(--gold); }
+.calc-steps-list li .step-text { flex:1; }
+.calc-steps-list li .step-highlight { color:var(--cyan); font-weight:700; }
+.calc-btn-row { display:flex; gap:.5rem; margin-top:.9rem; flex-wrap:wrap; }
+.calc-btn { padding:.45rem 1.1rem; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:.9rem; font-family:'Courier New',monospace; cursor:pointer; transition:all .18s; font-weight:600; }
+.calc-btn:hover { border-color:var(--gold); color:var(--gold); }
+.calc-btn.primary { background:rgba(245,200,66,.12); border-color:rgba(245,200,66,.5); color:var(--gold); }
+
+/* ── SCHWARZES LOCH BOX ── */
+.blackhole-box { background:radial-gradient(ellipse at center, rgba(30,10,60,.6) 0%, rgba(7,13,31,.95) 70%); border:1px solid rgba(155,137,224,.35); border-radius:16px; padding:1.6rem 1.8rem; margin:1rem 0; position:relative; overflow:hidden; }
+.blackhole-box::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:160px; height:160px; border-radius:50%; background:radial-gradient(ellipse at center, rgba(0,0,0,.9) 38%, rgba(155,137,224,.15) 60%, transparent 70%); pointer-events:none; }
+.blackhole-box .bh-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--purple); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.8rem; position:relative; z-index:1; }
+.blackhole-box p { font-size:.95rem; color:#ccc8f0; margin-bottom:.55rem; position:relative; z-index:1; }
+.blackhole-box p:last-child { margin-bottom:0; }
+.blackhole-box strong { color:var(--purple); }
+
+/* ── FORMEL-BOX ── */
+.formula-box { background:var(--card3); border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin:1rem 0; text-align:center; }
+.formula-box .f-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.6rem; }
+.formula-box .f-main { font-size:1.3rem; font-weight:800; color:#fff; letter-spacing:.04em; font-family:'Courier New',monospace; }
+.formula-box .f-sub  { font-size:.85rem; color:var(--muted); margin-top:.5rem; display:block; }
+
+/* ── AUFGABEN ── */
+.task-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:1rem; }
+.task-card .tc-head { display:flex; align-items:center; gap:.5rem; padding:.6rem 1.3rem; font-family:'Courier New',monospace; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); }
+.task-card .tc-head.green { background:rgba(76,175,136,.12); color:var(--green); }
+.task-card .tc-head.blue  { background:rgba(91,164,207,.12); color:var(--blue); }
+.task-card .tc-head.gold  { background:rgba(245,200,66,.1);  color:var(--gold); }
+.task-card .tc-head.cyan  { background:rgba(78,205,196,.1);  color:var(--cyan); }
+.task-card .tc-head.purple{ background:rgba(155,137,224,.1); color:var(--purple); }
+.task-card .tc-body { padding:1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom:.8rem; }
+.q-opts { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+.q-btn { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:.55rem 1.1rem; font-size:.95rem; color:var(--text); cursor:pointer; transition:all .18s; font-weight:600; }
+.q-btn:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.q-btn.ok   { background:rgba(76,175,136,.2);  border-color:var(--green); color:var(--green); }
+.q-btn.fail { background:rgba(224,90,90,.15);  border-color:var(--red);   color:var(--red); }
+.q-fb { font-size:.86rem; margin-top:.4rem; min-height:1.2rem; }
+.q-fb.ok   { color:var(--green); }
+.q-fb.fail { color:var(--red); }
+
+/* ── INFO-KARTEN ── */
+.info-card { border-radius:12px; padding:1.2rem 1.4rem; margin:1rem 0; }
+.info-card .ic-title { font-size:.78rem; font-family:'Courier New',monospace; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.65rem; }
+.info-card p { font-size:.95rem; margin-bottom:.55rem; }
+.info-card p:last-child { margin-bottom:0; }
+.info-card.uni  { background:rgba(245,200,66,.07);  border:1px solid rgba(245,200,66,.25); }
+.info-card.uni  .ic-title { color:var(--gold); }
+.info-card.uni  p         { color:#e8dfa0; }
+.info-card.tip  { background:rgba(155,137,224,.1);  border:1px solid rgba(155,137,224,.3); }
+.info-card.tip  .ic-title { color:var(--purple); }
+.info-card.tip  p         { color:#ccc8f0; }
+.info-card.warn { background:rgba(224,90,90,.08);   border:1px solid rgba(224,90,90,.25); }
+.info-card.warn .ic-title { color:var(--red); }
+.info-card.warn p         { color:#ecc; }
+.info-card.nb   { background:rgba(91,164,207,.08);  border:1px solid rgba(91,164,207,.25); }
+.info-card.nb   .ic-title { color:var(--blue); }
+.info-card.nb   p         { color:#b8d8ec; }
+
+/* ── ZUSAMMENFASSUNG ── */
+.summary-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; margin:1.4rem 0; }
+.summary-box .sb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.14em; display:block; margin-bottom:1rem; }
+.summary-box .sb-formula { font-family:'Courier New',monospace; font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:.8rem; line-height:2.2; }
+.summary-box .sb-formula .sg { color:var(--gold); }
+.summary-box .sb-formula .sc { color:var(--cyan); }
+.summary-box .sb-formula .sp { color:var(--purple); }
+.summary-box .sb-sub { font-size:.88rem; color:var(--muted); line-height:1.7; }
+
+/* ── ABSCHLUSS ── */
+.ch-end { text-align:center; margin:1.4rem 0; }
+.ch-end .big-star { font-size:3rem; display:block; margin-bottom:.5rem; }
+.ch-end h2 { font-size:1.5rem; font-weight:800; color:var(--gold); margin-bottom:.35rem; }
+.ch-end p { color:var(--muted); font-size:.95rem; }
+
+.bot-nav { display:flex; justify-content:center; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
+.bot-nav a { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.4rem; background:rgba(245,200,66,.08); border:1px solid rgba(245,200,66,.3); border-radius:50px; color:var(--gold); text-decoration:none; font-size:.9rem; font-family:'Courier New',monospace; transition:all .2s; }
+.bot-nav a:hover { background:rgba(245,200,66,.16); }
+
+footer { text-align:center; font-size:.76rem; color:var(--muted); font-family:'Courier New',monospace; padding:1.5rem; margin-top:2rem; border-top:1px solid var(--border); }
+
+@media(max-width:600px){ .wrap { padding:0 .8rem 5rem; } .section { padding:1.3rem 1.1rem; } }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 9
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🌀</span>
+  <h1>9. Die Rechenregeln</h1>
+  <p class="subtitle">Ordnung im Universum – Klammern zuerst, dann Punkt vor Strich</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-08-mal-durch-10-100-1000.html">← Kapitel 8</a>
+  <span class="cur">9 – Rechenregeln</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-10-positive-negative-zahlen.html">Kapitel 10 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE NEUNTE NACHT ═══ -->
+<div class="section">
+  <h2>Die neunte Nacht – am Rand des Schwarzen Lochs</h2>
+
+  <p>Es war die neunte Nacht, und sie war anders als alle davor. Sterni stand im Beobachtungsdeck und schaute auf etwas, das sie noch nie gesehen hatte: ein Schwarzes Loch. Es lag tief im Sektor Omega, und sein Gravitationsfeld zog an allem – an Licht, an Zeit, an Entfernungsberechnungen.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Sterni, ich brauche deine Hilfe. Wir müssen den sicheren Kurs berechnen. Dafür brauche ich das Ergebnis von: 3 + 4 · 2."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das ist doch einfach. 3 plus 4 ist 7, mal 2 ist... 14?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Falsch. Und dieser Fehler würde uns direkt in das Schwarze Loch führen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>(leise) „Wie... falsch?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„In der Mathematik – und in der Physik – gibt es eine strenge Rangordnung. Sie heißt: Punkt vor Strich. Multiplikation kommt vor Addition. Also: erst 4 · 2 = 8, dann 3 + 8 = 11."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„11 statt 14. Das ist ein Unterschied von 3 Lichteinheiten. Bei diesem Schwarzen Loch wäre das..."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„...zu nah. Genau deshalb haben Mathematiker Rechenregeln erfunden. Damit alle überall dasselbe Ergebnis bekommen. Das Universum macht keine Ausnahmen."
+  </div>
+</div>
+
+<!-- ═══ 2. DIE DREI REGELN ═══ -->
+<div class="section">
+  <h2>Die Rangordnung – drei klare Stufen</h2>
+
+  <p>Rechenregeln legen fest, in welcher Reihenfolge die Teile einer Aufgabe berechnet werden müssen. Es gibt eine klare Hierarchie – von oben nach unten:</p>
+
+  <div class="priority-pyramid">
+    <div class="prio-level p1">
+      <div class="prio-num">①</div>
+      <div class="prio-text">
+        <strong>Klammern zuerst</strong>
+        <span>Was in Klammern steht, wird immer zuerst berechnet – egal was drumherum steht.</span>
+      </div>
+    </div>
+    <div class="prio-level p2">
+      <div class="prio-num">②</div>
+      <div class="prio-text">
+        <strong>Punkt vor Strich</strong>
+        <span>Multiplikation (·) und Division (÷) kommen vor Addition (+) und Subtraktion (−).</span>
+      </div>
+    </div>
+    <div class="prio-level p3">
+      <div class="prio-num">③</div>
+      <div class="prio-text">
+        <strong>Von links nach rechts</strong>
+        <span>Gleich starke Operationen werden von links nach rechts berechnet.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dlg lektion">
+    Kurz gesagt: <strong>K</strong>lammern · <strong>P</strong>unkt · <strong>S</strong>trich – KPS. In dieser Reihenfolge, immer.
+  </div>
+</div>
+
+<!-- ═══ 3. KLAMMERN ═══ -->
+<div class="section">
+  <h2>Regel 1 – Klammern zuerst</h2>
+
+  <p>Klammern sind wie ein Schutzschild: Was darin steht, wird zuerst berechnet, bevor der Rest der Aufgabe überhaupt angeschaut wird.</p>
+
+  <div class="rule-vis">
+    <span class="rv-label">📐 Klammern ändern das Ergebnis</span>
+    <div class="rule-steps">
+      <div class="rule-step">
+        <span class="rs-expr">
+          <span class="hi-line">3</span> + <span class="hi-line">4</span> · <span class="hi-line">2</span>
+        </span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr">3 + <span class="hi-point">8</span></span>
+        <span class="rs-arrow">=</span>
+        <span class="rs-expr"><span class="hi-res">11</span></span>
+        <span class="rs-note"><strong>ohne Klammern</strong>: Punkt vor Strich</span>
+      </div>
+      <div class="rule-step">
+        <span class="rs-expr">
+          <span class="hi-bracket">(</span><span class="hi-line">3</span> + <span class="hi-line">4</span><span class="hi-bracket">)</span> · <span class="hi-line">2</span>
+        </span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr"><span class="hi-bracket">7</span> · 2</span>
+        <span class="rs-arrow">=</span>
+        <span class="rs-expr"><span class="hi-res">14</span></span>
+        <span class="rs-note"><strong>mit Klammern</strong>: erst (3+4), dann ·2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Dieselben Zahlen, dieselben Zeichen – aber ein anderes Ergebnis. Nur weil eine Klammer da ist."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Klammern sind das mächtigste Werkzeug in der Mathematik. Sie sagen: Diesen Teil zuerst, alles andere wartet."
+  </div>
+
+  <div class="rule-vis">
+    <span class="rv-label">📐 Weiteres Beispiel</span>
+    <div class="rule-steps">
+      <div class="rule-step">
+        <span class="rs-expr">10 − <span class="hi-bracket">(</span>3 + 2<span class="hi-bracket">)</span></span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr">10 − <span class="hi-bracket">5</span></span>
+        <span class="rs-arrow">=</span>
+        <span class="rs-expr"><span class="hi-res">5</span></span>
+        <span class="rs-note">erst (3+2)=5, dann 10−5</span>
+      </div>
+      <div class="rule-step">
+        <span class="rs-expr">10 − 3 + 2</span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr">7 + 2</span>
+        <span class="rs-arrow">=</span>
+        <span class="rs-expr"><span class="hi-res">9</span></span>
+        <span class="rs-note">ohne Klammern: von links nach rechts</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. PUNKT VOR STRICH ═══ -->
+<div class="section">
+  <h2>Regel 2 – Punkt vor Strich</h2>
+
+  <p>Wenn keine Klammern da sind, gilt: Multiplikation und Division (Punktoperationen) werden vor Addition und Subtraktion (Strichoperationen) berechnet.</p>
+
+  <div class="blackhole-box">
+    <span class="bh-label">🕳️ Das Schwarze-Loch-Prinzip</span>
+    <p>Ein Schwarzes Loch verändert die Reihenfolge, in der Zeit vergeht – Dinge passieren nicht mehr „von links nach rechts". Ohne Rechenregeln wäre Mathematik genauso chaotisch: Zwei Personen bekämen für dieselbe Aufgabe verschiedene Ergebnisse.</p>
+    <p>„Punkt vor Strich" ist die Vereinbarung, die verhindert, dass Berechnungen ins Schwarze Loch fallen. <strong>Multiplikation und Division binden stärker</strong> als Addition und Subtraktion – wie die Gravitation eines Schwarzen Lochs, die alles in der Nähe festhält, bevor Ferneres reagiert.</p>
+  </div>
+
+  <div class="rule-vis">
+    <span class="rv-label">📐 Punkt vor Strich in Aktion</span>
+    <div class="rule-steps">
+      <div class="rule-step">
+        <span class="rs-expr">2 + <span class="hi-point">3 · 4</span> − 1</span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr">2 + <span class="hi-point">12</span> − 1</span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr">14 − 1</span>
+        <span class="rs-arrow">=</span>
+        <span class="rs-expr"><span class="hi-res">13</span></span>
+      </div>
+      <div class="rule-step">
+        <span class="rs-expr">20 ÷ <span class="hi-point">4</span> + <span class="hi-point">3 · 2</span></span>
+        <span class="rs-arrow">→</span>
+        <span class="rs-expr"><span class="hi-point">5</span> + <span class="hi-point">6</span></span>
+        <span class="rs-arrow">=</span>
+        <span class="rs-expr"><span class="hi-res">11</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Schritt für Schritt – interaktiver Kursrechner</h2>
+  <p>Erklärus zeigt Sterni, wie man eine komplexe Aufgabe systematisch löst. Klicke auf „Nächster Schritt", um die Lösung aufzudecken:</p>
+
+  <div class="calc-wrap">
+    <span class="cl-label">🧮 Kurskorrektur-Aufgabe</span>
+    <div class="calc-expr" id="calc-display">5 + (12 ÷ 4) · 3 − 2</div>
+    <ol class="calc-steps-list" id="calc-steps">
+      <li id="cstep-0">
+        <span class="step-num">①</span>
+        <span class="step-text">Klammern zuerst: <span class="step-highlight">(12 ÷ 4) = 3</span></span>
+      </li>
+      <li id="cstep-1">
+        <span class="step-num">②</span>
+        <span class="step-text">Ergebnis einsetzen: <span class="step-highlight">5 + 3 · 3 − 2</span></span>
+      </li>
+      <li id="cstep-2">
+        <span class="step-num">③</span>
+        <span class="step-text">Punkt vor Strich: <span class="step-highlight">3 · 3 = 9</span></span>
+      </li>
+      <li id="cstep-3">
+        <span class="step-num">④</span>
+        <span class="step-text">Einsetzen: <span class="step-highlight">5 + 9 − 2</span></span>
+      </li>
+      <li id="cstep-4">
+        <span class="step-num">⑤</span>
+        <span class="step-text">Von links nach rechts: <span class="step-highlight">5 + 9 = 14 → 14 − 2 = <strong style="color:var(--cyan)">12</strong></span></span>
+      </li>
+    </ol>
+    <div class="calc-btn-row">
+      <button class="calc-btn primary" onclick="calcNext()">Nächster Schritt →</button>
+      <button class="calc-btn" onclick="calcReset()">Zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. DIE DREI GESETZE ═══ -->
+<div class="section">
+  <h2>Die bekannten Gesetze – alte Freunde</h2>
+
+  <p>Neben der Rangordnung gibt es drei weitere Gesetze, die du vielleicht schon kennst – auch wenn du ihren Namen noch nicht wusstest:</p>
+
+  <div class="law-grid">
+    <div class="law-card comm">
+      <span class="lc-name">🔄 Kommutativgesetz</span>
+      <div class="lc-formula">
+        a + b <span class="eq">=</span> b + a<br>
+        a · b <span class="eq">=</span> b · a
+      </div>
+      <div class="lc-note">Reihenfolge egal bei + und ·<br>Gilt nicht für − und ÷!</div>
+    </div>
+    <div class="law-card asso">
+      <span class="lc-name">🔗 Assoziativgesetz</span>
+      <div class="lc-formula">
+        (a+b)+c <span class="eq">=</span> a+(b+c)<br>
+        (a·b)·c <span class="eq">=</span> a·(b·c)
+      </div>
+      <div class="lc-note">Klammerung beliebig bei + und ·<br>Gilt nicht für − und ÷!</div>
+    </div>
+  </div>
+  <div class="law-card dist" style="margin-top:.9rem;">
+    <span class="lc-name">📤 Distributivgesetz</span>
+    <div class="lc-formula">
+      a · (b + c) <span class="eq">=</span> a·b + a·c
+    </div>
+    <div class="lc-note">Eine Summe mit einer Zahl multiplizieren = jeden Summanden einzeln multiplizieren. Sehr nützlich zum Vereinfachen!</div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das Kommutativgesetz kenne ich! 3 + 5 ist dasselbe wie 5 + 3. Das habe ich immer gemacht, ich wusste nur nicht, dass es einen Namen hat."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Mathematiker benennen Dinge, damit man präzise darüber sprechen kann. Auch im Universum: Alles hat einen Namen, damit nichts verloren geht."
+  </div>
+</div>
+
+<!-- ═══ 7. SCHWARZE LÖCHER & RECHENREGELN ═══ -->
+<div class="section">
+  <h2>Schwarze Löcher und die Ordnung der Dinge</h2>
+
+  <div class="blackhole-box">
+    <span class="bh-label">🕳️ Physik-Verbindung</span>
+    <p>Schwarze Löcher haben eine Eigenschaft, die Physiker das <strong>Ereignishorizont-Problem</strong> nennen: Wenn man Messungen von verschiedenen Beobachterpunkten macht, bekommt man scheinbar widersprüchliche Ergebnisse – weil Raum und Zeit sich verbiegen.</p>
+    <p>Ohne einheitliche Rechenregeln hätte die Mathematik dasselbe Problem: Zwei Astronomen, die 3 + 4 · 2 berechnen, kämen zu verschiedenen Ergebnissen – 11 oder 14 – je nachdem, wie sie vorgehen. Das wäre wie zwei Beobachter an verschiedenen Punkten des Ereignishorizonts.</p>
+    <p>Die Rechenregeln sind daher keine willkürliche Erfindung. Sie sind eine <strong>universelle Vereinbarung</strong>, die sicherstellt, dass Mathematik überall im Universum dieselbe Sprache spricht – auch wenn Raum und Zeit sich verbiegen.</p>
+  </div>
+
+  <div class="info-card uni">
+    <span class="ic-title">🌌 Im Universum – konkrete Zahlen</span>
+    <p>Sternis Raumsonde misst die Entfernung zum Schwarzen Loch mit der Formel: <strong>D = 2 + 3 · (8 ÷ 4) · 10</strong> Lichteinheiten. Wie weit ist es?</p>
+    <p>Schritt 1 – Klammern: (8 ÷ 4) = 2 → <strong>2 + 3 · 2 · 10</strong></p>
+    <p>Schritt 2 – Punkt vor Strich: 3 · 2 · 10 = 60 → <strong>2 + 60</strong></p>
+    <p>Schritt 3 – Ergebnis: <strong>62 Lichteinheiten</strong>. Sicherer Abstand – der Kurs ist frei.</p>
+  </div>
+</div>
+
+<!-- ═══ 8. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head gold">⚠️ Aufgabe 1 – Kurs oder Schwarzes Loch?</div>
+  <div class="tc-body">
+    <p>Sterni muss berechnen: <strong>2 + 3 · 4</strong>. Was ist das Ergebnis?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Fast! Aber Punkt vor Strich: erst 3·4=12, dann 2+12=14.')">20</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! Erst 3·4=12 (Punkt vor Strich), dann 2+12=14 ✓')">14</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Das wäre (2+3)·4 – da fehlt die Klammer!')">20</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – wir multiplizieren 3·4, nicht 2·4.')">10</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">🔢 Aufgabe 2 – Klammern setzen</div>
+  <div class="tc-body">
+    <p>Erklärus schreibt: <strong>(5 + 3) · 2</strong>. Was ergibt das?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – das wäre 5+3·2 ohne Klammer: 5+6=11.')">11</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! Erst (5+3)=8, dann 8·2=16 – die Klammer verändert alles ✓')">16</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – erst die Klammer lösen: (5+3)=8, dann 8·2.')">13</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Zu groß – 5+3 ist 8, nicht 10.')">20</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head green">🔄 Aufgabe 3 – Kommutativgesetz</div>
+  <div class="tc-body">
+    <p>Sterni berechnet <strong>7 · 3</strong>. Erklärus sagt: „Das ist dasselbe wie 3 · 7." Stimmt das?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! Kommutativgesetz: a·b = b·a. 7·3 = 3·7 = 21 ✓')">Ja, beide ergeben 21</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Falsch! Das Kommutativgesetz gilt für Multiplikation: 7·3 = 3·7 = 21.')">Nein, die Reihenfolge ändert das Ergebnis</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head purple">🕳️ Aufgabe 4 – Der Kurs ums Schwarze Loch</div>
+  <div class="tc-body">
+    <p>Die kritische Distanz ist: <strong>10 − (2 + 3) · 1</strong>. Was ergibt das?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – die Klammer muss zuerst: (2+3)=5, dann 10−5·1=10−5.')">8</button>
+      <button class="q-btn" onclick="q(this,true, 'q4','Richtig! Erst (2+3)=5, dann 5·1=5, dann 10−5=5 ✓')">5</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Zu groß – denke an Klammern zuerst!')">10</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – 1·1 wäre falsch. Der Faktor ist (2+3)=5.')">9</button>
+    </div>
+    <div class="q-fb" id="q4-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">📤 Aufgabe 5 – Distributivgesetz</div>
+  <div class="tc-body">
+    <p>Erklärus sagt: <strong>3 · (4 + 2)</strong> ist dasselbe wie <strong>3·4 + 3·2</strong>. Was ergibt beides?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q5','Fast! 3·(4+2)=3·6=18 und 3·4+3·2=12+6=18. Beide 18, nicht 12!')">12 und 12</button>
+      <button class="q-btn" onclick="q(this,true, 'q5','Richtig! 3·(6)=18 und 12+6=18 – Distributivgesetz bestätigt ✓')">18 und 18</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 3·6=18, nicht 24.')">24 und 18</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 3+6=9 wäre falsch, es heißt 3·(4+2)=3·6=18.')">9 und 18</button>
+    </div>
+    <div class="q-fb" id="q5-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ 9. DAS ENDE DIESER NACHT ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Der Kurs war berechnet. Sterni hatte die Rechenregeln gelernt – und das Schwarze Loch blieb in sicherem Abstand. Die Sonde glitt ruhig an seinem Ereignishorizont vorbei.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Klammern zuerst, dann Punkt vor Strich, dann von links nach rechts. Das sind nur drei Regeln. Aber ohne sie..."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„...wäre jede Berechnung ein Schwarzes Loch. Man wüsste nie, was herauskommt."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und die Gesetze – Kommutativ, Assoziativ, Distributiv?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Sie sind Werkzeuge. Manchmal kannst du mit ihrer Hilfe eine schwierige Aufgabe umschreiben und viel einfacher lösen. Nicht die Zahl ändert sich – nur der Weg."
+  </div>
+
+  <p>Sterni schaute noch einmal auf das Schwarze Loch. Ein Ring aus Licht umgab es – das Licht, das es nicht entkommen ließ. Aber Sterni entkam. Mit Mathematik.</p>
+
+  <div class="dlg lektion">
+    „Neunte Lektion: Rechenregeln – Klammern zuerst, dann Punkt vor Strich (· ÷ vor + −), dann von links nach rechts. Kommutativgesetz: Reihenfolge egal bei + und ·. Assoziativgesetz: Klammerung beliebig bei + und ·. Distributivgesetz: a·(b+c) = a·b + a·c. Ohne diese Regeln wäre jede Rechnung ein Schwarzes Loch."
+  </div>
+</div>
+
+<!-- ZUSAMMENFASSUNG -->
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-formula">
+    <span class="sg">①</span> Klammern zuerst<br>
+    <span class="sp">②</span> · und ÷ vor + und −<br>
+    <span class="sc">③</span> von links nach rechts
+  </div>
+  <div class="sb-sub">
+    Kommutativgesetz: a+b = b+a · a·b = b·a<br>
+    Assoziativgesetz: Klammern beliebig bei + und ·<br>
+    Distributivgesetz: a·(b+c) = a·b + a·c
+  </div>
+</div>
+
+<!-- NOTIZBUCH -->
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Zweistins Notizbuch – Seite 9</span>
+    <p>„Rechenregeln: Klammern – Punkt – Strich. Immer in dieser Reihenfolge. Sterni hat beinahe das Schwarze Loch besucht, weil sie Addition vor Multiplikation gerechnet hat. Drei Lichteinheiten Unterschied zwischen 11 und 14. Im Universum kann das alles bedeuten. Die Gesetze heißen Kommutativ, Assoziativ, Distributiv. Das schreibe ich mir auf. Auf."</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 9 gemeistert!</h2>
+  <p>Das Schwarze Loch liegt hinter uns. Klammern zuerst – das Universum ist geordnet.<br>
+     Kapitel 10 wartet: positive und negative Zahlen.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-08-mal-durch-10-100-1000.html">← Kapitel 8</a>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-10-positive-negative-zahlen.html">Kapitel 10 – Positive und negative Zahlen →</a>
+</div>
+
+</main>
+
+<footer>
+  © 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 9
+</footer>
+
+</div><!-- /above -->
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'), cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){ cv.width=window.innerWidth; cv.height=window.innerHeight; }
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08, med=Math.random()<0.18;
+      stars.push({ x:Math.random()*cv.width, y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()*1.0):(0.2+Math.random()*0.8),
+        o:big?0.95:med?(0.6+Math.random()*0.35):(0.25+Math.random()*0.5),
+        sp:big?(0.003+Math.random()*0.004):(0.004+Math.random()*0.012),
+        ph:Math.random()*Math.PI*2, big, med });
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({ x:Math.random()*cv.width*1.5, y:-10,
+      vx:-3.5-Math.random()*3, vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120, alpha:1, fade:0.012+Math.random()*0.008 });
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(0.45+0.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath(); cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`; cx.fill();
+      if(s.big&&a>0.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*0.5})`; cx.lineWidth=0.7;
+        cx.beginPath(); cx.moveTo(s.x-g,s.y); cx.lineTo(s.x+g,s.y); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x,s.y-g); cx.lineTo(s.x,s.y+g); cx.stroke();
+        const g2=g*0.6; cx.strokeStyle=`rgba(255,240,180,${a*0.25})`;
+        cx.beginPath(); cx.moveTo(s.x-g2,s.y-g2); cx.lineTo(s.x+g2,s.y+g2); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x+g2,s.y-g2); cx.lineTo(s.x-g2,s.y+g2); cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const len=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/len*m.len,m.y-m.vy/len*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath(); cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/len*m.len,m.y-m.vy/len*m.len);
+      cx.strokeStyle=grd; cx.lineWidth=1.8; cx.stroke();
+      m.x+=m.vx; m.y+=m.vy; m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20) meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize(); initStars();
+  window.addEventListener('resize',()=>{ resize(); initStars(); });
+  requestAnimationFrame(draw);
+  function sched(){ spawnMeteor(); setTimeout(sched,4000+Math.random()*5000); }
+  setTimeout(sched,1500);
+})();
+
+/* ─── Schritt-für-Schritt Rechner ─── */
+let calcStep = -1;
+const calcDisplays = [
+  '5 + (12 ÷ 4) · 3 − 2',
+  '5 + 3 · 3 − 2',
+  '5 + 9 − 2',
+  '14 − 2',
+  '= 12'
+];
+function calcNext(){
+  calcStep++;
+  if(calcStep >= 5) { calcReset(); return; }
+  document.querySelectorAll('#calc-steps li').forEach((li,i)=>{
+    li.classList.toggle('active', i === calcStep);
+  });
+  if(calcStep < calcDisplays.length){
+    document.getElementById('calc-display').textContent = calcDisplays[calcStep];
+  }
+}
+function calcReset(){
+  calcStep = -1;
+  document.querySelectorAll('#calc-steps li').forEach(li=>li.classList.remove('active'));
+  document.getElementById('calc-display').textContent = '5 + (12 ÷ 4) · 3 − 2';
+}
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
