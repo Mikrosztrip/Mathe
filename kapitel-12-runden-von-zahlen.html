@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 12 – Runden von Zahlen · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size:17px; line-height:1.75; min-height:100vh; overflow-x:hidden; }
+#starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.above { position:relative; z-index:1; }
+
+.site-header { text-align:center; padding:1.1rem 2rem .9rem; font-family:'Courier New',monospace; font-size:.78rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; border-bottom:1px solid var(--border); background:rgba(7,13,31,.88); backdrop-filter:blur(10px); position:sticky; top:0; z-index:100; }
+.site-header strong { color:var(--gold); }
+
+.hero { text-align:center; padding:3.5rem 1.5rem 2rem; background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size:3.6rem; display:block; margin-bottom:.5rem; }
+.hero h1 { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; color:var(--gold); text-shadow:0 0 30px rgba(245,200,66,.35); margin-bottom:.3rem; }
+.hero .subtitle { font-size:.88rem; color:var(--muted); font-style:italic; font-family:'Courier New',monospace; }
+
+.ch-nav { display:flex; justify-content:center; align-items:center; gap:.8rem; padding:.9rem 1.5rem 1.6rem; flex-wrap:wrap; }
+.ch-nav a, .ch-nav .cur { display:inline-flex; align-items:center; padding:.45rem 1.2rem; border-radius:50px; font-size:.88rem; font-family:'Courier New',monospace; text-decoration:none; transition:all .2s; }
+.ch-nav a { background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text); }
+.ch-nav a:hover { background:rgba(255,255,255,.12); color:var(--gold); }
+.ch-nav .cur { background:var(--gold); color:#1a0e00; font-weight:700; border:none; }
+
+.wrap { max-width:780px; margin:0 auto; padding:0 1.2rem 6rem; }
+
+.section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem 2.2rem; margin-bottom:1.4rem; }
+.section h2 { font-size:1.15rem; font-weight:700; color:var(--gold); margin-bottom:.9rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+.section p { margin-bottom:.85rem; }
+.section p:last-child { margin-bottom:0; }
+
+.dlg { border-left:4px solid; border-radius:0 10px 10px 0; padding:.85rem 1.1rem; margin:.7rem 0; font-style:italic; line-height:1.65; }
+.dlg.sterni    { border-color:var(--gold);  background:rgba(245,200,66,.07); color:var(--gold); }
+.dlg.zweistein { border-color:var(--blue);  background:rgba(91,164,207,.07); color:var(--blue); }
+.dlg.lektion   { border-color:var(--cyan);  background:rgba(78,205,196,.06); color:#a0e8e4; }
+.dlg .who { font-style:normal; font-weight:700; font-size:.82rem; letter-spacing:.04em; }
+
+/* ── RUND-VISUALISIERUNG ── */
+.round-vis { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; margin:1rem 0; }
+.round-vis .rv-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1.1rem; }
+.round-row { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; margin:.5rem 0; font-family:'Courier New',monospace; font-size:1rem; }
+.rr-orig { color:var(--text); }
+.rr-arrow { color:var(--muted); }
+.rr-result { font-weight:700; }
+.rr-result.up   { color:var(--cyan); }
+.rr-result.down { color:var(--pink); }
+.rr-note { font-size:.8rem; color:var(--muted); font-style:italic; font-family:'Segoe UI',sans-serif; }
+.rr-note strong { color:var(--gold); }
+.rr-digit { display:inline-block; padding:.05rem .25rem; border-radius:4px; }
+.rr-digit.key-up   { background:rgba(78,205,196,.2);  color:var(--cyan);  font-weight:800; }
+.rr-digit.key-down { background:rgba(232,122,171,.2); color:var(--pink);  font-weight:800; }
+
+/* ── ZAHLENSTRAHL RUNDEN ── */
+.numround-wrap { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; margin:1rem 0; overflow-x:auto; }
+.numround-wrap .nr-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1.2rem; }
+
+/* ── INTERAKTIVER RUNDUNGS-RECHNER ── */
+.rounder { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin:1rem 0; }
+.rounder .r-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1rem; }
+.r-controls { display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem; }
+.r-input { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:.45rem .8rem; color:var(--text); font-family:'Courier New',monospace; font-size:1.1rem; width:180px; }
+.r-input:focus { outline:none; border-color:var(--gold); }
+.r-select { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:.45rem .8rem; color:var(--text); font-family:'Courier New',monospace; font-size:.9rem; cursor:pointer; }
+.r-select:focus { outline:none; border-color:var(--gold); }
+.r-display { font-family:'Courier New',monospace; font-size:1.6rem; font-weight:800; text-align:center; padding:1rem; background:rgba(0,0,0,.2); border-radius:10px; min-height:3.5rem; }
+.r-display .orig-part { color:var(--muted); }
+.r-display .round-part { color:var(--gold); font-size:2rem; }
+.r-display .arrow-part { color:var(--muted); font-size:1.2rem; margin:0 .5rem; }
+.r-explain { font-size:.88rem; color:var(--muted); text-align:center; margin-top:.6rem; min-height:1.5rem; line-height:1.7; }
+.r-explain strong { color:var(--cyan); }
+.r-explain .up-color   { color:var(--cyan); font-weight:700; }
+.r-explain .down-color { color:var(--pink); font-weight:700; }
+
+/* ── STERNE-TABELLE ── */
+.star-table-wrap { overflow-x:auto; margin:1rem 0; }
+.star-table { border-collapse:collapse; font-size:.88rem; width:100%; }
+.star-table th { background:rgba(245,200,66,.1); color:var(--gold); font-weight:700; padding:.55rem .9rem; text-align:left; border:1px solid rgba(100,120,200,.2); font-family:'Courier New',monospace; font-size:.78rem; }
+.star-table td { padding:.55rem .9rem; border:1px solid rgba(100,120,200,.15); color:var(--text); font-family:'Courier New',monospace; font-size:.88rem; }
+.star-table tr:nth-child(even) td { background:rgba(255,255,255,.02); }
+.star-table .td-exact  { color:var(--muted); }
+.star-table .td-round  { color:var(--cyan);  font-weight:700; }
+.star-table .td-why    { color:var(--gold);  }
+
+/* ── ASTRONOMEN-BOX ── */
+.astro-box { background:radial-gradient(ellipse at bottom right, rgba(91,164,207,.1) 0%, rgba(7,13,31,.95) 70%); border:1px solid rgba(91,164,207,.3); border-radius:16px; padding:1.6rem 1.8rem; margin:1rem 0; }
+.astro-box .ab-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--blue); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.8rem; }
+.astro-box p { font-size:.95rem; color:#b8d8ec; margin-bottom:.55rem; }
+.astro-box p:last-child { margin-bottom:0; }
+.astro-box strong { color:var(--blue); }
+
+/* ── REGELKARTE ── */
+.rule-card { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin:1rem 0; }
+@media(max-width:520px){ .rule-card { grid-template-columns:1fr; } }
+.rc-item { border-radius:12px; padding:1rem 1.2rem; }
+.rc-item.down { background:rgba(232,122,171,.08); border:1px solid rgba(232,122,171,.25); }
+.rc-item.up   { background:rgba(78,205,196,.08);  border:1px solid rgba(78,205,196,.25); }
+.rc-item .rc-title { font-family:'Courier New',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:.5rem; font-weight:700; }
+.rc-item.down .rc-title { color:var(--pink); }
+.rc-item.up   .rc-title { color:var(--cyan); }
+.rc-item .rc-digits { font-family:'Courier New',monospace; font-size:1.3rem; font-weight:800; margin:.3rem 0; }
+.rc-item.down .rc-digits { color:var(--pink); }
+.rc-item.up   .rc-digits { color:var(--cyan); }
+.rc-item .rc-note { font-size:.82rem; color:var(--muted); }
+
+/* ── INFO-KARTEN ── */
+.info-card { border-radius:12px; padding:1.2rem 1.4rem; margin:1rem 0; }
+.info-card .ic-title { font-size:.78rem; font-family:'Courier New',monospace; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.65rem; }
+.info-card p { font-size:.95rem; margin-bottom:.55rem; }
+.info-card p:last-child { margin-bottom:0; }
+.info-card.uni  { background:rgba(245,200,66,.07);  border:1px solid rgba(245,200,66,.25); }
+.info-card.uni  .ic-title { color:var(--gold); }
+.info-card.uni  p { color:#e8dfa0; }
+.info-card.tip  { background:rgba(155,137,224,.1);  border:1px solid rgba(155,137,224,.3); }
+.info-card.tip  .ic-title { color:var(--purple); }
+.info-card.tip  p { color:#ccc8f0; }
+.info-card.nb   { background:rgba(91,164,207,.08);  border:1px solid rgba(91,164,207,.25); }
+.info-card.nb   .ic-title { color:var(--blue); }
+.info-card.nb   p { color:#b8d8ec; }
+
+/* ── AUFGABEN ── */
+.task-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:1rem; }
+.task-card .tc-head { display:flex; align-items:center; gap:.5rem; padding:.6rem 1.3rem; font-family:'Courier New',monospace; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); }
+.task-card .tc-head.gold   { background:rgba(245,200,66,.1);   color:var(--gold); }
+.task-card .tc-head.cyan   { background:rgba(78,205,196,.1);   color:var(--cyan); }
+.task-card .tc-head.purple { background:rgba(155,137,224,.1);  color:var(--purple); }
+.task-card .tc-head.green  { background:rgba(76,175,136,.12);  color:var(--green); }
+.task-card .tc-head.blue   { background:rgba(91,164,207,.12);  color:var(--blue); }
+.task-card .tc-head.pink   { background:rgba(232,122,171,.1);  color:var(--pink); }
+.task-card .tc-body { padding:1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom:.8rem; }
+.q-opts { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+.q-btn { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:.55rem 1.1rem; font-size:.95rem; color:var(--text); cursor:pointer; transition:all .18s; font-weight:600; font-family:'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.q-btn.ok   { background:rgba(76,175,136,.2);  border-color:var(--green); color:var(--green); }
+.q-btn.fail { background:rgba(224,90,90,.15);  border-color:var(--red);   color:var(--red); }
+.q-fb { font-size:.86rem; margin-top:.4rem; min-height:1.2rem; }
+.q-fb.ok   { color:var(--green); }
+.q-fb.fail { color:var(--red); }
+
+/* ── ZUSAMMENFASSUNG ── */
+.summary-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; margin:1.4rem 0; }
+.summary-box .sb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.14em; display:block; margin-bottom:1rem; }
+.summary-box .sb-row { font-family:'Courier New',monospace; font-size:.95rem; font-weight:700; color:#fff; line-height:2.6; }
+.summary-box .sg { color:var(--gold); }
+.summary-box .sc { color:var(--cyan); }
+.summary-box .sp { color:var(--pink); }
+.summary-box .sb-sub { font-size:.88rem; color:var(--muted); line-height:1.8; margin-top:.5rem; }
+
+/* ── ABSCHLUSS ── */
+.ch-end { text-align:center; margin:1.4rem 0; }
+.ch-end .big-star { font-size:3rem; display:block; margin-bottom:.5rem; }
+.ch-end h2 { font-size:1.5rem; font-weight:800; color:var(--gold); margin-bottom:.35rem; }
+.ch-end p { color:var(--muted); font-size:.95rem; }
+.bot-nav { display:flex; justify-content:center; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
+.bot-nav a { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.4rem; background:rgba(245,200,66,.08); border:1px solid rgba(245,200,66,.3); border-radius:50px; color:var(--gold); text-decoration:none; font-size:.9rem; font-family:'Courier New',monospace; transition:all .2s; }
+.bot-nav a:hover { background:rgba(245,200,66,.16); }
+footer { text-align:center; font-size:.76rem; color:var(--muted); font-family:'Courier New',monospace; padding:1.5rem; margin-top:2rem; border-top:1px solid var(--border); }
+@media(max-width:600px){ .wrap{padding:0 .8rem 5rem;} .section{padding:1.3rem 1.1rem;} }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 12
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🔭</span>
+  <h1>12. Runden von Zahlen</h1>
+  <p class="subtitle">Lichtjahre, Sternenkataloge und die Kunst der Näherung</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="kapitel-11-bruchrechnen.html">← Kapitel 11</a>
+  <span class="cur">12 – Runden</span>
+  <a href="kapitel-13-schlussrechnung.html">Kapitel 13 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE ZWÖLFTE NACHT ═══ -->
+<div class="section">
+  <h2>Die zwölfte Nacht – der Sternenkatalog</h2>
+
+  <p>Die Sonde glitt durch eine stille Wolke aus Staub und Gas — einen Nebel, aus dem eines Tages neue Sterne entstehen würden. Erklärus hatte ein altes astronomisches Datenpaket geöffnet und scrollte durch Zahlen.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Sterni, hier steht die Entfernung zum nächsten Stern: 4,246 Lichtjahre. Und zum übernächsten: 4,243 Lichtjahre. Für unsere Navigationskarte brauche ich aber nur eine Dezimalstelle."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Dann sind beide einfach 4,2 Lichtjahre?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau — gerundet auf eine Nachkommastelle. Das ist das Prinzip des Rundens: Wir behalten die Genauigkeit, die wir brauchen, und lassen den Rest los."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Aber wie entscheidet man, ob man auf- oder abrundet?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Eine einzige Regel — und sie gilt überall, für ganze Zahlen und Dezimalzahlen: Schau auf die Ziffer rechts von der Stelle, auf die du runden willst. Ist sie 0 bis 4, rundest du ab. Ist sie 5 bis 9, rundest du auf."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Eine Regel für das ganze Universum?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das Universum liebt Einfachheit."
+  </div>
+</div>
+
+<!-- ═══ 2. DIE EINE REGEL ═══ -->
+<div class="section">
+  <h2>Die eine Rundungsregel</h2>
+
+  <p>Beim Runden schaust du immer auf die Ziffer, die <strong style="color:var(--gold)">direkt rechts</strong> von der Stelle steht, auf die du runden möchtest. Diese Ziffer entscheidet alles:</p>
+
+  <div class="rule-card">
+    <div class="rc-item down">
+      <span class="rc-title">⬇️ Abrunden</span>
+      <div class="rc-digits">0 · 1 · 2 · 3 · 4</div>
+      <div class="rc-note">Die betrachtete Stelle bleibt gleich. Alle Ziffern rechts davon werden zu 0 (oder weggelassen).</div>
+    </div>
+    <div class="rc-item up">
+      <span class="rc-title">⬆️ Aufrunden</span>
+      <div class="rc-digits">5 · 6 · 7 · 8 · 9</div>
+      <div class="rc-note">Die betrachtete Stelle wird um 1 erhöht. Alle Ziffern rechts davon werden zu 0 (oder weggelassen).</div>
+    </div>
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Merksatz: </span>„<strong>Schlüsselziffer &lt; 5 → abrunden · Schlüsselziffer ≥ 5 → aufrunden</strong>"
+  </div>
+</div>
+
+<!-- ═══ 3. GANZE ZAHLEN AUF ZEHNER ═══ -->
+<div class="section">
+  <h2>Ganze Zahlen runden – auf Zehner, Hunderter, Tausender</h2>
+
+  <p><strong style="color:var(--gold)">Auf Zehner runden:</strong> Schau auf die Einerstelle (letzte Ziffer). 0–4 → abrunden, 5–9 → aufrunden.</p>
+
+  <div class="round-vis">
+    <span class="rv-label">📏 Auf Zehner runden</span>
+    <div class="round-row">
+      <span class="rr-orig">4<span class="rr-digit key-down">3</span></span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">40</span>
+      <span class="rr-note">Einser ist <strong>3</strong> → abrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">4<span class="rr-digit key-up">7</span></span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">50</span>
+      <span class="rr-note">Einser ist <strong>7</strong> → aufrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">13<span class="rr-digit key-down">4</span></span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">130</span>
+      <span class="rr-note">Einser ist <strong>4</strong> → abrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">13<span class="rr-digit key-up">5</span></span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">140</span>
+      <span class="rr-note">Einser ist <strong>5</strong> → aufrunden</span>
+    </div>
+  </div>
+
+  <p><strong style="color:var(--gold)">Auf Hunderter runden:</strong> Schau auf die Zehnerstelle (vorletzte Ziffer). 0–4 → abrunden, 5–9 → aufrunden.</p>
+
+  <div class="round-vis">
+    <span class="rv-label">📏 Auf Hunderter runden</span>
+    <div class="round-row">
+      <span class="rr-orig">3<span class="rr-digit key-down">2</span>8</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">300</span>
+      <span class="rr-note">Zehner ist <strong>2</strong> → abrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">3<span class="rr-digit key-up">7</span>2</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">400</span>
+      <span class="rr-note">Zehner ist <strong>7</strong> → aufrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">1<span class="rr-digit key-down">4</span>99</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">1 400</span>
+      <span class="rr-note">Zehner ist <strong>4</strong> → abrunden (auch wenn Einser 9 ist!)</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">1<span class="rr-digit key-up">5</span>01</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">1 600</span>
+      <span class="rr-note">Zehner ist <strong>5</strong> → aufrunden</span>
+    </div>
+  </div>
+
+  <p><strong style="color:var(--gold)">Auf Tausender runden:</strong> Schau auf die Hunderterstelle. 0–4 → abrunden, 5–9 → aufrunden.</p>
+
+  <div class="round-vis">
+    <span class="rv-label">📏 Auf Tausender runden</span>
+    <div class="round-row">
+      <span class="rr-orig">4<span class="rr-digit key-down">3</span>87</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">4 000</span>
+      <span class="rr-note">Hunderter ist <strong>3</strong> → abrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">4<span class="rr-digit key-up">6</span>12</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">5 000</span>
+      <span class="rr-note">Hunderter ist <strong>6</strong> → aufrunden</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. DEZIMALZAHLEN ═══ -->
+<div class="section">
+  <h2>Dezimalzahlen runden</h2>
+
+  <p>Die gleiche Regel gilt für Kommazahlen — du schaust einfach auf die Stelle <strong style="color:var(--gold)">direkt rechts</strong> von der gewünschten Genauigkeit.</p>
+
+  <div class="round-vis">
+    <span class="rv-label">📏 Auf ganze Zahl runden (0 Nachkommastellen)</span>
+    <div class="round-row">
+      <span class="rr-orig">3,<span class="rr-digit key-down">2</span>7</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">3</span>
+      <span class="rr-note">1. Nachkommastelle ist <strong>2</strong> → abrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">3,<span class="rr-digit key-up">8</span>1</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">4</span>
+      <span class="rr-note">1. Nachkommastelle ist <strong>8</strong> → aufrunden</span>
+    </div>
+  </div>
+
+  <div class="round-vis">
+    <span class="rv-label">📏 Auf 1. Nachkommastelle runden</span>
+    <div class="round-row">
+      <span class="rr-orig">4,2<span class="rr-digit key-down">4</span>6</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">4,2</span>
+      <span class="rr-note">2. Nachkommastelle ist <strong>4</strong> → abrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">4,2<span class="rr-digit key-up">5</span>3</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">4,3</span>
+      <span class="rr-note">2. Nachkommastelle ist <strong>5</strong> → aufrunden</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">9,9<span class="rr-digit key-up">7</span></span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">10,0</span>
+      <span class="rr-note">7 → aufrunden: 9,9 + 0,1 = 10,0</span>
+    </div>
+  </div>
+
+  <div class="round-vis">
+    <span class="rv-label">📏 Auf 2. und 3. Nachkommastelle runden</span>
+    <div class="round-row">
+      <span class="rr-orig">3,14<span class="rr-digit key-down">1</span>59</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result down">3,14</span>
+      <span class="rr-note">3. Stelle ist <strong>1</strong> → abrunden (π auf 2 Stellen)</span>
+    </div>
+    <div class="round-row">
+      <span class="rr-orig">3,141<span class="rr-digit key-up">5</span>9</span>
+      <span class="rr-arrow">→</span>
+      <span class="rr-result up">3,142</span>
+      <span class="rr-note">4. Stelle ist <strong>5</strong> → aufrunden (π auf 3 Stellen)</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„π! Die Kreiszahl. Erklärus, hat π unendlich viele Nachkommastellen?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Ja. 3,14159265358979... ohne Ende, ohne Muster. Für Berechnungen runden wir sie. Auf 2 Stellen für schnelle Überschläge, auf 5 Stellen für Raumfahrtberechnungen. Die NASA verwendet π mit 15 Nachkommastellen — das reicht für jeden Kurs im Sonnensystem."
+  </div>
+</div>
+
+<!-- ═══ 5. ASTRONOMIE-VERBINDUNG ═══ -->
+<div class="section">
+  <h2>Astronomie und Runden – eine untrennbare Verbindung</h2>
+
+  <div class="astro-box">
+    <span class="ab-label">🔭 Warum Astronomen runden müssen</span>
+    <p>Die Entfernung zur Andromeda-Galaxie beträgt genau <strong>2.537.000 Lichtjahre</strong> — aber Astronomen schreiben meist <strong>2,5 Millionen Lichtjahre</strong>. Nicht weil sie es nicht genauer wissen, sondern weil die Messunsicherheit ohnehin größer ist als die letzten Stellen.</p>
+    <p>Runden in der Astronomie ist kein Nachlässigkeit — es ist <strong>Ehrlichkeit</strong>. Eine Zahl mit mehr Stellen als die Messgenauigkeit erlaubt, wäre eine Lüge.</p>
+  </div>
+
+  <div class="star-table-wrap">
+    <table class="star-table">
+      <thead>
+        <tr>
+          <th>Stern / Objekt</th>
+          <th>Exakte Entfernung</th>
+          <th>Gerundet auf…</th>
+          <th>Ergebnis</th>
+          <th>Schlüsselziffer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Proxima Centauri</td>
+          <td class="td-exact">4,2465 Lj</td>
+          <td>1 Nachkommastelle</td>
+          <td class="td-round">4,2 Lj</td>
+          <td class="td-why">4 → abrunden</td>
+        </tr>
+        <tr>
+          <td>Alpha Centauri</td>
+          <td class="td-exact">4,3441 Lj</td>
+          <td>1 Nachkommastelle</td>
+          <td class="td-round">4,3 Lj</td>
+          <td class="td-why">4 → abrunden</td>
+        </tr>
+        <tr>
+          <td>Sirius</td>
+          <td class="td-exact">8,6011 Lj</td>
+          <td>ganze Zahl</td>
+          <td class="td-round">9 Lj</td>
+          <td class="td-why">6 → aufrunden</td>
+        </tr>
+        <tr>
+          <td>Erde–Sonne</td>
+          <td class="td-exact">149.597.870 km</td>
+          <td>Millionen</td>
+          <td class="td-round">150 Mio. km</td>
+          <td class="td-why">5 → aufrunden</td>
+        </tr>
+        <tr>
+          <td>Andromeda</td>
+          <td class="td-exact">2.537.000 Lj</td>
+          <td>Hunderttausender</td>
+          <td class="td-round">2.500.000 Lj</td>
+          <td class="td-why">3 → abrunden</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-card uni">
+    <span class="ic-title">🌌 Sternis Kurs – gerundete Navigation</span>
+    <p>Sternis Navigationssystem zeigt: Heimatplanet noch <strong>47.382,74 Lichteinheiten</strong> entfernt. Für die Grobbplanung rundet Erklärus auf Tausender: <strong>47.000 Lichteinheiten</strong>. Für die Feinnavigation später braucht er 2 Nachkommastellen: <strong>47.382,74</strong> bleibt unverändert, da er bereits genug Stellen hat. Runden spart Rechenzeit — und manchmal Leben.</p>
+  </div>
+</div>
+
+<!-- ═══ 6. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Interaktiv – der Rund-O-Mat 3000</h2>
+  <p>Gib eine beliebige Zahl ein und wähle die gewünschte Rundungsstufe:</p>
+
+  <div class="rounder">
+    <span class="r-label">🎛️ Rund-O-Mat 3000</span>
+    <div class="r-controls">
+      <input type="text" id="r-input" class="r-input" value="4246.5" placeholder="Zahl eingeben...">
+      <select id="r-level" class="r-select" onchange="doRound()">
+        <option value="1000">Auf Tausender</option>
+        <option value="100">Auf Hunderter</option>
+        <option value="10">Auf Zehner</option>
+        <option value="1" selected>Auf ganze Zahl</option>
+        <option value="0.1">Auf 1 Nachkommastelle</option>
+        <option value="0.01">Auf 2 Nachkommastellen</option>
+        <option value="0.001">Auf 3 Nachkommastellen</option>
+      </select>
+    </div>
+    <div class="r-display" id="r-display"></div>
+    <div class="r-explain" id="r-explain"></div>
+  </div>
+</div>
+
+<!-- ═══ 7. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head gold">⭐ Aufgabe 1 – Sirius auf Zehner runden</div>
+  <div class="tc-body">
+    <p>Die Entfernung zu Sirius beträgt <strong>81 Lichtjahre</strong> (ganzzahlig). Runde auf Zehner.</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! Einser ist 1 → abrunden → 80 ✓')">80</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – Einser ist 1, also kleiner als 5 → abrunden → 80.')">90</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 81 liegt zwischen 80 und 90. Einser = 1 → 80.')">100</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 81 auf Zehner: Einser ist 1 → 80, nicht 81.')">81</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">🌍 Aufgabe 2 – Erde–Sonne auf Hunderter</div>
+  <div class="tc-body">
+    <p>Die Erde ist <strong>149.597.870 km</strong> von der Sonne entfernt. Runde auf Hunderter (letzte drei Stellen).</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – die Hunderterstelle ist 8, also aufrunden: ...900.')">149.597.800</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! Hunderterstelle ist 8 → aufrunden → 149.597.900 ✓')">149.597.900</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – wir runden auf Hunderter, nicht auf Tausender.')">149.598.000</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – die Hunderterstelle (8) bestimmt das Runden, nicht die Zehnerstelle.')">149.597.870</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head purple">🔢 Aufgabe 3 – π auf 2 Nachkommastellen</div>
+  <div class="tc-body">
+    <p>π = 3,14159… Runde auf 2 Nachkommastellen.</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – schau auf die 3. Nachkommastelle: 1 → abrunden → 3,14.')">3,15</button>
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! 3. Stelle ist 1 → abrunden → 3,14 ✓')">3,14</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 3,142 wäre auf 3 Nachkommastellen. Wir wollen 2.')">3,142</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – wir runden auf 2 Stellen, also 3,14.')">3,1</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">🚀 Aufgabe 4 – Sternis Heimweg</div>
+  <div class="tc-body">
+    <p>Sternis Navigationssystem zeigt <strong>47.382,74 Lichteinheiten</strong>. Runde auf Tausender.</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – Hunderterstelle ist 3 (kleiner als 5) → abrunden → 47.000.')">48.000</button>
+      <button class="q-btn" onclick="q(this,true, 'q4','Richtig! Hunderterstelle ist 3 → abrunden → 47.000 ✓')">47.000</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – wir runden auf Tausender, nicht auf Zehntausender.')">50.000</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – 47.400 wäre auf Hunderter. Wir wollen Tausender.')">47.400</button>
+    </div>
+    <div class="q-fb" id="q4-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head pink">🌀 Aufgabe 5 – Der Kniff mit der 9</div>
+  <div class="tc-body">
+    <p>Runde <strong>9,97</strong> auf 1 Nachkommastelle. Achtung – hier passiert etwas Besonderes!</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q5','Fast! 9,97 → 2. Stelle ist 7 → aufrunden → 9,9 + 0,1 = 10,0, nicht 9,9.')">9,9</button>
+      <button class="q-btn" onclick="q(this,true, 'q5','Richtig! 2. Stelle ist 7 → aufrunden → 9,9 + 0,1 = 10,0. Die Zahl springt über 10! ✓')">10,0</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 10,1 wäre zu viel. 9,9 + 0,1 = 10,0.')">10,1</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 2. Nachkommastelle ist 7, also wird aufgerundet.')">9,97</button>
+    </div>
+    <div class="q-fb" id="q5-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ 8. ENDE DIESER NACHT ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Der Sternenkatalog war fertig. Jede Entfernung auf die passende Stelle gerundet — präzise genug für die Navigation, einfach genug für schnelle Entscheidungen. Sterni betrachtete die Tabelle und sah zum ersten Mal, wie viel Weisheit im einfachen Runden steckt.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Runden ist also kein Fehler. Es ist eine Entscheidung — ich wähle, wie viel Genauigkeit ich brauche."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Und die Schlüsselziffer ist immer dieselbe: Rechts von der gewünschten Stelle schauen. Kleiner als 5 — abrunden. 5 oder größer — aufrunden."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das klingt fast zu einfach."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Die besten Regeln sind einfach. Das Universum macht keine Ausnahmen — und beim Runden auch nicht."
+  </div>
+
+  <div class="dlg lektion">
+    „Zwölfte Lektion: Runden bedeutet, eine Zahl auf eine gewünschte Stelle zu vereinfachen. Schlüsselziffer (direkt rechts von der Zielstelle): 0–4 → abrunden, 5–9 → aufrunden. Gilt für Zehner, Hunderter, Tausender und alle Nachkommastellen. Astronomen runden täglich — nicht aus Faulheit, sondern aus Ehrlichkeit gegenüber der Messgenauigkeit."
+  </div>
+</div>
+
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-row">
+    <span class="sp">Schlüsselziffer 0–4</span> → <span class="sp">abrunden</span><br>
+    <span class="sc">Schlüsselziffer 5–9</span> → <span class="sc">aufrunden</span><br>
+    <span class="sg">Gilt für Zehner · Hunderter · Tausender · Nachkommastellen</span>
+  </div>
+  <div class="sb-sub">
+    Schau immer auf die Stelle direkt rechts von der Zielstelle.<br>
+    Vorsicht bei 9 → nach dem Aufrunden kann die nächste Stelle überlaufen!<br>
+    Astronomen runden π, Lichtjahre und Galaxienentfernungen täglich.
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Zweistins Notizbuch – Seite 12</span>
+    <p>„Runden. Eine Regel. Schlüsselziffer rechts von der Zielstelle: kleiner 5 abrunden, ab 5 aufrunden. Sterni hat beinahe 9,97 als 9,9 gerundet — aber 7 ist ≥ 5, also 10,0. Die NASA verwendet π mit 15 Stellen für Raumfahrt. Wir brauchen nur 3,14. Das Universum ist größer als jede Dezimalstelle. Das schreibe ich mit Sternchen auf."</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 12 gemeistert!</h2>
+  <p>Die Sternenkarte ist fertig. Sterni kennt den Weg.<br>
+     Kapitel 13 wartet: Schlussrechnung.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-11-bruchrechnen.html">← Kapitel 11</a>
+  <a href="kapitel-13-schlussrechnung.html">Kapitel 13 – Schlussrechnung →</a>
+</div>
+
+</main>
+<footer>© 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 12</footer>
+</div>
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'),cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08,med=Math.random()<0.18;
+      stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()):(.2+Math.random()*.8),
+        o:big?.95:med?(.6+Math.random()*.35):(.25+Math.random()*.5),
+        sp:big?(.003+Math.random()*.004):(.004+Math.random()*.012),
+        ph:Math.random()*Math.PI*2,big,med});
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({x:Math.random()*cv.width*1.5,y:-10,
+      vx:-3.5-Math.random()*3,vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120,alpha:1,fade:.012+Math.random()*.008});
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(.45+.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`;cx.fill();
+      if(s.big&&a>.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*.5})`;cx.lineWidth=.7;
+        cx.beginPath();cx.moveTo(s.x-g,s.y);cx.lineTo(s.x+g,s.y);cx.stroke();
+        cx.beginPath();cx.moveTo(s.x,s.y-g);cx.lineTo(s.x,s.y+g);cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const l=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath();cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      cx.strokeStyle=grd;cx.lineWidth=1.8;cx.stroke();
+      m.x+=m.vx;m.y+=m.vy;m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20)meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();initStars();
+  window.addEventListener('resize',()=>{resize();initStars();});
+  requestAnimationFrame(draw);
+  function sched(){spawnMeteor();setTimeout(sched,4000+Math.random()*5000);}
+  setTimeout(sched,1500);
+})();
+
+/* ─── Rund-O-Mat ─── */
+function doRound(){
+  const raw = document.getElementById('r-input').value.replace(',','.');
+  const num = parseFloat(raw);
+  const lvl = parseFloat(document.getElementById('r-level').value);
+
+  if(isNaN(num)){
+    document.getElementById('r-display').innerHTML = '<span style="color:var(--red)">Ungültige Zahl</span>';
+    document.getElementById('r-explain').innerHTML = '';
+    return;
+  }
+
+  // Decimal places for display
+  let decimals = 0;
+  if(lvl === 0.1) decimals = 1;
+  else if(lvl === 0.01) decimals = 2;
+  else if(lvl === 0.001) decimals = 3;
+
+  const rounded = Math.round(num / lvl) * lvl;
+  const roundedStr = rounded.toFixed(decimals);
+
+  // Figure out key digit
+  let keyDigit, direction, levelName;
+  if(lvl >= 1){
+    // Rounding to whole units/tens/hundreds etc.
+    const factor = lvl / 10;
+    const remainder = Math.abs(num) % lvl;
+    keyDigit = Math.floor(remainder / factor) % 10;
+    direction = keyDigit >= 5 ? 'aufgerundet' : 'abgerundet';
+    levelName = lvl === 1000 ? 'Tausender' : lvl === 100 ? 'Hunderter' : lvl === 10 ? 'Zehner' : 'ganze Zahl';
+  } else {
+    // Decimal rounding
+    const places = Math.round(-Math.log10(lvl));
+    const shifted = Math.abs(num) * Math.pow(10, places);
+    keyDigit = Math.floor((shifted % 10));
+    // Actually get the digit one place further right
+    const nextShifted = Math.abs(num) * Math.pow(10, places + 1);
+    keyDigit = Math.floor(nextShifted % 10);
+    direction = keyDigit >= 5 ? 'aufgerundet' : 'abgerundet';
+    levelName = places + '. Nachkommastelle';
+  }
+
+  const isUp = rounded > num || (rounded === num && keyDigit >= 5);
+  const color = (rounded >= num) ? 'var(--cyan)' : 'var(--pink)';
+
+  document.getElementById('r-display').innerHTML =
+    `<span class="orig-part">${raw.replace('.',',')} </span>` +
+    `<span class="arrow-part">→</span>` +
+    `<span class="round-part" style="color:${color}">${roundedStr.replace('.',',')}</span>`;
+
+  document.getElementById('r-explain').innerHTML =
+    `Schlüsselziffer: <strong>${keyDigit}</strong> → ` +
+    `<span class="${keyDigit>=5?'up-color':'down-color'}">${direction}</span> auf ${levelName}`;
+}
+
+document.getElementById('r-input').addEventListener('input', doRound);
+doRound();
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
