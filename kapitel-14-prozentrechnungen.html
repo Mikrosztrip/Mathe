@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 14 – Prozentrechnungen · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.75;min-height:100vh;overflow-x:hidden;}
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.above{position:relative;z-index:1;}
+.site-header{text-align:center;padding:1.1rem 2rem .9rem;font-family:'Courier New',monospace;font-size:.78rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);background:rgba(7,13,31,.88);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;}
+.site-header strong{color:var(--gold);}
+.hero{text-align:center;padding:3.5rem 1.5rem 2rem;background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%);}
+.hero .hero-icon{font-size:3.6rem;display:block;margin-bottom:.5rem;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--gold);text-shadow:0 0 30px rgba(245,200,66,.35);margin-bottom:.3rem;}
+.hero .subtitle{font-size:.88rem;color:var(--muted);font-style:italic;font-family:'Courier New',monospace;}
+.ch-nav{display:flex;justify-content:center;align-items:center;gap:.8rem;padding:.9rem 1.5rem 1.6rem;flex-wrap:wrap;}
+.ch-nav a,.ch-nav .cur{display:inline-flex;align-items:center;padding:.45rem 1.2rem;border-radius:50px;font-size:.88rem;font-family:'Courier New',monospace;text-decoration:none;transition:all .2s;}
+.ch-nav a{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);}
+.ch-nav a:hover{background:rgba(255,255,255,.12);color:var(--gold);}
+.ch-nav .cur{background:var(--gold);color:#1a0e00;font-weight:700;border:none;}
+.wrap{max-width:780px;margin:0 auto;padding:0 1.2rem 6rem;}
+.section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 2.2rem;margin-bottom:1.4rem;}
+.section h2{font-size:1.15rem;font-weight:700;color:var(--gold);margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.section p{margin-bottom:.85rem;}
+.section p:last-child{margin-bottom:0;}
+.dlg{border-left:4px solid;border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin:.7rem 0;font-style:italic;line-height:1.65;}
+.dlg.sterni{border-color:var(--gold);background:rgba(245,200,66,.07);color:var(--gold);}
+.dlg.zweistein{border-color:var(--blue);background:rgba(91,164,207,.07);color:var(--blue);}
+.dlg.lektion{border-color:var(--cyan);background:rgba(78,205,196,.06);color:#a0e8e4;}
+.dlg .who{font-style:normal;font-weight:700;font-size:.82rem;letter-spacing:.04em;}
+
+/* ── PROZENT-BALKEN ── */
+.pbar-wrap{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin:1rem 0;}
+.pbar-wrap .pb-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.pbar-item{margin:.7rem 0;}
+.pbar-item .pi-head{display:flex;justify-content:space-between;font-family:'Courier New',monospace;font-size:.82rem;margin-bottom:.3rem;}
+.pbar-item .pi-head .pi-name{color:var(--muted);}
+.pbar-item .pi-head .pi-val{color:var(--gold);font-weight:700;}
+.pbar-track{background:rgba(255,255,255,.06);border-radius:50px;height:14px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:50px;transition:width .8s ease;}
+
+/* ── DREIECK DER FORMELN ── */
+.formula-triangle{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1rem 0;display:flex;justify-content:center;}
+.ft-svg{width:100%;max-width:380px;}
+
+/* ── RECHENWEG ── */
+.rechenweg{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin:1rem 0;}
+.rechenweg .rw-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.rw-step{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.5rem 0;font-family:'Courier New',monospace;font-size:.97rem;}
+.rw-arrow{color:var(--muted);}
+.rw-result{color:var(--cyan);font-weight:800;}
+.rw-note{font-size:.8rem;color:var(--muted);font-style:italic;font-family:'Segoe UI',sans-serif;}
+.rw-note strong{color:var(--gold);}
+
+/* ── FORMEL-KARTEN ── */
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;margin:1rem 0;}
+.formula-card{border-radius:12px;padding:1rem 1.2rem;text-align:center;}
+.formula-card .fc-name{font-family:'Courier New',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.5rem;font-weight:700;}
+.formula-card .fc-formula{font-family:'Courier New',monospace;font-size:1rem;font-weight:800;line-height:1.6;}
+.formula-card .fc-note{font-size:.78rem;color:var(--muted);margin-top:.4rem;}
+.formula-card.w{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);}
+.formula-card.w .fc-name{color:var(--gold);}
+.formula-card.w .fc-formula{color:var(--gold);}
+.formula-card.g{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.3);}
+.formula-card.g .fc-name{color:var(--cyan);}
+.formula-card.g .fc-formula{color:var(--cyan);}
+.formula-card.p{background:rgba(155,137,224,.08);border:1px solid rgba(155,137,224,.3);}
+.formula-card.p .fc-name{color:var(--purple);}
+.formula-card.p .fc-formula{color:var(--purple);}
+
+/* ── STERN-BOX ── */
+.stern-box{background:radial-gradient(ellipse at center,rgba(245,200,66,.1) 0%,rgba(7,13,31,.95) 70%);border:1px solid rgba(245,200,66,.3);border-radius:16px;padding:1.6rem 1.8rem;margin:1rem 0;}
+.stern-box .sb2-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:.8rem;}
+.stern-box p{font-size:.95rem;color:#e8dfa0;margin-bottom:.55rem;}
+.stern-box p:last-child{margin-bottom:0;}
+.stern-box strong{color:var(--gold);}
+
+/* ── INTERAKTIVER RECHNER ── */
+.pct-calc{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1rem 0;}
+.pct-calc .pc-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.pc-mode-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.pc-mode-btn{padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:'Courier New',monospace;font-size:.85rem;cursor:pointer;transition:all .18s;}
+.pc-mode-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,.1);}
+.pc-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-bottom:1rem;}
+@media(max-width:500px){.pc-fields{grid-template-columns:1fr;}}
+.pc-field label{font-size:.75rem;color:var(--muted);font-family:'Courier New',monospace;display:block;margin-bottom:.3rem;}
+.pc-input{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:.4rem .6rem;color:var(--text);font-family:'Courier New',monospace;font-size:1rem;width:100%;}
+.pc-input:focus{outline:none;border-color:var(--gold);}
+.pc-input.result{color:var(--gold);font-weight:800;border-color:rgba(245,200,66,.4);background:rgba(245,200,66,.05);}
+.pc-result-row{text-align:center;font-family:'Courier New',monospace;font-size:1.4rem;font-weight:800;padding:.8rem;background:rgba(0,0,0,.2);border-radius:10px;color:var(--gold);min-height:3rem;}
+.pc-explain{font-size:.85rem;color:var(--muted);text-align:center;margin-top:.6rem;line-height:1.8;}
+.pc-explain strong{color:var(--cyan);}
+
+/* ── INFO & TASK ── */
+.info-card{border-radius:12px;padding:1.2rem 1.4rem;margin:1rem 0;}
+.info-card .ic-title{font-size:.78rem;font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.65rem;}
+.info-card p{font-size:.95rem;margin-bottom:.55rem;}
+.info-card p:last-child{margin-bottom:0;}
+.info-card.uni{background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.25);}
+.info-card.uni .ic-title{color:var(--gold);}
+.info-card.uni p{color:#e8dfa0;}
+.info-card.nb{background:rgba(91,164,207,.08);border:1px solid rgba(91,164,207,.25);}
+.info-card.nb .ic-title{color:var(--blue);}
+.info-card.nb p{color:#b8d8ec;}
+.task-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
+.task-card .tc-head{display:flex;align-items:center;gap:.5rem;padding:.6rem 1.3rem;font-family:'Courier New',monospace;font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);}
+.task-card .tc-head.gold{background:rgba(245,200,66,.1);color:var(--gold);}
+.task-card .tc-head.cyan{background:rgba(78,205,196,.1);color:var(--cyan);}
+.task-card .tc-head.purple{background:rgba(155,137,224,.1);color:var(--purple);}
+.task-card .tc-head.green{background:rgba(76,175,136,.12);color:var(--green);}
+.task-card .tc-head.blue{background:rgba(91,164,207,.12);color:var(--blue);}
+.task-card .tc-head.orange{background:rgba(232,131,74,.12);color:var(--orange);}
+.task-card .tc-body{padding:1.1rem 1.3rem;}
+.task-card .tc-body p{margin-bottom:.8rem;}
+.q-opts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0;}
+.q-btn{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.55rem 1.1rem;font-size:.95rem;color:var(--text);cursor:pointer;transition:all .18s;font-weight:600;font-family:'Courier New',monospace;}
+.q-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.q-btn.ok{background:rgba(76,175,136,.2);border-color:var(--green);color:var(--green);}
+.q-btn.fail{background:rgba(224,90,90,.15);border-color:var(--red);color:var(--red);}
+.q-fb{font-size:.86rem;margin-top:.4rem;min-height:1.2rem;}
+.q-fb.ok{color:var(--green);}
+.q-fb.fail{color:var(--red);}
+
+/* ── SUMMARY & END ── */
+.summary-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;margin:1.4rem 0;}
+.summary-box .sb-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.14em;display:block;margin-bottom:1rem;}
+.summary-box .sb-row{font-family:'Courier New',monospace;font-size:.95rem;font-weight:700;color:#fff;line-height:2.8;}
+.summary-box .sg{color:var(--gold);}
+.summary-box .sc2{color:var(--cyan);}
+.summary-box .sp{color:var(--purple);}
+.summary-box .sb-sub{font-size:.88rem;color:var(--muted);line-height:1.8;margin-top:.5rem;}
+.ch-end{text-align:center;margin:1.4rem 0;}
+.ch-end .big-star{font-size:3rem;display:block;margin-bottom:.5rem;}
+.ch-end h2{font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:.35rem;}
+.ch-end p{color:var(--muted);font-size:.95rem;}
+.bot-nav{display:flex;justify-content:center;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+.bot-nav a{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:50px;color:var(--gold);text-decoration:none;font-size:.9rem;font-family:'Courier New',monospace;transition:all .2s;}
+.bot-nav a:hover{background:rgba(245,200,66,.16);}
+footer{text-align:center;font-size:.76rem;color:var(--muted);font-family:'Courier New',monospace;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);}
+@media(max-width:600px){.wrap{padding:0 .8rem 5rem;}.section{padding:1.3rem 1.1rem;}}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 14
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🌞</span>
+  <h1>14. Prozentrechnungen</h1>
+  <p class="subtitle">Sternentwicklung, Wasserstoffvorrat und das Leben in Prozenten</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="kapitel-13-schlussrechnung.html">← Kapitel 13</a>
+  <span class="cur">14 – Prozent</span>
+  <a href="kapitel-15-rechnen-mit-potenzen.html">Kapitel 15 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. VIERZEHNTE NACHT ═══ -->
+<div class="section">
+  <h2>Die vierzehnte Nacht – der Stern auf seiner letzten Reise</h2>
+
+  <p>Die Sonde passierte einen mittelgroßen gelben Stern — fast identisch mit der Sonne von Sternis Heimatplanet. Erklärus rief die Daten auf dem Bildschirm auf und runzelte die Stirn.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Dieser Stern hat bereits <strong>73%</strong> seines Wasserstoffvorrats verbraucht. In etwa 1,3 Milliarden Jahren wird er sich in einen leuchtenden Nebel verwandeln — und sein Licht verschenken, damit daraus neue Sterne entstehen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„73%... das bedeutet, er hat noch 27% übrig?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. 100% minus 73% = 27%. Prozent bedeutet immer: von hundert Teilen. Der gesamte Wasserstoffvorrat ist 100%. Was er verbraucht hat, ist der Prozentwert."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und unsere Sonne — wie viel hat sie verbraucht?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Etwa 50%. Genau die Hälfte. Sie ist auf halbem Weg. Noch etwa 5 Milliarden Jahre. Das ist Prozentrechnung im großen Maßstab."
+  </div>
+</div>
+
+<!-- ═══ 2. WAS SIND PROZENT ═══ -->
+<div class="section">
+  <h2>Was bedeutet Prozent?</h2>
+
+  <p>Das Wort <em>Prozent</em> kommt aus dem Lateinischen: <em>pro centum</em> — „von hundert". Das Ganze wird immer in <strong style="color:var(--gold)">100 gleiche Teile</strong> geteilt. 100% ist immer das Ganze.</p>
+
+  <div class="pbar-wrap">
+    <span class="pb-label">☀️ Wasserstoffvorrat verschiedener Sterne</span>
+    <div class="pbar-item">
+      <div class="pi-head"><span class="pi-name">Unsere Sonne (4,6 Mrd. Jahre alt)</span><span class="pi-val">50% verbraucht</span></div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:50%;background:linear-gradient(90deg,var(--gold),var(--orange));"></div></div>
+    </div>
+    <div class="pbar-item">
+      <div class="pi-head"><span class="pi-name">Beobachteter Stern (auf dem Weg zum Nebel)</span><span class="pi-val">73% verbraucht</span></div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:73%;background:linear-gradient(90deg,var(--orange),var(--red));"></div></div>
+    </div>
+    <div class="pbar-item">
+      <div class="pi-head"><span class="pi-name">Junger Stern (neu gebildet)</span><span class="pi-val">8% verbraucht</span></div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:8%;background:linear-gradient(90deg,var(--cyan),var(--blue));"></div></div>
+    </div>
+    <div class="pbar-item">
+      <div class="pi-head"><span class="pi-name">Sternis Heimatstern (Ziel!)</span><span class="pi-val">45% verbraucht</span></div>
+      <div class="pbar-track"><div class="pbar-fill" style="width:45%;background:linear-gradient(90deg,var(--green),var(--cyan));"></div></div>
+    </div>
+  </div>
+
+  <p>Die drei Grundbegriffe der Prozentrechnung: <strong style="color:var(--gold)">G</strong> = Grundwert (das Ganze, 100%), <strong style="color:var(--cyan)">W</strong> = Prozentwert (der gesuchte Anteil), <strong style="color:var(--purple)">p%</strong> = Prozentsatz (wie viel von 100).</p>
+</div>
+
+<!-- ═══ 3. DIE DREI FORMELN ═══ -->
+<div class="section">
+  <h2>Die drei Größen – und wie man sie findet</h2>
+
+  <p>Es gibt drei Größen: <strong style="color:var(--gold)">W</strong> (Prozentwert), <strong style="color:var(--cyan)">G</strong> (Grundwert), <strong style="color:var(--purple)">p%</strong> (Prozentsatz). Wenn man zwei davon kennt, kann man die dritte immer berechnen — aber man muss keine Formel auswendig lernen. Es genügt, nachzudenken.</p>
+
+  <!-- Formel-Dreieck als SVG -->
+  <div class="formula-triangle">
+    <svg class="ft-svg" viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg" style="font-family:'Courier New',monospace;">
+      <!-- Dreieck -->
+      <polygon points="190,20 30,175 350,175" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.3)" stroke-width="1.5"/>
+      <!-- Trennlinien -->
+      <line x1="190" y1="20" x2="190" y2="175" stroke="rgba(100,120,200,.3)" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="30" y1="175" x2="350" y2="175" stroke="rgba(100,120,200,.3)" stroke-width="1"/>
+      <!-- W oben -->
+      <circle cx="190" cy="20" r="22" fill="rgba(245,200,66,.15)" stroke="rgba(245,200,66,.5)" stroke-width="1.5"/>
+      <text x="190" y="26" fill="#f5c842" font-size="16" font-weight="800" text-anchor="middle">W</text>
+      <!-- G links unten -->
+      <circle cx="62" cy="175" r="22" fill="rgba(78,205,196,.12)" stroke="rgba(78,205,196,.4)" stroke-width="1.5"/>
+      <text x="62" y="181" fill="#4ecdc4" font-size="16" font-weight="800" text-anchor="middle">G</text>
+      <!-- p% rechts unten -->
+      <circle cx="318" cy="175" r="22" fill="rgba(155,137,224,.12)" stroke="rgba(155,137,224,.4)" stroke-width="1.5"/>
+      <text x="318" y="181" fill="#9b89e0" font-size="13" font-weight="800" text-anchor="middle">p%</text>
+      <!-- Operatoren -->
+      <text x="190" y="145" fill="rgba(255,255,255,.5)" font-size="18" font-weight="700" text-anchor="middle">·</text>
+      <text x="120" y="120" fill="rgba(255,255,255,.3)" font-size="11" text-anchor="middle">÷ p%</text>
+      <text x="260" y="120" fill="rgba(255,255,255,.3)" font-size="11" text-anchor="middle">÷ G</text>
+      <text x="190" y="170" fill="rgba(255,255,255,.3)" font-size="11" text-anchor="middle">× 100</text>
+      <!-- Formel-Labels -->
+      <text x="190" y="195" fill="var(--muted)" font-size="9" text-anchor="middle">W = G · p% ÷ 100</text>
+    </svg>
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Merksatz: </span>„W steht oben — es ist das Ergebnis von G mal p%. G und p% stehen unten: man deckt die gesuchte Größe ab und liest ab, was übrig bleibt."
+  </div>
+
+  <!-- ── KREUZMULTIPLIKATION ── -->
+  <div class="rechenweg" style="margin-top:1.4rem;">
+    <span class="rw-label">✖️ Kreuzmultiplikation – denken statt auswendig lernen</span>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:1rem;">Wer die Formel vergessen hat, braucht nur eine Tabelle und ein Kreuz. Das Prinzip: <em>Was man diagonal gegenüber hat, multipliziert man — und teilt durch die vierte Zahl.</em></p>
+
+    <!-- ── ALLGEMEINES SCHEMA ── -->
+    <div style="display:flex;justify-content:center;margin:1rem 0 1.6rem;">
+      <svg viewBox="0 0 500 185" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:540px;font-family:'Courier New',monospace;">
+
+        <!-- TABELLE -->
+        <rect x="10" y="22" width="155" height="115" rx="9" fill="rgba(255,255,255,.03)" stroke="rgba(100,120,200,.3)" stroke-width="1.3"/>
+        <line x1="88" y1="22" x2="88" y2="137" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <line x1="10" y1="52" x2="165" y2="52" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <text x="49" y="41" fill="#7a85b8" font-size="10" text-anchor="middle">Teil (%)</text>
+        <text x="126" y="41" fill="#7a85b8" font-size="10" text-anchor="middle">Wert</text>
+        <!-- Zeile 1: 100 | G -->
+        <text x="49" y="82" fill="#4ecdc4" font-size="16" font-weight="800" text-anchor="middle">100</text>
+        <text x="126" y="82" fill="#f5c842" font-size="16" font-weight="800" text-anchor="middle">G</text>
+        <!-- Zeile 2: p% | W -->
+        <text x="49" y="120" fill="#9b89e0" font-size="16" font-weight="800" text-anchor="middle">p%</text>
+        <text x="126" y="120" fill="#e8a0f0" font-size="16" font-weight="800" text-anchor="middle">W</text>
+
+        <!-- Schritt 1: roter Pfeil W → 100 (diagonal, mit ×) -->
+        <!-- Von W (126,120) nach 100 (49,82) -->
+        <line x1="112" y1="114" x2="60" y2="78" stroke="#e05a5a" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="60,78 52,70 65,74" fill="#e05a5a"/>
+        <!-- × Kästchen auf der Linie -->
+        <rect x="74" y="88" width="20" height="17" rx="3" fill="rgba(224,90,90,.22)"/>
+        <text x="84" y="100" fill="#e05a5a" font-size="13" font-weight="900" text-anchor="middle">×</text>
+        <!-- Schritt-Label -->
+        <text x="57" y="155" fill="#e05a5a" font-size="9" text-anchor="middle">① W × 100</text>
+
+        <!-- Schritt 2: blauer Pfeil 100 → G (horizontal, mit ÷) -->
+        <line x1="62" y1="70" x2="108" y2="70" stroke="#5ba4cf" stroke-width="2.2" stroke-linecap="round"/>
+        <polygon points="108,67 117,70 108,73" fill="#5ba4cf"/>
+        <!-- ÷ Kästchen über dem Pfeil -->
+        <rect x="74" y="57" width="20" height="17" rx="3" fill="rgba(91,164,207,.2)"/>
+        <text x="84" y="69" fill="#5ba4cf" font-size="13" font-weight="900" text-anchor="middle">÷</text>
+        <!-- Schritt-Label -->
+        <text x="127" y="155" fill="#5ba4cf" font-size="9" text-anchor="middle">② ÷ G</text>
+
+        <!-- Großer Pfeil → zum Bruch -->
+        <line x1="173" y1="95" x2="207" y2="95" stroke="#7a85b8" stroke-width="2.2"/>
+        <polygon points="207,91 218,95 207,99" fill="#7a85b8"/>
+
+        <!-- BRUCH: W · 100 / G -->
+        <text x="253" y="79" fill="#e8a0f0" font-size="14" font-weight="800" text-anchor="middle">W</text>
+        <text x="269" y="79" fill="#e05a5a" font-size="14" font-weight="700" text-anchor="middle">·</text>
+        <text x="287" y="79" fill="#4ecdc4" font-size="14" font-weight="800" text-anchor="middle">100</text>
+        <line x1="232" y1="87" x2="318" y2="87" stroke="rgba(91,164,207,.8)" stroke-width="2"/>
+        <text x="224" y="92" fill="#5ba4cf" font-size="12" font-weight="700" text-anchor="middle">÷</text>
+        <text x="275" y="108" fill="#f5c842" font-size="15" font-weight="800" text-anchor="middle">G</text>
+
+        <!-- Ergebnis-Pfeil -->
+        <line x1="326" y1="95" x2="358" y2="95" stroke="#4caf88" stroke-width="2"/>
+        <polygon points="358,91 368,95 358,99" fill="#4caf88"/>
+        <text x="413" y="91" fill="#4caf88" font-size="15" font-weight="800" text-anchor="middle">p% !</text>
+        <text x="413" y="109" fill="#7a85b8" font-size="9" text-anchor="middle">(Ergebnis)</text>
+
+      </svg>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.9rem;">Konkret mit dem Jacken-Beispiel: <strong style="color:var(--gold)">G = 180 €</strong>, <strong style="color:var(--blue)">W = 126 €</strong>, p% = ?</p>
+
+    <!-- ── KONKRETES BEISPIEL ── -->
+    <div style="display:flex;justify-content:center;margin:.5rem 0 1.2rem;">
+      <svg viewBox="0 0 500 185" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:540px;font-family:'Courier New',monospace;">
+
+        <!-- TABELLE -->
+        <rect x="10" y="22" width="155" height="115" rx="9" fill="rgba(255,255,255,.03)" stroke="rgba(100,120,200,.3)" stroke-width="1.3"/>
+        <line x1="88" y1="22" x2="88" y2="137" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <line x1="10" y1="52" x2="165" y2="52" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <text x="49" y="41" fill="#7a85b8" font-size="10" text-anchor="middle">Teil (%)</text>
+        <text x="126" y="41" fill="#7a85b8" font-size="10" text-anchor="middle">Preis (€)</text>
+        <!-- Zeile 1: 100 | 180 -->
+        <text x="49" y="82" fill="#4ecdc4" font-size="16" font-weight="800" text-anchor="middle">100</text>
+        <text x="126" y="82" fill="#f5c842" font-size="16" font-weight="800" text-anchor="middle">180</text>
+        <!-- Zeile 2: ? | 126 -->
+        <text x="49" y="120" fill="#e05a5a" font-size="17" font-weight="800" text-anchor="middle">?</text>
+        <text x="126" y="120" fill="#5ba4cf" font-size="16" font-weight="800" text-anchor="middle">126</text>
+
+        <!-- Schritt 1: roter Pfeil 126 → 100 (diagonal, mit ×) -->
+        <!-- Von 126 (126,120) nach 100 (49,82) -->
+        <line x1="112" y1="114" x2="60" y2="78" stroke="#e05a5a" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="60,78 52,70 65,74" fill="#e05a5a"/>
+        <!-- × Kästchen auf der Linie -->
+        <rect x="74" y="88" width="20" height="17" rx="3" fill="rgba(224,90,90,.22)"/>
+        <text x="84" y="100" fill="#e05a5a" font-size="13" font-weight="900" text-anchor="middle">×</text>
+        <!-- Schritt-Label -->
+        <text x="57" y="155" fill="#e05a5a" font-size="9" text-anchor="middle">① 126 × 100</text>
+
+        <!-- Schritt 2: blauer Pfeil 100 → 180 (horizontal, mit ÷) -->
+        <line x1="62" y1="70" x2="108" y2="70" stroke="#5ba4cf" stroke-width="2.2" stroke-linecap="round"/>
+        <polygon points="108,67 117,70 108,73" fill="#5ba4cf"/>
+        <!-- ÷ Kästchen über dem Pfeil -->
+        <rect x="74" y="57" width="20" height="17" rx="3" fill="rgba(91,164,207,.2)"/>
+        <text x="84" y="69" fill="#5ba4cf" font-size="13" font-weight="900" text-anchor="middle">÷</text>
+        <!-- Schritt-Label -->
+        <text x="127" y="155" fill="#5ba4cf" font-size="9" text-anchor="middle">② ÷ 180</text>
+
+        <!-- Großer Pfeil → zum Bruch -->
+        <line x1="173" y1="95" x2="207" y2="95" stroke="#7a85b8" stroke-width="2.2"/>
+        <polygon points="207,91 218,95 207,99" fill="#7a85b8"/>
+
+        <!-- BRUCH: 126 · 100 / 180 -->
+        <text x="253" y="79" fill="#5ba4cf" font-size="14" font-weight="800" text-anchor="middle">126</text>
+        <text x="272" y="79" fill="#e05a5a" font-size="14" font-weight="700" text-anchor="middle">·</text>
+        <text x="290" y="79" fill="#4ecdc4" font-size="14" font-weight="800" text-anchor="middle">100</text>
+        <line x1="232" y1="87" x2="318" y2="87" stroke="rgba(91,164,207,.8)" stroke-width="2"/>
+        <text x="224" y="92" fill="#5ba4cf" font-size="12" font-weight="700" text-anchor="middle">÷</text>
+        <text x="275" y="108" fill="#f5c842" font-size="15" font-weight="800" text-anchor="middle">180</text>
+
+        <!-- Ergebnis-Pfeil -->
+        <line x1="326" y1="95" x2="358" y2="95" stroke="#4caf88" stroke-width="2"/>
+        <polygon points="358,91 368,95 358,99" fill="#4caf88"/>
+        <text x="415" y="88" fill="#4caf88" font-size="16" font-weight="800" text-anchor="middle">70 %</text>
+        <text x="415" y="106" fill="#7a85b8" font-size="10" text-anchor="middle">✓</text>
+
+      </svg>
+    </div>
+
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Logik:</span>
+      <span class="rw-arrow">Das Kreuz zeigt: die zwei Zahlen diagonal <em>multiplizieren</em> (100 · 126), dann durch die vierte <em>dividieren</em> (÷ 180)</span>
+    </div>
+    <div class="rw-step" style="margin-top:.4rem;">
+      <span style="color:var(--muted);font-size:.85rem;">Ergebnis:</span>
+      <span class="rw-arrow">100 · 126 ÷ 180 =</span>
+      <span class="rw-result">70 %</span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span style="color:var(--muted);font-size:.85rem;">Merke:</span>
+      <span class="rw-arrow" style="font-style:italic;">Diese Methode funktioniert für alle drei Fälle — egal was gesucht ist. Man legt das Kreuz immer so, dass die <strong style="color:var(--gold)">gesuchte Größe</strong> und die diagonal gegenüberliegende Zahl das Produkt bilden.</span>
+    </div>
+  </div>
+
+  <!-- Formeln als Zusammenfassung -->
+  <p style="margin-top:1.2rem;font-size:.9rem;color:var(--muted);">Wer die Formeln dennoch griffbereit haben möchte — sie sind nichts anderes als die Kreuzmultiplikation, aufgeschrieben:</p>
+
+  <div class="formula-grid" style="margin-top:.7rem;">
+    <div class="formula-card w">
+      <span class="fc-name">🎯 Prozentwert W</span>
+      <div class="fc-formula">W = G · p% ÷ 100</div>
+      <div class="fc-note">Welcher Betrag sind x% vom Ganzen?</div>
+    </div>
+    <div class="formula-card g">
+      <span class="fc-name">🌐 Grundwert G</span>
+      <div class="fc-formula">G = W · 100 ÷ p%</div>
+      <div class="fc-note">Was ist das Ganze, wenn x% bekannt sind?</div>
+    </div>
+    <div class="formula-card p">
+      <span class="fc-name">📊 Prozentsatz p%</span>
+      <div class="fc-formula">p% = W · 100 ÷ G</div>
+      <div class="fc-note">Wie viel Prozent ist W vom Ganzen G?</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. PROZENTWERT BERECHNEN ═══ -->
+<div class="section">
+  <h2>Prozentwert berechnen</h2>
+
+  <p>Sternis Sonde hat einen Energiespeicher von <strong>800 Einheiten</strong>. Das Navigationssystem meldet: <strong>30%</strong> sind verbraucht. Wie viele Einheiten sind das?</p>
+
+  <div class="rechenweg">
+    <span class="rw-label">✖️ Schritt 1 – Kreuz legen und nachdenken</span>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem;">Zuerst die Tabelle aufschreiben — dann das Kreuz legen und ablesen, was zu tun ist.</p>
+
+    <!-- Tabelle + Pfeile + Bruch in einem SVG -->
+    <div style="display:flex;justify-content:center;margin:.5rem 0 1.4rem;">
+      <svg viewBox="0 0 480 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:'Courier New',monospace;">
+
+        <!-- ── TABELLE ── -->
+        <rect x="10" y="20" width="160" height="110" rx="9" fill="rgba(255,255,255,.03)" stroke="rgba(100,120,200,.3)" stroke-width="1.3"/>
+        <line x1="90" y1="20" x2="90" y2="130" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <line x1="10" y1="50" x2="170" y2="50" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <!-- Spalten-Header -->
+        <text x="50" y="40" fill="#7a85b8" font-size="10" text-anchor="middle">Teil (%)</text>
+        <text x="130" y="40" fill="#7a85b8" font-size="10" text-anchor="middle">Einheiten</text>
+        <!-- Zeile 1: bekannt -->
+        <text x="50" y="78" fill="#4ecdc4" font-size="16" font-weight="800" text-anchor="middle">100</text>
+        <text x="130" y="78" fill="#f5c842" font-size="16" font-weight="800" text-anchor="middle">800</text>
+        <!-- Zeile 2: gesucht -->
+        <text x="50" y="115" fill="#9b89e0" font-size="16" font-weight="800" text-anchor="middle">30</text>
+        <text x="130" y="115" fill="#e05a5a" font-size="17" font-weight="800" text-anchor="middle">?</text>
+
+        <!-- ── HORIZONTALER PFEIL Zeile 1 (100 → 800, bekannt) ── -->
+        <line x1="68" y1="72" x2="108" y2="72" stroke="#4ecdc4" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <polygon points="108,69 115,72 108,75" fill="#4ecdc4"/>
+
+        <!-- ── DIAGONALER KREUZ-PFEIL (30 × 800, das ist die Multiplikation) ── -->
+        <!-- Pfeil von 30 (links unten) diagonal hoch zu 800 (rechts oben) -->
+        <line x1="65" y1="108" x2="113" y2="65" stroke="#e05a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <polygon points="113,65 118,58 107,62" fill="#e05a5a"/>
+        <!-- × Label auf der Diagonale -->
+        <text x="102" y="96" fill="#e05a5a" font-size="13" font-weight="900">×</text>
+
+        <!-- ── GROSSER PFEIL → zur Formel ── -->
+        <line x1="178" y1="88" x2="212" y2="88" stroke="#7a85b8" stroke-width="2"/>
+        <polygon points="212,84 222,88 212,92" fill="#7a85b8"/>
+
+        <!-- ── BRUCH-DARSTELLUNG ── -->
+        <!-- Zähler: 30 × 800 -->
+        <text x="248" y="72" fill="#e05a5a" font-size="13" font-weight="800" text-anchor="middle">30</text>
+        <text x="264" y="72" fill="#dde5ff" font-size="13" font-weight="800" text-anchor="middle">×</text>
+        <text x="282" y="72" fill="#f5c842" font-size="13" font-weight="800" text-anchor="middle">800</text>
+        <!-- Bruchstrich -->
+        <line x1="228" y1="80" x2="310" y2="80" stroke="rgba(245,200,66,.6)" stroke-width="1.8"/>
+        <!-- Nenner: 100 -->
+        <text x="269" y="100" fill="#4ecdc4" font-size="15" font-weight="800" text-anchor="middle">100</text>
+        <!-- ÷ Zeichen links vom Bruch als Label -->
+        <text x="222" y="84" fill="#7a85b8" font-size="11" text-anchor="middle">÷</text>
+
+        <!-- ── ERGEBNIS-PFEIL → ── -->
+        <line x1="318" y1="88" x2="348" y2="88" stroke="#4caf88" stroke-width="2"/>
+        <polygon points="348,84 358,88 348,92" fill="#4caf88"/>
+
+        <!-- ── ERGEBNIS ── -->
+        <text x="390" y="83" fill="#4caf88" font-size="16" font-weight="800" text-anchor="middle">240</text>
+        <text x="390" y="101" fill="#7a85b8" font-size="10" text-anchor="middle">Einheiten ✓</text>
+
+      </svg>
+    </div>
+
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Gedanke:</span>
+      <span class="rw-arrow">Der <strong style="color:#e05a5a">× Pfeil diagonal</strong> zeigt: <strong style="color:var(--purple)">30</strong> × <strong style="color:var(--gold)">800</strong> multiplizieren — dann durch die verbleibende Zahl (<strong style="color:var(--cyan)">100</strong>) dividieren</span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span style="color:var(--muted);font-size:.85rem;">Formel:</span>
+      <span class="rw-arrow">Kurz aufgeschrieben: <strong style="color:var(--gold)">W = G · p% ÷ 100</strong> — dasselbe Kreuz, als Gleichung.</span>
+    </div>
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Check:</span>
+      <span class="rw-arrow">30% ≈ ⅓ → ⅓ von 800 ≈ 267. 240 ist etwas weniger → plausibel ✓</span>
+    </div>
+  </div>
+
+  <div class="stern-box">
+    <span class="sb2-label">☀️ Sternentwicklung – Prozentwert</span>
+    <p>Die Sonne hat einen Wasserstoffvorrat von ca. <strong>2 · 10³⁰ kg</strong>. Sie hat bereits <strong>50%</strong> davon fusioniert. Wie viel ist das in kg? W = 2·10³⁰ · 50 ÷ 100 = <strong>1·10³⁰ kg</strong> — eine Trillion Tonnen Wasserstoff, bereits zu Helium verschmolzen. Prozentrechnung im kosmischen Maßstab.</p>
+  </div>
+</div>
+
+<!-- ═══ 5. GRUNDWERT BERECHNEN ═══ -->
+<div class="section">
+  <h2>Grundwert berechnen</h2>
+
+  <p>Sterni weiß: <strong>126 Kredits</strong> entsprechen <strong>70%</strong> des ursprünglichen Preises einer Ausrüstung (nach 30% Rabatt). Was hat die Ausrüstung ursprünglich gekostet?</p>
+
+  <div class="rechenweg">
+    <span class="rw-label">✖️ Schritt 1 – Kreuz legen und nachdenken</span>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem;">Bekannt: 70% = 126 Kredits. Gesucht: 100% = ? — Das Kreuz zeigt den Weg.</p>
+
+    <div style="display:flex;justify-content:center;margin:.5rem 0 1.4rem;">
+      <svg viewBox="0 0 480 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:'Courier New',monospace;">
+
+        <!-- ── TABELLE ── -->
+        <rect x="10" y="20" width="160" height="110" rx="9" fill="rgba(255,255,255,.03)" stroke="rgba(100,120,200,.3)" stroke-width="1.3"/>
+        <line x1="90" y1="20" x2="90" y2="130" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <line x1="10" y1="50" x2="170" y2="50" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <text x="50" y="40" fill="#7a85b8" font-size="10" text-anchor="middle">Teil (%)</text>
+        <text x="130" y="40" fill="#7a85b8" font-size="10" text-anchor="middle">Kredits</text>
+        <!-- Zeile 1: 100% → ? -->
+        <text x="50" y="78" fill="#4ecdc4" font-size="16" font-weight="800" text-anchor="middle">100</text>
+        <text x="130" y="78" fill="#e05a5a" font-size="17" font-weight="800" text-anchor="middle">?</text>
+        <!-- Zeile 2: 70% → 126 -->
+        <text x="50" y="115" fill="#9b89e0" font-size="16" font-weight="800" text-anchor="middle">70</text>
+        <text x="130" y="115" fill="#5ba4cf" font-size="16" font-weight="800" text-anchor="middle">126</text>
+
+        <!-- ── HORIZONTALER PFEIL Zeile 2 (70 → 126, bekannt) ── -->
+        <line x1="68" y1="110" x2="108" y2="110" stroke="#9b89e0" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <polygon points="108,107 115,110 108,113" fill="#9b89e0"/>
+
+        <!-- ── DIAGONALER KREUZ-PFEIL (100 × 126) ── -->
+        <!-- Pfeil von 100 (links oben) diagonal runter zu 126 (rechts unten) -->
+        <line x1="65" y1="82" x2="113" y2="109" stroke="#e05a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <polygon points="113,109 120,115 108,112" fill="#e05a5a"/>
+        <!-- × Label -->
+        <text x="100" y="103" fill="#e05a5a" font-size="13" font-weight="900">×</text>
+
+        <!-- ── GROSSER PFEIL → zur Formel ── -->
+        <line x1="178" y1="88" x2="212" y2="88" stroke="#7a85b8" stroke-width="2"/>
+        <polygon points="212,84 222,88 212,92" fill="#7a85b8"/>
+
+        <!-- ── BRUCH-DARSTELLUNG ── -->
+        <text x="248" y="72" fill="#4ecdc4" font-size="13" font-weight="800" text-anchor="middle">100</text>
+        <text x="267" y="72" fill="#dde5ff" font-size="13" font-weight="800" text-anchor="middle">×</text>
+        <text x="284" y="72" fill="#5ba4cf" font-size="13" font-weight="800" text-anchor="middle">126</text>
+        <line x1="228" y1="80" x2="310" y2="80" stroke="rgba(78,205,196,.6)" stroke-width="1.8"/>
+        <text x="269" y="100" fill="#9b89e0" font-size="15" font-weight="800" text-anchor="middle">70</text>
+        <text x="222" y="84" fill="#7a85b8" font-size="11" text-anchor="middle">÷</text>
+
+        <!-- ── ERGEBNIS ── -->
+        <line x1="318" y1="88" x2="348" y2="88" stroke="#4caf88" stroke-width="2"/>
+        <polygon points="348,84 358,88 348,92" fill="#4caf88"/>
+        <text x="390" y="83" fill="#4caf88" font-size="16" font-weight="800" text-anchor="middle">180</text>
+        <text x="390" y="101" fill="#7a85b8" font-size="10" text-anchor="middle">Kredits ✓</text>
+
+      </svg>
+    </div>
+
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Gedanke:</span>
+      <span class="rw-arrow">Der <strong style="color:#e05a5a">× Pfeil diagonal</strong> zeigt: <strong style="color:var(--cyan)">100</strong> × <strong style="color:var(--blue)">126</strong> multiplizieren — dann durch <strong style="color:var(--purple)">70</strong> dividieren</span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span style="color:var(--muted);font-size:.85rem;">Formel:</span>
+      <span class="rw-arrow">Kurz aufgeschrieben: <strong style="color:var(--cyan)">G = W · 100 ÷ p%</strong> — dasselbe Kreuz, als Gleichung.</span>
+    </div>
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Probe:</span>
+      <span class="rw-arrow">180 · 70 ÷ 100 = 126 ✓</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also: wenn ich den Prozentwert und den Prozentsatz kenne, komme ich immer zum Grundwert zurück. Das ist wie die Umkehrung."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Exakt. Alle drei Formeln sind dieselbe Beziehung — nur nach verschiedenen Unbekannten aufgelöst."
+  </div>
+</div>
+
+<!-- ═══ 6. PROZENTSATZ BERECHNEN ═══ -->
+<div class="section">
+  <h2>Prozentsatz berechnen</h2>
+
+  <p>Der beobachtete Stern hat einen Gesamtvorrat von <strong>800 Wasserstoff-Einheiten</strong>. Noch <strong>216 Einheiten</strong> sind übrig. Wie viel Prozent hat er noch?</p>
+
+  <div class="rechenweg">
+    <span class="rw-label">✖️ Schritt 1 – Kreuz legen und nachdenken</span>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem;">Bekannt: 100% = 800 Einheiten, 216 Einheiten sind übrig. Gesucht: ? % — das Kreuz zeigt den Weg.</p>
+
+    <div style="display:flex;justify-content:center;margin:.5rem 0 1.4rem;">
+      <svg viewBox="0 0 480 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:'Courier New',monospace;">
+
+        <!-- ── TABELLE ── -->
+        <rect x="10" y="20" width="160" height="110" rx="9" fill="rgba(255,255,255,.03)" stroke="rgba(100,120,200,.3)" stroke-width="1.3"/>
+        <line x1="90" y1="20" x2="90" y2="130" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <line x1="10" y1="50" x2="170" y2="50" stroke="rgba(100,120,200,.22)" stroke-width="1"/>
+        <text x="50" y="40" fill="#7a85b8" font-size="10" text-anchor="middle">Teil (%)</text>
+        <text x="130" y="40" fill="#7a85b8" font-size="10" text-anchor="middle">Einheiten</text>
+        <!-- Zeile 1: 100% → 800 -->
+        <text x="50" y="78" fill="#4ecdc4" font-size="16" font-weight="800" text-anchor="middle">100</text>
+        <text x="130" y="78" fill="#f5c842" font-size="16" font-weight="800" text-anchor="middle">800</text>
+        <!-- Zeile 2: ?% → 216 -->
+        <text x="50" y="115" fill="#e05a5a" font-size="17" font-weight="800" text-anchor="middle">?</text>
+        <text x="130" y="115" fill="#5ba4cf" font-size="16" font-weight="800" text-anchor="middle">216</text>
+
+        <!-- ── HORIZONTALER PFEIL Zeile 1 (100 → 800, bekannt) ── -->
+        <line x1="68" y1="72" x2="108" y2="72" stroke="#4ecdc4" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <polygon points="108,69 115,72 108,75" fill="#4ecdc4"/>
+
+        <!-- ── DIAGONALER KREUZ-PFEIL (? × 800 → brauche ich 100 × 216) ── -->
+        <!-- Pfeil von ? (links unten) diagonal hoch zu 800 (rechts oben) -->
+        <line x1="60" y1="108" x2="113" y2="67" stroke="#e05a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <polygon points="113,67 119,59 107,64" fill="#e05a5a"/>
+        <!-- × Label auf der Diagonale -->
+        <text x="100" y="96" fill="#e05a5a" font-size="13" font-weight="900">×</text>
+
+        <!-- ── GROSSER PFEIL → zur Formel ── -->
+        <line x1="178" y1="88" x2="212" y2="88" stroke="#7a85b8" stroke-width="2"/>
+        <polygon points="212,84 222,88 212,92" fill="#7a85b8"/>
+
+        <!-- ── BRUCH-DARSTELLUNG ── -->
+        <text x="245" y="72" fill="#4ecdc4" font-size="13" font-weight="800" text-anchor="middle">100</text>
+        <text x="264" y="72" fill="#dde5ff" font-size="13" font-weight="800" text-anchor="middle">×</text>
+        <text x="282" y="72" fill="#5ba4cf" font-size="13" font-weight="800" text-anchor="middle">216</text>
+        <line x1="225" y1="80" x2="308" y2="80" stroke="rgba(155,137,224,.6)" stroke-width="1.8"/>
+        <text x="266" y="100" fill="#f5c842" font-size="15" font-weight="800" text-anchor="middle">800</text>
+        <text x="219" y="84" fill="#7a85b8" font-size="11" text-anchor="middle">÷</text>
+
+        <!-- ── ERGEBNIS ── -->
+        <line x1="316" y1="88" x2="346" y2="88" stroke="#4caf88" stroke-width="2"/>
+        <polygon points="346,84 356,88 346,92" fill="#4caf88"/>
+        <text x="392" y="83" fill="#4caf88" font-size="16" font-weight="800" text-anchor="middle">27 %</text>
+        <text x="392" y="101" fill="#7a85b8" font-size="10" text-anchor="middle">übrig ✓</text>
+
+      </svg>
+    </div>
+
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Gedanke:</span>
+      <span class="rw-arrow">Der <strong style="color:#e05a5a">× Pfeil diagonal</strong> zeigt: <strong style="color:var(--cyan)">100</strong> × <strong style="color:var(--blue)">216</strong> multiplizieren — dann durch <strong style="color:var(--gold)">800</strong> dividieren</span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span style="color:var(--muted);font-size:.85rem;">Formel:</span>
+      <span class="rw-arrow">Kurz aufgeschrieben: <strong style="color:var(--purple)">p% = W · 100 ÷ G</strong> — dasselbe Kreuz, als Gleichung.</span>
+    </div>
+    <div class="rw-step">
+      <span style="color:var(--muted);font-size:.85rem;">Schluss:</span>
+      <span class="rw-arrow">73% verbraucht, 27% übrig — übereinstimmend mit der Geschichte! ✓</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also brauche ich die Formel gar nicht auswendig lernen — ich lege einfach das Kreuz, multipliziere diagonal und teile durch die vierte Zahl."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Die Formeln sind nichts anderes als das Kreuz, in Kurzschrift. Wer das Kreuz versteht, kann jede der drei Größen finden — ohne auswendig zu lernen."
+  </div>
+</div>
+
+<!-- ═══ 7. RATENZAHLUNG ═══ -->
+<div class="section">
+  <h2>Anwendung – Ratenzahlung im Raumhafen</h2>
+
+  <p>Im Raumhafen bietet ein Händler Sterni ein Navigationssystem für <strong>1.160 Kredits</strong> an. Zwei Optionen:</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:1rem 0;">
+    <div style="background:rgba(78,205,196,.07);border:1px solid rgba(78,205,196,.25);border-radius:12px;padding:1rem 1.2rem;">
+      <div style="font-family:'Courier New',monospace;font-size:.72rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;font-weight:700;">Option A – Sofort</div>
+      <div style="font-size:.9rem;color:#a0e8e4;line-height:1.8;">5% Rabatt<br>Einmalzahlung</div>
+    </div>
+    <div style="background:rgba(232,131,74,.07);border:1px solid rgba(232,131,74,.25);border-radius:12px;padding:1rem 1.2rem;">
+      <div style="font-family:'Courier New',monospace;font-size:.72rem;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;font-weight:700;">Option B – Raten</div>
+      <div style="font-size:.9rem;color:#f0cca0;line-height:1.8;">15% Anzahlung<br>+ 12 × 116 Kredits</div>
+    </div>
+  </div>
+
+  <div class="rechenweg">
+    <span class="rw-label">💳 Option A – Sofortkauf mit 5% Rabatt</span>
+    <div class="rw-step">
+      <span>Rabatt:</span>
+      <span class="rw-arrow">W = 1160 · 5 ÷ 100 =</span>
+      <span class="rw-result">58 Kredits</span>
+    </div>
+    <div class="rw-step">
+      <span>Preis:</span>
+      <span class="rw-arrow">1160 − 58 =</span>
+      <span class="rw-result">1.102 Kredits</span>
+    </div>
+  </div>
+
+  <div class="rechenweg">
+    <span class="rw-label">💳 Option B – Ratenzahlung</span>
+    <div class="rw-step">
+      <span>Anzahlung 15%:</span>
+      <span class="rw-arrow">1160 · 15 ÷ 100 =</span>
+      <span class="rw-result">174 Kredits</span>
+    </div>
+    <div class="rw-step">
+      <span>Raten:</span>
+      <span class="rw-arrow">12 × 116 =</span>
+      <span class="rw-result">1.392 Kredits</span>
+    </div>
+    <div class="rw-step">
+      <span>Gesamt:</span>
+      <span class="rw-arrow">174 + 1392 =</span>
+      <span class="rw-result">1.566 Kredits</span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span>Differenz:</span>
+      <span class="rw-arrow">1566 − 1102 =</span>
+      <span class="rw-result">464 Kredits mehr bei Raten!</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„464 Kredits Unterschied! Das ist fast 40% des ursprünglichen Preises extra."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Prozentrechnungen können Leben retten — im wörtlichen Sinne, wenn man mit begrenzten Ressourcen reist."
+  </div>
+
+  <div class="info-card uni">
+    <span class="ic-title">🎯 Bonus – wann wäre der Preis abgezahlt?</span>
+    <p>Wenn Sterni sofort 174 Kredits beiseitelegt und dann 116 pro Monat spart, wann hat sie die vollen 1.160 Kredits? Abzüglich Anzahlung: 1.160 − 174 = 986 Kredits noch nötig. 986 ÷ 116 = <strong>8,5 Monate</strong> — also in 9 Monaten wäre das System abbezahlt, ohne die Zinskosten der Ratenzahlung.</p>
+  </div>
+</div>
+
+<!-- ═══ 8. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Interaktiver Prozentrechner</h2>
+  <p>Wähle was du berechnen möchtest und gib die zwei bekannten Werte ein:</p>
+
+  <div class="pct-calc">
+    <span class="pc-label">☀️ Stern-Prozentrechner</span>
+    <div class="pc-mode-btns">
+      <button class="pc-mode-btn active" id="btn-w" onclick="pcMode('w')">W berechnen</button>
+      <button class="pc-mode-btn" id="btn-g" onclick="pcMode('g')">G berechnen</button>
+      <button class="pc-mode-btn" id="btn-p" onclick="pcMode('p')">p% berechnen</button>
+    </div>
+    <div class="pc-fields">
+      <div class="pc-field">
+        <label id="lbl-g">G – Grundwert</label>
+        <input type="number" id="pc-g" class="pc-input" value="800" oninput="pcCalc()">
+      </div>
+      <div class="pc-field">
+        <label id="lbl-p">p% – Prozentsatz</label>
+        <input type="number" id="pc-p" class="pc-input" value="30" oninput="pcCalc()">
+      </div>
+      <div class="pc-field">
+        <label id="lbl-w">W – Prozentwert</label>
+        <input type="number" id="pc-w" class="pc-input result" readonly>
+      </div>
+    </div>
+    <div class="pc-result-row" id="pc-result-row">W = 240</div>
+    <div class="pc-explain" id="pc-explain"></div>
+  </div>
+</div>
+
+<!-- ═══ 9. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head gold">☀️ Aufgabe 1 – Sternvorrat</div>
+  <div class="tc-body">
+    <p>Ein Stern hat <strong>500 Einheiten</strong> Wasserstoff. Er hat <strong>40%</strong> verbraucht. Wie viele Einheiten sind das?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – W = G · p% ÷ 100 = 500 · 40 ÷ 100 = 200.')">40</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! W = 500 · 40 ÷ 100 = 200 Einheiten ✓')">200</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 500÷40 wäre falsch. Die Formel: 500·40÷100=200.')">12,5</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 500+40=540 ist keine Prozentrechnung.')">540</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">💰 Aufgabe 2 – Grundwert finden</div>
+  <div class="tc-body">
+    <p>Sterni zahlt <strong>85 Kredits</strong> für ein Teil — das entspricht <strong>25%</strong> des Originalpreises. Was hat das Teil ursprünglich gekostet?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – G = W·100÷p% = 85·100÷25 = 340.')">21,25</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! G = 85·100÷25 = 340 Kredits ✓')">340</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – 85·25=2125, dann ÷100=21,25. Aber wir suchen G: 85·100÷25=340.')">2.125</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – 85+25=110 ist keine Prozentrechnung.')">110</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head purple">📊 Aufgabe 3 – Prozentsatz bestimmen</div>
+  <div class="tc-body">
+    <p>Sternis Heimweg beträgt <strong>47.000 Lichteinheiten</strong>. Sie hat bereits <strong>12.220</strong> zurückgelegt. Wie viel Prozent des Weges liegt hinter ihr?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – p% = W·100÷G = 12220·100÷47000 = 26%.')">47%</button>
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! p% = 12220·100÷47000 = 26% des Weges geschafft ✓')">26%</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 12220÷47000=0,26, dann ×100=26%.')">74%</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 12% wäre zu wenig. 12220 von 47000 sind 26%.')">12%</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head green">⚡ Aufgabe 4 – Energiereserve</div>
+  <div class="tc-body">
+    <p>Der Energiespeicher zeigt noch <strong>35%</strong>. Das entspricht <strong>280 Einheiten</strong>. Wie groß ist der volle Speicher?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – G = 280·100÷35 = 800, nicht 98.')">98</button>
+      <button class="q-btn" onclick="q(this,true, 'q4','Richtig! G = 280·100÷35 = 800 Einheiten ✓')">800</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – 280·35=9800, dann ÷100=98. Aber wir suchen G: 280·100÷35=800.')">9.800</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – 315 wäre 280+35, keine Formel.')">315</button>
+    </div>
+    <div class="q-fb" id="q4-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head orange">💳 Aufgabe 5 – Kauf-Entscheidung</div>
+  <div class="tc-body">
+    <p>Ein Gerät kostet 600 Kredits. Sofort: <strong>10% Rabatt</strong>. Raten: <strong>20% Anzahlung + 6 × 95 Kredits</strong>. Was ist günstiger und um wie viel?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,true, 'q5','Richtig! Sofort: 600·90÷100=540. Raten: 120+570=690. Unterschied: 150 Kredits ✓')">Sofort, um 150 Kredits günstiger</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – Sofort: 540, Raten: 690. Sofort ist günstiger.')">Raten, um 150 Kredits günstiger</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – der Unterschied ist 690−540=150, nicht 90.')">Sofort, um 90 Kredits günstiger</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – rechne: 600·10÷100=60 Rabatt → 540. Raten: 120+570=690.')">Beide gleich teuer</button>
+    </div>
+    <div class="q-fb" id="q5-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ ABSCHLUSS ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Sterni kaufte das Navigationssystem sofort — sie hatte schnell gerechnet und die richtige Entscheidung getroffen. 464 Kredits gespart. Und sie wusste jetzt: 26% des Heimweges lagen hinter ihr. Noch 74% vor ihr.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„W = G · p% ÷ 100. G = W · 100 ÷ p%. p% = W · 100 ÷ G. Drei Formeln, eine Idee."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Und das Universum? Es rechnet auch in Prozenten. Die Sonne: 50% verbraucht. Der alte Stern: 73%. Wenn ihre 100% aufgebraucht sind, werden sie zu Nebeln — und schenken ihr Licht weiter. Das Kreuz funktioniert im kosmischen Maßstab genauso wie beim Einkauf."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Dann ist Prozentrechnung nicht nur Mathematik. Es ist eine Art, Zeit zu messen."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist der tiefste Satz, den ich heute gehört habe."
+  </div>
+
+  <div class="dlg lektion">
+    „Vierzehnte Lektion: Prozent = von hundert. G = Grundwert (das Ganze). W = Prozentwert (der Anteil). p% = Prozentsatz. Formel 1: W = G · p% ÷ 100. Formel 2: G = W · 100 ÷ p%. Formel 3: p% = W · 100 ÷ G. Alle drei sind dieselbe Beziehung — nur verschieden aufgelöst. Sterne messen ihr Leben in Prozenten — und verschenken ihr Licht am Ende ans Universum."
+  </div>
+</div>
+
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-row">
+    <span class="sg">W = G · p% ÷ 100</span><br>
+    <span class="sc2">G = W · 100 ÷ p%</span><br>
+    <span class="sp">p% = W · 100 ÷ G</span>
+  </div>
+  <div class="sb-sub">
+    100% = das Ganze (Grundwert G)<br>
+    Sterne verbrauchen ihren Wasserstoff – gemessen in Prozenten<br>
+    Ratenzahlung kostet mehr – Prozentrechnungen helfen, klug zu entscheiden
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Zweistins Notizbuch – Seite 14</span>
+    <p>„Prozent. W=G·p÷100. G=W·100÷p. p=W·100÷G. Sterni hat 464 Kredits gespart, weil sie schnell gerechnet hat. Und sie weiß jetzt: 26% des Heimweges hinter ihr, 74% noch vor ihr. Der Stern da draußen hat 73% verbraucht. Irgendwann wird er sein Licht verschenken — und daraus entstehen neue Sterne. Das schreibe ich mit einem goldenen Strich auf."</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 14 gemeistert!</h2>
+  <p>26% des Heimweges liegen hinter Sterni. Noch 74% — aber sie kennt jetzt die Formeln.<br>
+     Kapitel 15 wartet: Rechnen mit Potenzen.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-13-schlussrechnung.html">← Kapitel 13</a>
+  <a href="kapitel-15-rechnen-mit-potenzen.html">Kapitel 15 – Potenzen →</a>
+</div>
+
+</main>
+<footer>© 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 14</footer>
+</div>
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'),cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08,med=Math.random()<0.18;
+      stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()):(.2+Math.random()*.8),
+        o:big?.95:med?(.6+Math.random()*.35):(.25+Math.random()*.5),
+        sp:big?(.003+Math.random()*.004):(.004+Math.random()*.012),
+        ph:Math.random()*Math.PI*2,big,med});
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({x:Math.random()*cv.width*1.5,y:-10,
+      vx:-3.5-Math.random()*3,vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120,alpha:1,fade:.012+Math.random()*.008});
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(.45+.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`;cx.fill();
+      if(s.big&&a>.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*.5})`;cx.lineWidth=.7;
+        cx.beginPath();cx.moveTo(s.x-g,s.y);cx.lineTo(s.x+g,s.y);cx.stroke();
+        cx.beginPath();cx.moveTo(s.x,s.y-g);cx.lineTo(s.x,s.y+g);cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const l=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath();cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      cx.strokeStyle=grd;cx.lineWidth=1.8;cx.stroke();
+      m.x+=m.vx;m.y+=m.vy;m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20)meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();initStars();
+  window.addEventListener('resize',()=>{resize();initStars();});
+  requestAnimationFrame(draw);
+  function sched(){spawnMeteor();setTimeout(sched,4000+Math.random()*5000);}
+  setTimeout(sched,1500);
+})();
+
+/* ─── Prozentrechner ─── */
+let pcCurMode = 'w';
+
+function pcMode(m){
+  pcCurMode = m;
+  ['w','g','p'].forEach(k=>{
+    document.getElementById('btn-'+k).className='pc-mode-btn'+(k===m?' active':'');
+  });
+  const gI=document.getElementById('pc-g');
+  const pI=document.getElementById('pc-p');
+  const wI=document.getElementById('pc-w');
+  gI.readOnly=false; pI.readOnly=false; wI.readOnly=false;
+  gI.className='pc-input'; pI.className='pc-input'; wI.className='pc-input';
+  if(m==='w'){ wI.readOnly=true; wI.className='pc-input result'; }
+  if(m==='g'){ gI.readOnly=true; gI.className='pc-input result'; }
+  if(m==='p'){ pI.readOnly=true; pI.className='pc-input result'; }
+  pcCalc();
+}
+
+function pcCalc(){
+  const g=parseFloat(document.getElementById('pc-g').value)||0;
+  const p=parseFloat(document.getElementById('pc-p').value)||0;
+  const w=parseFloat(document.getElementById('pc-w').value)||0;
+  let result, explain, label;
+
+  if(pcCurMode==='w'){
+    result = g*p/100;
+    document.getElementById('pc-w').value = result.toFixed(2);
+    explain = `W = ${g} · ${p} ÷ 100 = <strong>${result.toFixed(2)}</strong>`;
+    label = `W = ${result.toFixed(2)}`;
+  } else if(pcCurMode==='g'){
+    result = p>0 ? w*100/p : 0;
+    document.getElementById('pc-g').value = result.toFixed(2);
+    explain = `G = ${w} · 100 ÷ ${p} = <strong>${result.toFixed(2)}</strong>`;
+    label = `G = ${result.toFixed(2)}`;
+  } else {
+    result = g>0 ? w*100/g : 0;
+    document.getElementById('pc-p').value = result.toFixed(2);
+    explain = `p% = ${w} · 100 ÷ ${g} = <strong>${result.toFixed(2)}%</strong>`;
+    label = `p% = ${result.toFixed(2)}%`;
+  }
+
+  document.getElementById('pc-result-row').textContent = label;
+  document.getElementById('pc-explain').innerHTML = explain;
+}
+
+['pc-g','pc-p','pc-w'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', pcCalc);
+});
+pcCalc();
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
