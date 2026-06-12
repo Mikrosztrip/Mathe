@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathematik – Vorwort · Erklärus & Sterni</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03060f;
+  --card-bg:rgba(8,18,42,0.82);
+  --card-border:rgba(74,127,212,0.25);
+  --blue:#4a7fd4;--blue-lt:#7db3f0;--blue-pale:rgba(74,127,212,0.15);
+  --gold:#f5c842;--gold-pale:rgba(245,168,35,0.12);
+  --teal:#2ec4b6;--red:#e05a4e;--green:#2ecc71;
+  --gray4:#8896b0;--gray5:#a0aec0;
+  --text:#e8eeff;--text2:#b8c8e8;
+  --shadow:0 4px 24px rgba(0,0,10,0.5);
+  --shadow2:0 8px 40px rgba(0,0,10,0.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;line-height:1.75;
+  position:relative;overflow-x:hidden;
+}
+#galaxy-bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none}
+.nebula-layer{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.nebula-layer::before{content:'';position:absolute;width:70vw;height:60vh;top:-10%;left:-10%;background:radial-gradient(ellipse,rgba(106,13,173,0.18) 0%,transparent 70%);filter:blur(40px);animation:nf1 18s ease-in-out infinite alternate}
+.nebula-layer::after{content:'';position:absolute;width:80vw;height:70vh;bottom:-20%;right:-15%;background:radial-gradient(ellipse,rgba(10,58,110,0.28) 0%,transparent 70%);filter:blur(50px);animation:nf2 22s ease-in-out infinite alternate}
+.nebula-mid{position:fixed;width:60vw;height:50vh;top:30%;left:20%;background:radial-gradient(ellipse,rgba(26,10,78,0.22) 0%,transparent 70%);filter:blur(60px);animation:nf3 26s ease-in-out infinite alternate;pointer-events:none;z-index:0}
+.nebula-pink{position:fixed;width:40vw;height:40vh;top:10%;right:0%;background:radial-gradient(ellipse,rgba(180,40,120,0.10) 0%,transparent 70%);filter:blur(45px);animation:nf2 20s ease-in-out infinite alternate;pointer-events:none;z-index:0}
+@keyframes nf1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(5vw,4vh) scale(1.12)}}
+@keyframes nf2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-4vw,3vh) scale(1.08)}}
+@keyframes nf3{0%{transform:translate(0,0) scale(1)}100%{transform:translate(3vw,-5vh) scale(1.15)}}
+.milkyway{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 120% 30% at 50% 55%,rgba(120,160,255,0.07) 0%,transparent 60%),radial-gradient(ellipse 80% 18% at 40% 58%,rgba(200,180,255,0.05) 0%,transparent 55%);transform:rotate(-18deg);transform-origin:center center;filter:blur(2px)}
+.glitter-stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.gstar{position:absolute;border-radius:50%;background:#fff;animation:gtwinkle var(--gd,2s) ease-in-out infinite var(--gdel,0s);box-shadow:0 0 var(--gb,4px) var(--gc,2px) rgba(200,220,255,0.8)}
+@keyframes gtwinkle{0%,100%{opacity:0;transform:scale(0.2)}30%{opacity:var(--go,0.9);transform:scale(1.2)}50%{opacity:var(--go2,0.5);transform:scale(0.8)}70%{opacity:var(--go,0.9);transform:scale(1.1)}}
+.gstar.gold{background:#ffe566;box-shadow:0 0 var(--gb,5px) var(--gc,3px) rgba(255,220,80,0.7)}
+.gstar.blue{background:#aad4ff;box-shadow:0 0 var(--gb,4px) var(--gc,2px) rgba(100,180,255,0.8)}
+.gstar.sparkle::before,.gstar.sparkle::after{content:'';position:absolute;background:rgba(255,255,255,0.6);left:50%;top:50%;transform:translate(-50%,-50%)}
+.gstar.sparkle::before{width:1px;height:300%;border-radius:1px}
+.gstar.sparkle::after{width:300%;height:1px;border-radius:1px}
+
+/* ── HEADER ── */
+.sky-header{
+  background:linear-gradient(160deg,rgba(5,8,28,0.92) 0%,rgba(10,18,55,0.88) 60%,rgba(8,28,60,0.92) 100%);
+  backdrop-filter:blur(4px);border-bottom:1px solid rgba(74,127,212,0.2);
+  padding:3.5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;z-index:1;
+}
+.sky-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(100,160,255,0.12) 0%,transparent 65%)}
+.sky-stars{position:absolute;inset:0;pointer-events:none}
+.s{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) ease-in-out infinite var(--del,0s);opacity:0}
+@keyframes tw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:var(--o,.6);transform:scale(1)}}
+.kap-badge{font-size:.72rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#7db3f0;margin-bottom:.8rem;position:relative}
+.kap-icon{font-size:4rem;display:block;margin-bottom:.75rem;position:relative;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(245,200,66,0.6))}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.kap-title{font-family:'Fredoka One',sans-serif;font-size:clamp(2rem,5vw,3rem);color:#fff;margin-bottom:.4rem;position:relative;text-shadow:0 0 40px rgba(120,160,255,0.5),0 2px 20px rgba(0,0,0,.5)}
+.kap-sub{color:#a8c4e8;font-size:.95rem;font-weight:600;position:relative;margin-bottom:.5rem}
+.kap-sub2{color:#6a8ab8;font-size:.82rem;font-style:italic;position:relative;margin-bottom:2rem}
+
+/* ── NAV BUTTONS ── */
+.kap-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative}
+.nav-pill{background:rgba(74,127,212,0.15);border:1px solid rgba(74,127,212,0.35);color:#c8ddf8;border-radius:50px;padding:8px 20px;font-size:.8rem;font-weight:800;text-decoration:none;font-family:'Nunito',sans-serif;transition:all .2s;backdrop-filter:blur(4px)}
+.nav-pill:hover{background:rgba(74,127,212,0.3);color:#fff;box-shadow:0 0 16px rgba(74,127,212,0.3)}
+.nav-pill.here{background:linear-gradient(135deg,rgba(245,200,66,0.9),rgba(245,168,35,0.8));border-color:var(--gold);color:#1a1000;box-shadow:0 0 20px rgba(245,200,66,0.4)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:760px;margin:0 auto;padding:2.5rem 1.5rem 5rem;position:relative;z-index:1}
+
+/* ── CARDS ── */
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:2rem 2.2rem;margin-bottom:1.75rem;box-shadow:var(--shadow);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(120,180,255,0.4),transparent)}
+.section-title{font-family:'Fredoka One',sans-serif;font-size:1.2rem;color:var(--blue-lt);margin-bottom:1.1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(74,127,212,0.25);text-shadow:0 0 20px rgba(120,180,255,0.3)}
+.story{font-size:1.03rem;line-height:1.9;color:var(--text)}
+.story p{margin-bottom:1.1rem}
+.story p:last-child{margin-bottom:0}
+
+/* ── SPEECH ── */
+.speech{border-left:3px solid var(--blue-lt);background:rgba(74,127,212,0.08);border-radius:0 12px 12px 0;padding:.8rem 1.25rem;margin:.9rem 0;font-style:italic;color:#c8ddf8}
+.speech strong{color:#7db3f0;font-style:normal;font-size:.95rem}
+.speech.sterni{border-color:var(--gold);background:rgba(245,168,35,0.07);color:#f5d08a}
+.speech.sterni strong{color:var(--gold)}
+
+/* ── INFOBOX ── */
+.infobox{border-radius:14px;padding:1.3rem 1.6rem;margin-bottom:1.75rem;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+.infobox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)}
+.infobox-label{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.7rem}
+.infobox.blue{background:rgba(74,127,212,0.10);border:1px solid rgba(74,127,212,0.3)}
+.infobox.blue .infobox-label{color:#7db3f0}
+.infobox.blue p{color:#b8d4f0;line-height:1.8;font-size:.96rem}
+.infobox.gold{background:rgba(245,168,35,0.08);border:1px solid rgba(245,168,35,0.25)}
+.infobox.gold .infobox-label{color:var(--gold)}
+.infobox.gold p{color:#f5d08a;line-height:1.8;font-size:.96rem}
+
+/* ── CHAPTER GRID ── */
+.chapter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:1.25rem}
+.chap-btn{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(74,127,212,0.25);
+  border-radius:14px;padding:1rem 1.1rem;text-decoration:none;
+  display:flex;align-items:flex-start;gap:.6rem;
+  transition:all .25s;backdrop-filter:blur(4px);
+}
+.chap-btn:hover{background:rgba(74,127,212,0.12);border-color:rgba(74,127,212,0.5);transform:translateY(-3px);box-shadow:0 0 20px rgba(74,127,212,0.2)}
+.chap-num{font-family:'Fredoka One',sans-serif;font-size:1.4rem;color:var(--gold);line-height:1;flex-shrink:0;text-shadow:0 0 12px rgba(245,200,66,0.4)}
+.chap-info{display:flex;flex-direction:column;gap:2px}
+.chap-title{font-size:.88rem;font-weight:800;color:#d0e4ff;line-height:1.3}
+.chap-hint{font-size:.72rem;color:var(--gray4);font-style:italic}
+
+/* ── CHARS ── */
+.chars{display:flex;gap:1.25rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap}
+.char{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:1.25rem 1.5rem;text-align:center;flex:1;min-width:180px;max-width:220px;box-shadow:var(--shadow),0 0 40px rgba(74,127,212,0.08);backdrop-filter:blur(8px);transition:transform .3s,box-shadow .3s}
+.char:hover{transform:translateY(-4px);box-shadow:var(--shadow2),0 0 60px rgba(74,127,212,0.15)}
+.char svg{display:block;margin:0 auto .6rem}
+.char-name{font-family:'Fredoka One',sans-serif;font-size:1.05rem;margin-bottom:.2rem;color:#a8d0ff}
+.char-desc{font-size:.8rem;color:var(--gray5);line-height:1.5}
+
+/* ── JOURNAL ── */
+.journal{background:rgba(245,168,35,0.08);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:.9rem 1.25rem;margin:1.1rem 0;font-style:italic;color:#f5d08a;font-size:.98rem;line-height:1.7;box-shadow:0 0 20px rgba(245,168,35,0.05)}
+
+/* ── START BUTTON ── */
+.start-wrap{text-align:center;margin:2rem 0}
+.start-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(245,168,35,0.95),rgba(220,140,20,0.9));
+  border:1px solid rgba(255,220,80,0.5);color:#1a1000;
+  border-radius:50px;padding:16px 40px;
+  font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;
+  cursor:pointer;transition:all .3s;text-decoration:none;
+  box-shadow:0 0 40px rgba(245,200,66,0.4);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+.start-btn:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 0 60px rgba(245,200,66,0.6)}
+@keyframes pulse{0%,100%{box-shadow:0 0 30px rgba(245,200,66,0.3)}50%{box-shadow:0 0 55px rgba(245,200,66,0.6)}}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:2rem 1rem 1rem;font-size:.8rem;color:var(--gray4);border-top:1px solid rgba(74,127,212,0.15);margin-top:3rem;position:relative;z-index:1}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,0.3)}
+::-webkit-scrollbar-thumb{background:rgba(74,127,212,0.4);border-radius:3px}
+@media(max-width:500px){.chars{flex-direction:column;align-items:center}.card{padding:1.3rem}.chapter-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<canvas id="galaxy-bg"></canvas>
+<div class="glitter-stars" id="glitterStars"></div>
+<div class="nebula-layer"></div>
+<div class="nebula-mid"></div>
+<div class="nebula-pink"></div>
+<div class="milkyway"></div>
+
+<div class="sky-header">
+  <div class="sky-stars" id="skyStars"></div>
+  <div class="kap-badge">Erklärus &amp; Sterni · Mathematik</div>
+  <span class="kap-icon">🌌</span>
+  <div class="kap-title">Mathematik</div>
+  <div class="kap-sub">Eine Reise durch Zahlen, Logik &amp; das Universum</div>
+  <div class="kap-sub2">von Timea Tóth · erzählt von Erklärus &amp; Sterni</div>
+  <div class="kap-nav">
+    <span class="nav-pill here">Vorwort</span>
+    <a class="nav-pill" href="kapitel-01_04-natuerliche-zahlen.html">Kapitel 1 →</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- CHARS -->
+  <div class="chars">
+    <div class="char">
+      <svg width="96" height="120" viewBox="0 0 192 240" xmlns="http://www.w3.org/2000/svg">
+        <rect x="52" y="136" width="88" height="76" rx="8" fill="#1565c0"/>
+        <rect x="52" y="136" width="88" height="23" rx="8" fill="#0d47a1"/>
+        <ellipse cx="96" cy="149" rx="30" ry="10" fill="#fdbcb4"/>
+        <rect x="22" y="142" width="30" height="14" rx="7" fill="#fdbcb4"/>
+        <rect x="140" y="142" width="30" height="14" rx="7" fill="#fdbcb4"/>
+        <rect x="148" y="144" width="30" height="22" rx="3" fill="#fffde7" stroke="#f9a825" stroke-width="1.5"/>
+        <line x1="153" y1="151" x2="173" y2="151" stroke="#ccc" stroke-width="1.2"/>
+        <line x1="153" y1="157" x2="173" y2="157" stroke="#ccc" stroke-width="1.2"/>
+        <rect x="62" y="210" width="24" height="28" rx="5" fill="#0d2666"/>
+        <rect x="106" y="210" width="24" height="28" rx="5" fill="#0d2666"/>
+        <rect x="56" y="231" width="34" height="10" rx="5" fill="#222"/>
+        <rect x="100" y="231" width="34" height="10" rx="5" fill="#222"/>
+        <ellipse cx="96" cy="100" rx="40" ry="44" fill="#fdbcb4"/>
+        <ellipse cx="96" cy="60" rx="42" ry="18" fill="#3d2a0f"/>
+        <ellipse cx="70" cy="66" rx="13" ry="9" fill="#3d2a0f"/>
+        <ellipse cx="122" cy="66" rx="13" ry="9" fill="#3d2a0f"/>
+        <rect x="62" y="93" width="28" height="19" rx="9" fill="#dbeafe" stroke="#1e3a7a" stroke-width="2.2" fill-opacity=".85"/>
+        <rect x="96" y="93" width="28" height="19" rx="9" fill="#dbeafe" stroke="#1e3a7a" stroke-width="2.2" fill-opacity=".85"/>
+        <line x1="90" y1="102" x2="96" y2="102" stroke="#1e3a7a" stroke-width="2"/>
+        <circle cx="76" cy="102" r="4.5" fill="#1e1b4b"/>
+        <circle cx="110" cy="102" r="4.5" fill="#1e1b4b"/>
+        <circle cx="78" cy="100" r="1.5" fill="white"/>
+        <circle cx="112" cy="100" r="1.5" fill="white"/>
+        <path d="M82 120 Q96 130 110 120" fill="none" stroke="#c0715a" stroke-width="2.3" stroke-linecap="round"/>
+      </svg>
+      <div class="char-name">Erklärus</div>
+      <div class="char-desc">9 Jahre · Brille · Notizbuch immer dabei · kann nicht schlafen vor lauter Fragen</div>
+    </div>
+    <div class="char">
+      <svg width="96" height="120" viewBox="0 0 192 240" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="96" cy="100" r="62" fill="rgba(255,251,200,0.15)"/>
+        <circle cx="96" cy="100" r="48" fill="#fef3c7"/>
+        <polygon points="96,34 111,78 157,78 122,104 136,148 96,122 56,148 70,104 35,78 81,78" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+        <circle cx="84" cy="86" r="5" fill="#3a2000"/>
+        <circle cx="108" cy="86" r="5" fill="#3a2000"/>
+        <circle cx="86" cy="84" r="1.8" fill="white"/>
+        <circle cx="110" cy="84" r="1.8" fill="white"/>
+        <path d="M87 98 Q96 107 105 98" fill="none" stroke="#b45309" stroke-width="2.3" stroke-linecap="round"/>
+        <line x1="35" y1="78" x2="22" y2="78" stroke="#d97706" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="157" y1="78" x2="170" y2="78" stroke="#d97706" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="56" y1="148" x2="48" y2="162" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+        <line x1="136" y1="148" x2="144" y2="162" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="char-name" style="color:#f5c842">Sterni ⭐</div>
+      <div class="char-desc">Ein verlorener Stern · warm und golden · sucht den Weg nach Hause</div>
+    </div>
+  </div>
+
+  <!-- VORWORT -->
+  <div class="card">
+    <div class="section-title">📖 Vorwort</div>
+    <div class="story">
+      <p>Diese Seite ist für alle, die Mathematik nie wirklich verstanden haben – und für alle, die sie schon immer geliebt haben, aber nicht wussten warum.</p>
+      <p>Mathematik ist keine Sammlung von Formeln, die man auswendig lernt und nach der Prüfung wieder vergisst. Mathematik ist eine Sprache. Die präziseste Sprache, die die Menschheit je erfunden hat. Eine Sprache, mit der man das Universum beschreiben, Brücken bauen, Planeten berechnen und Musik verstehen kann.</p>
+      <p>Ich habe diese Seite geschrieben, weil ich selbst lange glaubte, Mathematik sei nichts für mich. Bis ich verstand: Das Problem war nicht die Mathematik. Das Problem war, wie sie erklärt wurde.</p>
+      <div class="journal">„Lerne nicht die Formel. Lerne das Prinzip. Die Formel vergisst du. Das Prinzip bleibt." — Timea Tóth</div>
+      <p>Deshalb erzähle ich Mathematik hier anders: als Geschichte. Als Reise. Zusammen mit zwei ungewöhnlichen Begleitern.</p>
+    </div>
+  </div>
+
+  <!-- DIE GESCHICHTE -->
+  <div class="card">
+    <div class="section-title">🌟 Die Geschichte – Erklärus &amp; Sterni</div>
+    <div class="story">
+      <p>Es war eine Nacht im November. Erklärus, neun Jahre alt, konnte wieder nicht schlafen. Er lag auf dem Rücken, starrte durch sein Dachfenster in den schwarzen Himmel – und zählte Sterne.</p>
+      <p>Dann klopfte es ans Fenster.</p>
+      <p>Draußen saß ein kleiner Stern – etwa so groß wie eine Aprikose, warm und golden. Er zitterte ein bisschen, so wie jemand, der lange gereist ist und nicht weiß, ob er willkommen ist.</p>
+      <div class="speech sterni"><strong>Sterni:</strong> „Entschuldige die Störung. Ich bin verloren. Ich weiß nicht mehr, wie ich nach Hause finde."</div>
+      <div class="speech"><strong>Erklärus:</strong> „Wie kann ich dir helfen?"</div>
+      <div class="speech sterni"><strong>Sterni:</strong> „Mit Mathematik. Ich brauche jemanden, der mir erklärt, wie Zahlen funktionieren – und ich helfe dir, die Welt anders zu sehen."</div>
+      <p>So begann eine Reise durch die Mathematik. Kapitel für Kapitel. Frage für Frage. Von der allerersten Zahl bis zu den Gleichungen, die das Universum beschreiben.</p>
+      <p>Jedes Kapitel ist eine neue Nacht. Jede Nacht bringt eine neue Frage. Und jede Frage bringt Erklärus und Sterni dem Weg nach Hause ein Stück näher.</p>
+    </div>
+  </div>
+
+  <!-- WIE BENUTZEN -->
+  <div class="infobox gold">
+    <div class="infobox-label">💡 Wie du diese Seite nutzt</div>
+    <p>Jedes Kapitel enthält eine <strong>Geschichte</strong>, <strong>Erklärungen</strong> und <strong>interaktive Aufgaben</strong>. Du kannst auf Zahlen klicken, Sterne zählen und Lösungen entdecken – alles direkt hier, ohne Stift und Papier.<br><br>
+    Die Kapitel bauen aufeinander auf – aber jedes ist auch für sich verständlich. Wenn du irgendwo hängenbleibst: Lies die Geschichte noch einmal. Erklärus erklärt alles zweimal. Er ist geduldig.</p>
+  </div>
+
+  <!-- KAPITEL ÜBERSICHT -->
+  <div class="card">
+    <div class="section-title">🗺️ Die Kapitel – eine Reise durch die Mathematik</div>
+    <div class="chapter-grid">
+      <a class="chap-btn" href="kapitel-01_04-natuerliche-zahlen.html">
+        <span class="chap-num">1</span>
+        <div class="chap-info"><span class="chap-title">Die natürlichen Zahlen</span><span class="chap-hint">Wo alles beginnt</span></div>
+      </a>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">2</span>
+        <div class="chap-info"><span class="chap-title">Dezimalzahlen</span><span class="chap-hint">Bald verfügbar</span></div>
+      </div>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">3</span>
+        <div class="chap-info"><span class="chap-title">Vergleichszeichen</span><span class="chap-hint">Bald verfügbar</span></div>
+      </div>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">4</span>
+        <div class="chap-info"><span class="chap-title">Addition</span><span class="chap-hint">Bald verfügbar</span></div>
+      </div>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">5</span>
+        <div class="chap-info"><span class="chap-title">Subtraktion</span><span class="chap-hint">Bald verfügbar</span></div>
+      </div>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">6</span>
+        <div class="chap-info"><span class="chap-title">Multiplikation</span><span class="chap-hint">Bald verfügbar</span></div>
+      </div>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">7</span>
+        <div class="chap-info"><span class="chap-title">Division</span><span class="chap-hint">Bald verfügbar</span></div>
+      </div>
+      <div class="chap-btn" style="opacity:.5;cursor:default">
+        <span class="chap-num">8–18</span>
+        <div class="chap-info"><span class="chap-title">Weitere Kapitel</span><span class="chap-hint">Die Reise geht weiter…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="infobox blue">
+    <div class="infobox-label">✨ Eine letzte Sache</div>
+    <p>Mathematik hat kein Ende. Nach jedem Kapitel wartet ein neues. Nach jeder Antwort kommt eine neue Frage. Das ist keine Warnung – das ist das Schönste daran.<br><br>Erklärus weiß das. Sterni ahnt es. Und vielleicht weißt du es bald auch.</p>
+  </div>
+
+  <div class="start-wrap">
+    <a class="start-btn" href="kapitel-01_04-natuerliche-zahlen.html">
+      🌌 Die Reise beginnen – Kapitel 1
+    </a>
+  </div>
+
+</div>
+
+<div class="footer">© 2025 Timea Tóth · toth.services &nbsp;·&nbsp; Erklärus &amp; Sterni</div>
+
+<script>
+/* GALAXY CANVAS */
+(function(){
+  var canvas=document.getElementById('galaxy-bg');
+  var ctx=canvas.getContext('2d');
+  var W,H,stars=[],shootingStars=[];
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function initStars(){
+    stars=[];
+    for(var i=0;i<500;i++){
+      var sz=Math.random()<0.85?rnd(0.2,0.9):rnd(0.9,2.2);
+      stars.push({x:Math.random()*W,y:Math.random()*H,r:sz,baseAlpha:rnd(0.15,0.9),alpha:0,ts:rnd(0.003,0.012),to:Math.random()*Math.PI*2,color:Math.random()<0.1?'#ffeedd':Math.random()<0.08?'#ddeeff':'#ffffff',cluster:Math.random()<0.03});
+    }
+  }
+  var t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#010208');g.addColorStop(0.4,'#03060f');g.addColorStop(1,'#020508');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    var mw=ctx.createLinearGradient(W*0.1,H*0.3,W*0.9,H*0.75);
+    mw.addColorStop(0,'rgba(80,120,220,0)');mw.addColorStop(0.5,'rgba(180,160,255,0.07)');mw.addColorStop(1,'rgba(80,120,220,0)');
+    ctx.save();ctx.translate(W/2,H/2);ctx.rotate(-0.3);ctx.translate(-W/2,-H/2);
+    ctx.fillStyle=mw;ctx.fillRect(0,H*0.2,W,H*0.6);ctx.restore();
+    t+=0.016;
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i];
+      s.alpha=s.baseAlpha*(0.6+0.4*Math.sin(t*s.ts*60+s.to));
+      ctx.save();ctx.globalAlpha=Math.max(0,s.alpha);
+      ctx.fillStyle=s.color;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+    if(Math.random()<0.004&&shootingStars.length<3){
+      shootingStars.push({x:Math.random()*W*0.7,y:Math.random()*H*0.5,vx:rnd(4,9),vy:rnd(1.5,4),life:1});
+    }
+    for(var s2=shootingStars.length-1;s2>=0;s2--){
+      var ss=shootingStars[s2];
+      ss.x+=ss.vx;ss.y+=ss.vy;ss.life-=0.025;
+      if(ss.life<=0){shootingStars.splice(s2,1);continue;}
+      ctx.save();ctx.globalAlpha=ss.life*0.8;
+      var sg=ctx.createLinearGradient(ss.x-ss.vx*10,ss.y-ss.vy*10,ss.x,ss.y);
+      sg.addColorStop(0,'rgba(255,255,255,0)');sg.addColorStop(1,'rgba(255,255,255,0.9)');
+      ctx.strokeStyle=sg;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(ss.x-ss.vx*10,ss.y-ss.vy*10);ctx.lineTo(ss.x,ss.y);ctx.stroke();
+      ctx.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',function(){resize();initStars();});
+  resize();initStars();draw();
+})();
+
+/* GLITTER STARS */
+(function(){
+  var c=document.getElementById('glitterStars');
+  for(var i=0;i<220;i++){
+    var el=document.createElement('div');
+    var lg=Math.random()<0.12,md=Math.random()<0.25;
+    var sz=lg?(Math.random()*3+2.5):md?(Math.random()*1.5+1.2):(Math.random()*0.8+0.4);
+    var blur=(lg?sz*2.5:md?sz*2:sz*1.5)+'px';
+    var spread=(lg?sz*1.2:sz*0.8)+'px';
+    var type=lg?(Math.random()<0.4?'sparkle':''):(Math.random()<0.1?'gold':Math.random()<0.1?'blue':'');
+    el.className='gstar '+(type||'');
+    el.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;--gd:'+(1.2+Math.random()*4).toFixed(2)+'s;--gdel:'+(Math.random()*8).toFixed(2)+'s;--go:'+(0.5+Math.random()*0.5).toFixed(2)+';--go2:'+(0.2+Math.random()*0.4).toFixed(2)+';--gb:'+blur+';--gc:'+spread+';';
+    c.appendChild(el);
+  }
+})();
+
+/* HEADER STARS */
+(function(){
+  var c=document.getElementById('skyStars');
+  for(var i=0;i<80;i++){
+    var s=document.createElement('div');s.className='s';
+    var sz=Math.random()*2+.4;
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;--d:'+(2+Math.random()*5)+'s;--o:'+(0.3+Math.random()*.7)+';--del:'+Math.random()*6+'s';
+    c.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
