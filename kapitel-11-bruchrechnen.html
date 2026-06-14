@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 11 – Bruchrechnen · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size:17px; line-height:1.75; min-height:100vh; overflow-x:hidden; }
+#starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.above { position:relative; z-index:1; }
+
+.site-header { text-align:center; padding:1.1rem 2rem .9rem; font-family:'Courier New',monospace; font-size:.78rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; border-bottom:1px solid var(--border); background:rgba(7,13,31,.88); backdrop-filter:blur(10px); position:sticky; top:0; z-index:100; }
+.site-header strong { color:var(--gold); }
+
+.hero { text-align:center; padding:3.5rem 1.5rem 2rem; background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size:3.6rem; display:block; margin-bottom:.5rem; }
+.hero h1 { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; color:var(--gold); text-shadow:0 0 30px rgba(245,200,66,.35); margin-bottom:.3rem; }
+.hero .subtitle { font-size:.88rem; color:var(--muted); font-style:italic; font-family:'Courier New',monospace; }
+
+.ch-nav { display:flex; justify-content:center; align-items:center; gap:.8rem; padding:.9rem 1.5rem 1.6rem; flex-wrap:wrap; }
+.ch-nav a, .ch-nav .cur { display:inline-flex; align-items:center; padding:.45rem 1.2rem; border-radius:50px; font-size:.88rem; font-family:'Courier New',monospace; text-decoration:none; transition:all .2s; }
+.ch-nav a { background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text); }
+.ch-nav a:hover { background:rgba(255,255,255,.12); color:var(--gold); }
+.ch-nav .cur { background:var(--gold); color:#1a0e00; font-weight:700; border:none; }
+
+.wrap { max-width:780px; margin:0 auto; padding:0 1.2rem 6rem; }
+
+.section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem 2.2rem; margin-bottom:1.4rem; }
+.section h2 { font-size:1.15rem; font-weight:700; color:var(--gold); margin-bottom:.9rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+.section p { margin-bottom:.85rem; }
+.section p:last-child { margin-bottom:0; }
+
+.dlg { border-left:4px solid; border-radius:0 10px 10px 0; padding:.85rem 1.1rem; margin:.7rem 0; font-style:italic; line-height:1.65; }
+.dlg.sterni    { border-color:var(--gold);  background:rgba(245,200,66,.07); color:var(--gold); }
+.dlg.zweistein { border-color:var(--blue);  background:rgba(91,164,207,.07); color:var(--blue); }
+.dlg.lektion   { border-color:var(--cyan);  background:rgba(78,205,196,.06); color:#a0e8e4; }
+.dlg .who { font-style:normal; font-weight:700; font-size:.82rem; letter-spacing:.04em; }
+
+/* ── BRUCH-DARSTELLUNG ── */
+.frac { display:inline-flex; flex-direction:column; align-items:center; line-height:1.1; font-family:'Courier New',monospace; font-weight:700; vertical-align:middle; margin:0 .2rem; }
+.frac .num { border-bottom:2px solid; padding-bottom:1px; }
+.frac .den { padding-top:1px; }
+.frac.gold .num, .frac.gold .den { color:var(--gold); }
+.frac.gold .num { border-color:var(--gold); }
+.frac.cyan .num, .frac.cyan .den { color:var(--cyan); }
+.frac.cyan .num { border-color:var(--cyan); }
+.frac.purple .num, .frac.purple .den { color:var(--purple); }
+.frac.purple .num { border-color:var(--purple); }
+.frac.green .num, .frac.green .den { color:var(--green); }
+.frac.green .num { border-color:var(--green); }
+.frac.orange .num, .frac.orange .den { color:var(--orange); }
+.frac.orange .num { border-color:var(--orange); }
+
+/* ── BRUCH-VISUALISIERUNG (Torte) ── */
+.pie-row { display:flex; gap:1.2rem; flex-wrap:wrap; justify-content:center; margin:1rem 0; }
+.pie-item { text-align:center; }
+.pie-item svg { display:block; margin:0 auto .4rem; }
+.pie-item .pie-label { font-family:'Courier New',monospace; font-size:.82rem; color:var(--muted); }
+.pie-item .pie-frac  { font-family:'Courier New',monospace; font-size:1rem; font-weight:700; color:var(--gold); }
+
+/* ── RECHENWEG-BOX ── */
+.calc-box { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; margin:1rem 0; }
+.calc-box .cb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1rem; }
+.calc-step { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; margin:.45rem 0; font-family:'Courier New',monospace; font-size:1rem; }
+.calc-step .cs-arrow { color:var(--muted); }
+.calc-step .cs-note  { font-size:.8rem; color:var(--muted); font-style:italic; font-family:'Segoe UI',sans-serif; }
+.calc-step .cs-note strong { color:var(--gold); }
+
+/* ── RESONANZ-BOX ── */
+.resonanz-box { background:radial-gradient(ellipse at top right, rgba(155,137,224,.1) 0%, rgba(7,13,31,.95) 70%); border:1px solid rgba(155,137,224,.3); border-radius:16px; padding:1.6rem 1.8rem; margin:1rem 0; }
+.resonanz-box .rb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--purple); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.8rem; }
+.resonanz-box p { font-size:.95rem; color:#ccc8f0; margin-bottom:.55rem; }
+.resonanz-box p:last-child { margin-bottom:0; }
+.resonanz-box strong { color:var(--purple); }
+.resonanz-table { width:100%; border-collapse:collapse; font-family:'Courier New',monospace; font-size:.88rem; margin:.7rem 0; }
+.resonanz-table th { background:rgba(155,137,224,.15); color:var(--purple); padding:.45rem .8rem; text-align:left; border:1px solid rgba(155,137,224,.2); }
+.resonanz-table td { padding:.45rem .8rem; border:1px solid rgba(155,137,224,.15); color:#ccc8f0; }
+.resonanz-table tr:nth-child(even) td { background:rgba(155,137,224,.04); }
+
+/* ── INTERAKTIVER BRUCHRECHNER ── */
+.frac-calc { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin:1rem 0; }
+.frac-calc .fc-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1rem; }
+.fc-inputs { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; margin-bottom:1rem; }
+.fc-frac-input { display:flex; flex-direction:column; align-items:center; gap:.3rem; }
+.fc-frac-input input { width:56px; padding:.35rem .3rem; background:var(--card2); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:'Courier New',monospace; font-size:1rem; text-align:center; }
+.fc-frac-input input:focus { outline:none; border-color:var(--gold); }
+.fc-frac-input .fc-line { width:56px; height:2px; background:var(--gold); }
+.fc-op-btns { display:flex; flex-direction:column; gap:.3rem; }
+.fc-op-btn { padding:.3rem .6rem; border-radius:6px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-family:'Courier New',monospace; font-size:.9rem; cursor:pointer; transition:all .18s; }
+.fc-op-btn:hover, .fc-op-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(245,200,66,.1); }
+.fc-result { font-family:'Courier New',monospace; font-size:1.5rem; font-weight:800; min-height:3.5rem; text-align:center; padding:.8rem; background:rgba(0,0,0,.2); border-radius:10px; margin-top:.5rem; }
+.fc-steps { font-size:.85rem; color:var(--muted); margin-top:.6rem; line-height:1.9; }
+.fc-steps strong { color:var(--gold); }
+
+/* ── MENGEN-BOX ── */
+.menge-box { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.3rem 1.5rem; margin:1rem 0; display:flex; justify-content:center; }
+
+/* ── INFO-KARTEN ── */
+.info-card { border-radius:12px; padding:1.2rem 1.4rem; margin:1rem 0; }
+.info-card .ic-title { font-size:.78rem; font-family:'Courier New',monospace; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.65rem; }
+.info-card p { font-size:.95rem; margin-bottom:.55rem; }
+.info-card p:last-child { margin-bottom:0; }
+.info-card.uni  { background:rgba(245,200,66,.07);  border:1px solid rgba(245,200,66,.25); }
+.info-card.uni  .ic-title { color:var(--gold); }
+.info-card.uni  p { color:#e8dfa0; }
+.info-card.tip  { background:rgba(155,137,224,.1);  border:1px solid rgba(155,137,224,.3); }
+.info-card.tip  .ic-title { color:var(--purple); }
+.info-card.tip  p { color:#ccc8f0; }
+.info-card.nb   { background:rgba(91,164,207,.08);  border:1px solid rgba(91,164,207,.25); }
+.info-card.nb   .ic-title { color:var(--blue); }
+.info-card.nb   p { color:#b8d8ec; }
+
+/* ── AUFGABEN ── */
+.task-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:1rem; }
+.task-card .tc-head { display:flex; align-items:center; gap:.5rem; padding:.6rem 1.3rem; font-family:'Courier New',monospace; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); }
+.task-card .tc-head.gold   { background:rgba(245,200,66,.1);   color:var(--gold); }
+.task-card .tc-head.cyan   { background:rgba(78,205,196,.1);   color:var(--cyan); }
+.task-card .tc-head.purple { background:rgba(155,137,224,.1);  color:var(--purple); }
+.task-card .tc-head.green  { background:rgba(76,175,136,.12);  color:var(--green); }
+.task-card .tc-head.blue   { background:rgba(91,164,207,.12);  color:var(--blue); }
+.task-card .tc-body { padding:1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom:.8rem; }
+.q-opts { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+.q-btn { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:.55rem 1.1rem; font-size:.95rem; color:var(--text); cursor:pointer; transition:all .18s; font-weight:600; font-family:'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.q-btn.ok   { background:rgba(76,175,136,.2);  border-color:var(--green); color:var(--green); }
+.q-btn.fail { background:rgba(224,90,90,.15);  border-color:var(--red);   color:var(--red); }
+.q-fb { font-size:.86rem; margin-top:.4rem; min-height:1.2rem; }
+.q-fb.ok   { color:var(--green); }
+.q-fb.fail { color:var(--red); }
+
+/* ── ZUSAMMENFASSUNG ── */
+.summary-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; margin:1.4rem 0; }
+.summary-box .sb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.14em; display:block; margin-bottom:1rem; }
+.summary-box .sb-row { font-family:'Courier New',monospace; font-size:.97rem; font-weight:700; color:#fff; line-height:2.6; }
+.summary-box .sg { color:var(--gold); }
+.summary-box .sc { color:var(--cyan); }
+.summary-box .sp { color:var(--purple); }
+.summary-box .sb-sub { font-size:.88rem; color:var(--muted); line-height:1.8; margin-top:.5rem; }
+
+/* ── ABSCHLUSS ── */
+.ch-end { text-align:center; margin:1.4rem 0; }
+.ch-end .big-star { font-size:3rem; display:block; margin-bottom:.5rem; }
+.ch-end h2 { font-size:1.5rem; font-weight:800; color:var(--gold); margin-bottom:.35rem; }
+.ch-end p { color:var(--muted); font-size:.95rem; }
+.bot-nav { display:flex; justify-content:center; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
+.bot-nav a { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.4rem; background:rgba(245,200,66,.08); border:1px solid rgba(245,200,66,.3); border-radius:50px; color:var(--gold); text-decoration:none; font-size:.9rem; font-family:'Courier New',monospace; transition:all .2s; }
+.bot-nav a:hover { background:rgba(245,200,66,.16); }
+footer { text-align:center; font-size:.76rem; color:var(--muted); font-family:'Courier New',monospace; padding:1.5rem; margin-top:2rem; border-top:1px solid var(--border); }
+@media(max-width:600px){ .wrap{padding:0 .8rem 5rem;} .section{padding:1.3rem 1.1rem;} }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 11
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🪐</span>
+  <h1>11. Bruchrechnen</h1>
+  <p class="subtitle">Keplers Gesetze, Orbital-Resonanz und die Sprache der Brüche</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="kapitel-10-positive-negative-zahlen.html">← Kapitel 10</a>
+  <span class="cur">11 – Brüche</span>
+  <a href="kapitel-12-runden-von-zahlen.html">Kapitel 12 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE ELFTE NACHT ═══ -->
+<div class="section">
+  <h2>Die elfte Nacht – die Musik der Sphären</h2>
+
+  <p>Sterni schaute auf die Sternenkarte. Drei Monde kreisten um einen Gasriesen — einen riesigen blauen Planeten, der träge durch den Sektor Kepler glitt. Die Monde leuchteten in verschiedenen Farben: orange, weiß, türkis.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Sterni, siehst du die drei Monde? Sie sind nicht zufällig. Für je eine Umlaufzeit des äußeren Monds macht der mittlere genau <strong>1½</strong> Umläufe — und der innere <strong>3</strong>."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„1½ ist doch keine richtige Zahl..."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Doch! Sie heißt <em>gemischte Zahl</em> — oder als Bruch: drei Halbe. Das Universum liebt Brüche. Sie heißen in der Physik <em>Orbital-Resonanz</em>. Die Monde Io, Europa und Ganymed bei Jupiter schwingen genau im Verhältnis 1 : 2 : 4. Einfache Brüche halten Planetensysteme stabil."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das Universum rechnet also auch mit Brüchen?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Es hat damit angefangen. Wir haben es nur aufgeschrieben."
+  </div>
+</div>
+
+<!-- ═══ 2. WAS IST EIN BRUCH ═══ -->
+<div class="section">
+  <h2>Was ist ein Bruch?</h2>
+
+  <p>Ein Bruch entsteht, wenn wir etwas Ganzes in gleiche Teile aufteilen. Die klassische Vorstellung: ein Kuchen, geteilt unter Freunden.</p>
+
+  <!-- Torten-Visualisierung -->
+  <div class="pie-row">
+
+    <!-- ── 1/4 : Kreis in 4 gleiche Teile, NUR 1 Teil eingefärbt ── -->
+    <div class="pie-item">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <!-- Hintergrundkreis -->
+        <circle cx="40" cy="40" r="36" fill="rgba(245,200,66,.08)" stroke="rgba(245,200,66,.4)" stroke-width="1.5"/>
+        <!-- Trennlinien: senkrecht + waagrecht → 4 gleiche Viertel -->
+        <line x1="40" y1="4"  x2="40" y2="76" stroke="rgba(245,200,66,.45)" stroke-width="1.2"/>
+        <line x1="4"  y1="40" x2="76" y2="40" stroke="rgba(245,200,66,.45)" stroke-width="1.2"/>
+        <!-- NUR das obere rechte Viertel eingefärbt (von 12 Uhr bis 3 Uhr) -->
+        <path d="M40,40 L40,4 A36,36 0 0,1 76,40 Z" fill="rgba(245,200,66,.55)" stroke="none"/>
+      </svg>
+      <div class="pie-frac"><span class="frac gold"><span class="num">1</span><span class="den">4</span></span></div>
+      <div class="pie-label">ein Viertel</div>
+    </div>
+
+    <!-- ── 1/2 : Kreis in 2 Teile, 1 Teil eingefärbt ── -->
+    <div class="pie-item">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="36" fill="rgba(78,205,196,.08)" stroke="rgba(78,205,196,.4)" stroke-width="1.5"/>
+        <line x1="40" y1="4" x2="40" y2="76" stroke="rgba(78,205,196,.45)" stroke-width="1.2"/>
+        <!-- Rechte Hälfte eingefärbt -->
+        <path d="M40,40 L40,4 A36,36 0 0,1 40,76 Z" fill="rgba(78,205,196,.55)" stroke="none"/>
+      </svg>
+      <div class="pie-frac"><span class="frac cyan"><span class="num">1</span><span class="den">2</span></span></div>
+      <div class="pie-label">ein Halb</div>
+    </div>
+
+    <!-- ── 1/3 : Kreis in 3 gleiche Teile, NUR 1 Teil eingefärbt ── -->
+    <div class="pie-item">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="36" fill="rgba(155,137,224,.08)" stroke="rgba(155,137,224,.4)" stroke-width="1.5"/>
+        <!-- Trennlinien: 3 Sektoren à 120° (12 Uhr, 4 Uhr, 8 Uhr) -->
+        <!-- 0°=12Uhr=(40,4) | 120°=(71.18,58) | 240°=(8.82,58) -->
+        <line x1="40" y1="40" x2="40"    y2="4"    stroke="rgba(155,137,224,.45)" stroke-width="1.2"/>
+        <line x1="40" y1="40" x2="71.18" y2="58"   stroke="rgba(155,137,224,.45)" stroke-width="1.2"/>
+        <line x1="40" y1="40" x2="8.82"  y2="58"   stroke="rgba(155,137,224,.45)" stroke-width="1.2"/>
+        <!-- NUR das obere Drittel eingefärbt (von 12 Uhr bis 4 Uhr) -->
+        <path d="M40,40 L40,4 A36,36 0 0,1 71.18,58 Z" fill="rgba(155,137,224,.55)" stroke="none"/>
+      </svg>
+      <div class="pie-frac"><span class="frac purple"><span class="num">1</span><span class="den">3</span></span></div>
+      <div class="pie-label">ein Drittel</div>
+    </div>
+
+    <!-- ── 3/4 : Kreis in 4 gleiche Teile, 3 Teile eingefärbt ── -->
+    <div class="pie-item">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="36" fill="rgba(76,175,136,.08)" stroke="rgba(76,175,136,.4)" stroke-width="1.5"/>
+        <!-- Trennlinien: senkrecht + waagrecht -->
+        <line x1="40" y1="4"  x2="40" y2="76" stroke="rgba(76,175,136,.45)" stroke-width="1.2"/>
+        <line x1="4"  y1="40" x2="76" y2="40" stroke="rgba(76,175,136,.45)" stroke-width="1.2"/>
+        <!-- 3 Viertel eingefärbt: rechts oben + rechts unten + links unten
+             (von 12 Uhr über 3, 6, bis 9 Uhr = 270°) -->
+        <path d="M40,40 L40,4 A36,36 0 1,1 4,40 Z" fill="rgba(76,175,136,.55)" stroke="none"/>
+      </svg>
+      <div class="pie-frac"><span class="frac green"><span class="num">3</span><span class="den">4</span></span></div>
+      <div class="pie-label">drei Viertel</div>
+    </div>
+
+  </div>
+
+  <p>Ein Bruch besteht aus drei Teilen: dem <strong style="color:var(--gold)">Zähler</strong> (oben — wie viele Teile du hast), dem <strong style="color:var(--cyan)">Bruchstrich</strong> (der Trennlinie) und dem <strong style="color:var(--purple)">Nenner</strong> (unten — in wie viele gleiche Teile das Ganze geteilt ist).</p>
+
+  <div class="calc-box">
+    <span class="cb-label">🔢 Aufbau eines Bruchs</span>
+    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;justify-content:center;padding:.5rem 0;">
+      <div style="text-align:center;">
+        <div style="font-family:'Courier New',monospace;font-size:2.5rem;font-weight:800;line-height:1.1;color:var(--text);">
+          <span style="color:var(--gold)">3</span><br>
+          <span style="color:var(--cyan);font-size:1.5rem;">─────</span><br>
+          <span style="color:var(--purple)">4</span>
+        </div>
+      </div>
+      <div style="font-size:.9rem;color:var(--muted);line-height:2.2;">
+        <div><span style="color:var(--gold)">3</span> = Zähler (wie viele Teile)</div>
+        <div><span style="color:var(--cyan)">─</span> = Bruchstrich (geteilt durch)</div>
+        <div><span style="color:var(--purple)">4</span> = Nenner (in wie viele Teile)</div>
+      </div>
+    </div>
+  </div>
+
+  <p>Bruchzahlen gehören zur Menge der <strong style="color:var(--cyan)">rationalen Zahlen (ℚ)</strong>. Diese umfasst alle Zahlen, die sich als Bruch zweier ganzer Zahlen schreiben lassen — also ℕ ⊂ ℤ ⊂ ℚ.</p>
+
+  <div class="menge-box">
+    <svg viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;font-family:'Courier New',monospace;">
+      <ellipse cx="220" cy="88" rx="208" ry="78" fill="rgba(78,205,196,.05)" stroke="rgba(78,205,196,.35)" stroke-width="1.5"/>
+      <text x="18" y="38" fill="#4ecdc4" font-size="12" font-weight="700">ℚ – Rationale Zahlen</text>
+      <ellipse cx="260" cy="92" rx="148" ry="57" fill="rgba(78,205,196,.04)" stroke="rgba(91,164,207,.3)" stroke-width="1.2"/>
+      <text x="148" y="52" fill="#5ba4cf" font-size="11" font-weight="700">ℤ – Ganze Zahlen</text>
+      <ellipse cx="300" cy="96" rx="90" ry="38" fill="rgba(245,200,66,.06)" stroke="rgba(245,200,66,.3)" stroke-width="1.2"/>
+      <text x="258" y="78" fill="#f5c842" font-size="10" font-weight="700">ℕ</text>
+      <text x="268" y="100" fill="#f5c842" font-size="10">1,2,3…</text>
+      <text x="162" y="100" fill="#5ba4cf" font-size="10">−1,−2…</text>
+      <text x="30" y="100" fill="#4ecdc4" font-size="10">½, ¾, −⅓…</text>
+      <circle cx="215" cy="96" r="11" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <text x="215" y="100" fill="white" font-size="10" font-weight="700" text-anchor="middle">0</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ 3. BRUCHARTEN ═══ -->
+<div class="section">
+  <h2>Brucharten – echter, unechter und gemischter Bruch</h2>
+
+  <div class="calc-box">
+    <span class="cb-label">📊 Übersicht der Brucharten</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin-top:.3rem;">
+      <div style="background:rgba(78,205,196,.07);border:1px solid rgba(78,205,196,.25);border-radius:10px;padding:.9rem 1rem;">
+        <div style="font-family:'Courier New',monospace;font-size:.72rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">Echter Bruch</div>
+        <div style="font-size:.9rem;color:#a0e8e4;">Zähler &lt; Nenner<br>Wert &lt; 1</div>
+        <div style="margin-top:.5rem;font-family:'Courier New',monospace;color:var(--cyan);font-size:1.1rem;font-weight:700;">
+          <span class="frac cyan"><span class="num">3</span><span class="den">4</span></span>
+          &nbsp;
+          <span class="frac cyan"><span class="num">1</span><span class="den">7</span></span>
+        </div>
+      </div>
+      <div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.25);border-radius:10px;padding:.9rem 1rem;">
+        <div style="font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">Unechter Bruch</div>
+        <div style="font-size:.9rem;color:#e8dfa0;">Zähler &gt; Nenner<br>Wert &gt; 1</div>
+        <div style="margin-top:.5rem;font-family:'Courier New',monospace;color:var(--gold);font-size:1.1rem;font-weight:700;">
+          <span class="frac gold"><span class="num">7</span><span class="den">4</span></span>
+          &nbsp;
+          <span class="frac gold"><span class="num">21</span><span class="den">8</span></span>
+        </div>
+      </div>
+      <div style="background:rgba(155,137,224,.08);border:1px solid rgba(155,137,224,.25);border-radius:10px;padding:.9rem 1rem;">
+        <div style="font-family:'Courier New',monospace;font-size:.72rem;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">Gemischte Zahl</div>
+        <div style="font-size:.9rem;color:#ccc8f0;">Ganze Zahl + Bruch<br>Wert &gt; 1</div>
+        <div style="margin-top:.5rem;font-family:'Courier New',monospace;color:var(--purple);font-size:1.1rem;font-weight:700;">
+          2&nbsp;<span class="frac purple"><span class="num">5</span><span class="den">8</span></span>
+          &nbsp;&nbsp;
+          4&nbsp;<span class="frac purple"><span class="num">2</span><span class="den">3</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Die Orbital-Resonanz der Monde — 1:2:4 — das sind alles echte oder unechte Brüche?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Verhältnisse. Und Verhältnisse sind Brüche. Das äußere zum mittleren Mond ist 2/1 — ein unechter Bruch. Das äußere zum inneren: 4/1. Die Natur wählt immer die einfachsten Brüche, weil sie die stabilsten Umlaufbahnen erzeugen."
+  </div>
+</div>
+
+<!-- ═══ 4. KÜRZEN UND ERWEITERN ═══ -->
+<div class="section">
+  <h2>Brüche kürzen und erweitern</h2>
+
+  <p><strong style="color:var(--gold)">Erweitern</strong> bedeutet: Zähler und Nenner mit derselben Zahl multiplizieren — der Wert des Bruchs ändert sich nicht, nur die Schreibweise.</p>
+
+  <div class="calc-box">
+    <span class="cb-label">⬆️ Bruch erweitern – Beispiel</span>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">1</span><span class="den">2</span></span>
+      <span class="cs-arrow">×3/3 →</span>
+      <span class="frac gold"><span class="num">3</span><span class="den">6</span></span>
+      <span class="cs-note"><strong>gleicher Wert</strong>, anderer Nenner</span>
+    </div>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">2</span><span class="den">3</span></span>
+      <span class="cs-arrow">×4/4 →</span>
+      <span class="frac gold"><span class="num">8</span><span class="den">12</span></span>
+      <span class="cs-note">nützlich für gemeinsamen Nenner</span>
+    </div>
+  </div>
+
+  <p><strong style="color:var(--purple)">Kürzen</strong> bedeutet: Zähler und Nenner durch dieselbe Zahl dividieren — der Bruch wird einfacher, der Wert bleibt gleich.</p>
+
+  <div class="calc-box">
+    <span class="cb-label">⬇️ Bruch kürzen – Beispiel</span>
+    <div class="calc-step">
+      <span class="frac gold"><span class="num">6</span><span class="den">9</span></span>
+      <span class="cs-arrow">÷3/3 →</span>
+      <span class="frac cyan"><span class="num">2</span><span class="den">3</span></span>
+      <span class="cs-note">6 und 9 sind beide durch 3 teilbar</span>
+    </div>
+    <div class="calc-step">
+      <span class="frac gold"><span class="num">12</span><span class="den">16</span></span>
+      <span class="cs-arrow">÷4/4 →</span>
+      <span class="frac cyan"><span class="num">3</span><span class="den">4</span></span>
+      <span class="cs-note">12 und 16 durch 4 → vollständig gekürzt</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. ORBITAL-RESONANZ ═══ -->
+<div class="section">
+  <h2>Orbital-Resonanz – das Universum liebt einfache Brüche</h2>
+
+  <div class="resonanz-box">
+    <span class="rb-label">🪐 Kosmische Verbindung – Orbital-Resonanz</span>
+    <p>Wenn zwei Monde oder Planeten eine <strong>Umlaufzeit im Verhältnis einfacher ganzer Zahlen</strong> haben, spricht man von Orbital-Resonanz. Das Gravitationsfeld zieht sie immer wieder in dieselbe Position — sie stabilisieren sich gegenseitig.</p>
+    <p>Das berühmteste Beispiel: Jupiters Monde <strong>Io, Europa, Ganymed</strong> — ihre Umlaufzeiten stehen im Verhältnis <strong>1 : 2 : 4</strong>. Für jeden Umlauf von Ganymed macht Europa genau 2, Io genau 4. Diese Resonanz hält das System seit Milliarden Jahren stabil.</p>
+    <table class="resonanz-table">
+      <thead>
+        <tr><th>Mond</th><th>Umlaufzeit</th><th>Verhältnis</th><th>Als Bruch</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Io</td><td>1,77 Tage</td><td>1</td><td style="color:var(--gold);">4/4</td></tr>
+        <tr><td>Europa</td><td>3,55 Tage</td><td>2</td><td style="color:var(--gold);">4/2 = 2</td></tr>
+        <tr><td>Ganymed</td><td>7,15 Tage</td><td>4</td><td style="color:var(--gold);">4/1 = 4</td></tr>
+      </tbody>
+    </table>
+    <p>Auch <strong>Keplers drittes Gesetz</strong> verwendet Brüche: Das Verhältnis der Quadrate der Umlaufzeiten zweier Planeten ist gleich dem Verhältnis der Kuben ihrer großen Bahnhalbachsen — <em>T² / a³ = konstant</em>. Brüche sind die Grammatik des Sonnensystems.</p>
+  </div>
+</div>
+
+<!-- ═══ 6. ADDITION & SUBTRAKTION ═══ -->
+<div class="section">
+  <h2>Addition und Subtraktion von Brüchen</h2>
+
+  <p><strong style="color:var(--cyan)">Gleicher Nenner:</strong> Nur die Zähler addieren oder subtrahieren, der Nenner bleibt unverändert.</p>
+
+  <div class="calc-box">
+    <span class="cb-label">➕ Gleichnamige Brüche addieren</span>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">2</span><span class="den">7</span></span>
+      <span>+</span>
+      <span class="frac cyan"><span class="num">3</span><span class="den">7</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac gold"><span class="num">5</span><span class="den">7</span></span>
+      <span class="cs-note">Nenner bleibt 7</span>
+    </div>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">5</span><span class="den">8</span></span>
+      <span>−</span>
+      <span class="frac cyan"><span class="num">1</span><span class="den">8</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac gold"><span class="num">4</span><span class="den">8</span></span>
+      <span class="cs-arrow">kürzen →</span>
+      <span class="frac green"><span class="num">1</span><span class="den">2</span></span>
+    </div>
+  </div>
+
+  <p><strong style="color:var(--gold)">Ungleicher Nenner:</strong> Erst auf gemeinsamen Nenner (kgV) bringen, dann addieren oder subtrahieren.</p>
+
+  <div class="calc-box">
+    <span class="cb-label">➕ Ungleichnamige Brüche – gemeinsamer Nenner</span>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">1</span><span class="den">2</span></span>
+      <span>+</span>
+      <span class="frac purple"><span class="num">1</span><span class="den">3</span></span>
+      <span class="cs-note">→ kgV(2,3)=6</span>
+    </div>
+    <div class="calc-step">
+      <span class="cs-arrow">=</span>
+      <span class="frac gold"><span class="num">3</span><span class="den">6</span></span>
+      <span>+</span>
+      <span class="frac gold"><span class="num">2</span><span class="den">6</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac green"><span class="num">5</span><span class="den">6</span></span>
+      <span class="cs-note">½ ×3/3 = 3/6 · ⅓ ×2/2 = 2/6</span>
+    </div>
+    <div style="margin-top:.8rem;border-top:1px solid var(--border);padding-top:.8rem;">
+      <div class="calc-step">
+        <span class="frac cyan"><span class="num">1</span><span class="den">4</span></span>
+        <span>+</span>
+        <span class="frac purple"><span class="num">2</span><span class="den">3</span></span>
+        <span class="cs-note">→ kgV(4,3)=12</span>
+      </div>
+      <div class="calc-step">
+        <span class="cs-arrow">=</span>
+        <span class="frac gold"><span class="num">3</span><span class="den">12</span></span>
+        <span>+</span>
+        <span class="frac gold"><span class="num">8</span><span class="den">12</span></span>
+        <span class="cs-arrow">=</span>
+        <span class="frac green"><span class="num">11</span><span class="den">12</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. MULTIPLIKATION & DIVISION ═══ -->
+<div class="section">
+  <h2>Multiplizieren und Dividieren von Brüchen</h2>
+
+  <p><strong style="color:var(--gold)">Multiplizieren:</strong> Zähler × Zähler, Nenner × Nenner. Der Nenner spielt dabei keine Sonderrolle.</p>
+
+  <div class="calc-box">
+    <span class="cb-label">✖️ Brüche multiplizieren</span>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">2</span><span class="den">3</span></span>
+      <span>·</span>
+      <span class="frac purple"><span class="num">3</span><span class="den">4</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac gold"><span class="num">2·3</span><span class="den">3·4</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac gold"><span class="num">6</span><span class="den">12</span></span>
+      <span class="cs-arrow">kürzen →</span>
+      <span class="frac green"><span class="num">1</span><span class="den">2</span></span>
+    </div>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">3</span><span class="den">5</span></span>
+      <span>· 4 =</span>
+      <span class="frac cyan"><span class="num">3</span><span class="den">5</span></span>
+      <span>·</span>
+      <span class="frac gold"><span class="num">4</span><span class="den">1</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac green"><span class="num">12</span><span class="den">5</span></span>
+      <span class="cs-note">ganze Zahl = Zahl/1</span>
+    </div>
+  </div>
+
+  <p><strong style="color:var(--purple)">Dividieren:</strong> Den zweiten Bruch umkehren (Zähler ↔ Nenner), dann multiplizieren. Division durch einen Bruch = Multiplikation mit dem Kehrwert.</p>
+
+  <div class="calc-box">
+    <span class="cb-label">➗ Brüche dividieren</span>
+    <div class="calc-step">
+      <span class="frac cyan"><span class="num">3</span><span class="den">4</span></span>
+      <span>÷</span>
+      <span class="frac purple"><span class="num">2</span><span class="den">5</span></span>
+      <span class="cs-arrow">→ Kehrwert →</span>
+      <span class="frac cyan"><span class="num">3</span><span class="den">4</span></span>
+      <span>·</span>
+      <span class="frac gold"><span class="num">5</span><span class="den">2</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac green"><span class="num">15</span><span class="den">8</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 8. UMWANDELN ═══ -->
+<div class="section">
+  <h2>Umwandeln – gemischte Zahl ↔ unechter Bruch</h2>
+
+  <div class="calc-box">
+    <span class="cb-label">🔄 Unechter Bruch → gemischte Zahl</span>
+    <div class="calc-step">
+      <span class="frac gold"><span class="num">21</span><span class="den">8</span></span>
+      <span class="cs-note">→ 21 ÷ 8 = <strong>2</strong> Rest <strong>5</strong></span>
+    </div>
+    <div class="calc-step">
+      <span class="cs-arrow">= 2 &nbsp;</span>
+      <span class="frac green"><span class="num">5</span><span class="den">8</span></span>
+      <span class="cs-note">zwei ganze + fünf Achtel</span>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <span class="cb-label">🔄 Gemischte Zahl → unechter Bruch</span>
+    <div class="calc-step">
+      <span>4 &nbsp;</span><span class="frac gold"><span class="num">2</span><span class="den">3</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac cyan"><span class="num">4</span><span class="den">1</span></span>
+      <span>+</span>
+      <span class="frac cyan"><span class="num">2</span><span class="den">3</span></span>
+    </div>
+    <div class="calc-step">
+      <span class="cs-arrow">=</span>
+      <span class="frac gold"><span class="num">12</span><span class="den">3</span></span>
+      <span>+</span>
+      <span class="frac gold"><span class="num">2</span><span class="den">3</span></span>
+      <span class="cs-arrow">=</span>
+      <span class="frac green"><span class="num">14</span><span class="den">3</span></span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also die Orbital-Resonanz 1½ — als unechter Bruch wäre das 3/2?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Exakt. Neptun und Pluto haben eine 3:2-Resonanz — für jeden Umlauf Neptuns macht Pluto genau 3/2 Umläufe. So bleiben sie auf ewig in sicherem Abstand."
+  </div>
+</div>
+
+<!-- ═══ 9. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Interaktiver Bruchrechner</h2>
+  <p>Gib zwei Brüche ein und wähle eine Rechenoperation:</p>
+
+  <div class="frac-calc">
+    <span class="fc-label">🧮 Orbital-Bruchrechner</span>
+    <div class="fc-inputs">
+      <div class="fc-frac-input">
+        <input type="number" id="fa1" value="1" min="-99" max="99">
+        <div class="fc-line"></div>
+        <input type="number" id="fb1" value="2" min="1" max="99">
+      </div>
+      <div class="fc-op-btns">
+        <button class="fc-op-btn active" id="btn-add" onclick="fcOp('+')">+</button>
+        <button class="fc-op-btn" id="btn-sub" onclick="fcOp('−')">−</button>
+        <button class="fc-op-btn" id="btn-mul" onclick="fcOp('×')">×</button>
+        <button class="fc-op-btn" id="btn-div" onclick="fcOp('÷')">÷</button>
+      </div>
+      <div class="fc-frac-input">
+        <input type="number" id="fa2" value="1" min="-99" max="99">
+        <div class="fc-line"></div>
+        <input type="number" id="fb2" value="3" min="1" max="99">
+      </div>
+    </div>
+    <div class="fc-result" id="fc-result">
+      <span style="color:var(--gold);">5</span>/<span style="color:var(--purple);">6</span>
+    </div>
+    <div class="fc-steps" id="fc-steps"></div>
+  </div>
+</div>
+
+<!-- ═══ 10. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head gold">🪐 Aufgabe 1 – Orbital-Resonanz</div>
+  <div class="tc-body">
+    <p>Der innere Mond macht 4 Umläufe, der äußere 1. Als Bruch: Wie viele Umläufe macht der innere pro Umlauf des äußeren?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 4 Umläufe innen zu 1 außen = 4/1 = 4.')">1/4</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! 4 Umläufe innen / 1 Umlauf außen = 4/1 = 4 ✓')">4/1 = 4</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – das wäre der umgekehrte Bruch.')">1/2</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 4÷1=4, nicht 3.')">3</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">➕ Aufgabe 2 – Addition gleicher Nenner</div>
+  <div class="tc-body">
+    <p>Was ergibt <span class="frac cyan" style="display:inline-flex;"><span class="num">3</span><span class="den">8</span></span> + <span class="frac cyan" style="display:inline-flex;"><span class="num">3</span><span class="den">8</span></span> ?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – Nenner bleibt 8: 3+3=6, also 6/8 = 3/4.')">6/16</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! 3+3=6, Nenner bleibt 8 → 6/8 = 3/4 ✓')">6/8 = 3/4</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – 3+3=6, nicht 9.')">9/8</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – Zähler addieren, nicht Nenner.')">3/4 direkt ohne Rechnung</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head purple">🔄 Aufgabe 3 – Unechter Bruch umwandeln</div>
+  <div class="tc-body">
+    <p>Wandle <span class="frac gold" style="display:inline-flex;"><span class="num">11</span><span class="den">4</span></span> in eine gemischte Zahl um.</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! 11÷4 = 2 Rest 3 → 2 und 3/4 ✓')">2 ¾</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 11÷4=2 Rest 3, nicht Rest 1.')">2 ¼</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 4 passt 2-mal in 11 (=8), nicht 3-mal.')">3 ¼</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 11÷4=2 Rest 3, also 2 und 3/4.')">1 ¾</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head green">✖️ Aufgabe 4 – Multiplikation</div>
+  <div class="tc-body">
+    <p>Was ergibt <span class="frac cyan" style="display:inline-flex;"><span class="num">2</span><span class="den">3</span></span> · <span class="frac purple" style="display:inline-flex;"><span class="num">3</span><span class="den">4</span></span> ?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,true, 'q3b','Richtig! 2·3=6, 3·4=12 → 6/12 = 1/2 ✓')">1/2</button>
+      <button class="q-btn" onclick="q(this,false,'q3b','Nein – Zähler × Zähler, Nenner × Nenner: 6/12 = 1/2.')">5/7</button>
+      <button class="q-btn" onclick="q(this,false,'q3b','Nein – 6/12 kürzt auf 1/2.')">6/12 (ungekürzt)</button>
+      <button class="q-btn" onclick="q(this,false,'q3b','Nein – das wäre Addition der Nenner (falsch!).')">2/7</button>
+    </div>
+    <div class="q-fb" id="q3b-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">🚀 Aufgabe 5 – Keplers Resonanz</div>
+  <div class="tc-body">
+    <p>Neptuns Umlaufzeit ist <strong>165 Jahre</strong>. Pluto hat eine 3:2-Resonanz mit Neptun. Was ist Plutos Umlaufzeit als Bruch von Neptuns Zeit, und wie viele Jahre sind das?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 3:2 Resonanz bedeutet Pluto/Neptun = 3/2. Also 165 × 3/2 = 247,5 Jahre.')">110 Jahre (= 2/3 von 165)</button>
+      <button class="q-btn" onclick="q(this,true, 'q5','Richtig! 3/2-Resonanz: 165 × 3/2 = 247,5 Jahre – Plutos tatsächliche Umlaufzeit ✓')">247,5 Jahre (= 3/2 von 165)</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 165×2=330 wäre eine 2:1-Resonanz.')">330 Jahre (= 2/1 von 165)</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – 82,5 wäre 1/2 von 165.')">82,5 Jahre</button>
+    </div>
+    <div class="q-fb" id="q5-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ ABSCHLUSS ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Die drei bunten Monde kreisten weiter — orange, weiß, türkis. Sterni sah jetzt die Brüche in ihrem Tanz. 1 : 2 : 4, für immer eingefroren in Keplers Mathematik.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Brüche erweitern verändert nicht den Wert — nur die Schreibweise. Kürzen macht sie einfacher. Addition und Subtraktion brauchen gleiche Nenner. Multiplikation: Zähler mal Zähler, Nenner mal Nenner. Division: Kehrwert, dann multiplizieren."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Und das Universum?"
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Hält seine Monde in einfachen Brüchen. Weil einfache Brüche die stabilsten Bahnen sind."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Kepler wusste es. Nun weißt du es auch."
+  </div>
+
+  <div class="dlg lektion">
+    „Elfte Lektion: Brüche bestehen aus Zähler, Bruchstrich, Nenner. Echter Bruch: Zähler&lt;Nenner. Unechter Bruch: Zähler&gt;Nenner. Gemischte Zahl: ganze Zahl + Bruch. Kürzen und Erweitern ändern nicht den Wert. Addition/Subtraktion: gleicher Nenner nötig (kgV). Multiplikation: Zähler×Zähler, Nenner×Nenner. Division: Kehrwert × multiplizieren. Und: Das Universum rechnet mit Brüchen — Orbital-Resonanz hält Planetensysteme stabil."
+  </div>
+</div>
+
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-row">
+    <span class="sg">a/b + c/b = (a+c)/b</span><br>
+    <span class="sc">a/b · c/d = ac/bd</span><br>
+    <span class="sp">a/b ÷ c/d = a/b · d/c</span>
+  </div>
+  <div class="sb-sub">
+    Gleicher Nenner für + und − · kgV für verschiedene Nenner<br>
+    Kürzen: ÷gleiche Zahl · Erweitern: ×gleiche Zahl<br>
+    Orbital-Resonanz: einfache Brüche = stabile Umlaufbahnen
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Zweistins Notizbuch – Seite 11</span>
+    <p>„Brüche. Sterni hat zuerst gedacht, 1½ sei keine richtige Zahl. Jetzt weiß sie: Es ist 3/2, ein unechter Bruch, und Neptun und Pluto tanzen genau in diesem Verhältnis. Kürzen und Erweitern lassen den Wert gleich. Addition braucht gleichen Nenner. Multiplikation braucht das nicht. Division ist Multiplikation mit dem Kehrwert. Das schreibe ich dreimal auf."</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 11 gemeistert!</h2>
+  <p>Die Monde tanzen weiter. Sterni kennt jetzt ihre Sprache.<br>Kapitel 12 wartet: Runden von Zahlen.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-10-positive-negative-zahlen.html">← Kapitel 10</a>
+  <a href="kapitel-12-runden-von-zahlen.html">Kapitel 12 – Runden →</a>
+</div>
+
+</main>
+<footer>© 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 11</footer>
+</div>
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'),cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08,med=Math.random()<0.18;
+      stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()):(.2+Math.random()*.8),
+        o:big?.95:med?(.6+Math.random()*.35):(.25+Math.random()*.5),
+        sp:big?(.003+Math.random()*.004):(.004+Math.random()*.012),
+        ph:Math.random()*Math.PI*2,big,med});
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({x:Math.random()*cv.width*1.5,y:-10,
+      vx:-3.5-Math.random()*3,vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120,alpha:1,fade:.012+Math.random()*.008});
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(.45+.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`;cx.fill();
+      if(s.big&&a>.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*.5})`;cx.lineWidth=.7;
+        cx.beginPath();cx.moveTo(s.x-g,s.y);cx.lineTo(s.x+g,s.y);cx.stroke();
+        cx.beginPath();cx.moveTo(s.x,s.y-g);cx.lineTo(s.x,s.y+g);cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const l=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath();cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      cx.strokeStyle=grd;cx.lineWidth=1.8;cx.stroke();
+      m.x+=m.vx;m.y+=m.vy;m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20)meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();initStars();
+  window.addEventListener('resize',()=>{resize();initStars();});
+  requestAnimationFrame(draw);
+  function sched(){spawnMeteor();setTimeout(sched,4000+Math.random()*5000);}
+  setTimeout(sched,1500);
+})();
+
+/* ─── Bruchrechner ─── */
+let fcCurOp = '+';
+
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){let t=b;b=a%b;a=t;}return a;}
+function lcm(a,b){return Math.abs(a*b)/gcd(a,b);}
+
+function fcOp(op){
+  fcCurOp=op;
+  document.querySelectorAll('.fc-op-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent===op);
+  });
+  fcCalc();
+}
+
+function fcCalc(){
+  const a1=parseInt(document.getElementById('fa1').value)||0;
+  const b1=parseInt(document.getElementById('fb1').value)||1;
+  const a2=parseInt(document.getElementById('fa2').value)||0;
+  const b2=parseInt(document.getElementById('fb2').value)||1;
+
+  let rn,rd,steps='';
+
+  if(fcCurOp==='+' || fcCurOp==='−'){
+    const l=lcm(b1,b2);
+    const m1=l/b1, m2=l/b2;
+    const na=a1*m1, nb=a2*m2;
+    rn=(fcCurOp==='+')?na+nb:na-nb; rd=l;
+    steps=`Gemeinsamer Nenner: kgV(${b1},${b2}) = <strong>${l}</strong><br>`;
+    steps+=`<span style="color:var(--gold)">${a1}/${b1}</span> × ${m1}/${m1} = ${na}/${l} &nbsp; <span style="color:var(--gold)">${a2}/${b2}</span> × ${m2}/${m2} = ${nb}/${l}<br>`;
+    steps+=`${na} ${fcCurOp} ${nb} = <strong>${rn}</strong> / ${rd}`;
+  } else if(fcCurOp==='×'){
+    rn=a1*a2; rd=b1*b2;
+    steps=`Zähler × Zähler: <strong>${a1} × ${a2} = ${rn}</strong><br>Nenner × Nenner: <strong>${b1} × ${b2} = ${rd}</strong>`;
+  } else {
+    rn=a1*b2; rd=b1*a2;
+    steps=`Kehrwert von ${a2}/${b2} = <strong>${b2}/${a2}</strong><br>Dann multiplizieren: ${a1}/${b1} × ${b2}/${a2} = <strong>${rn}/${rd}</strong>`;
+  }
+
+  const g=gcd(Math.abs(rn),Math.abs(rd))||1;
+  const krn=rn/g, krd=rd/g;
+  if(g>1) steps+=`<br>Kürzen ÷${g}: <strong style="color:var(--cyan)">${krn}/${krd}</strong>`;
+
+  const resEl=document.getElementById('fc-result');
+  if(krd===1){
+    resEl.innerHTML=`<span style="color:var(--cyan);font-size:2rem;">${krn}</span>`;
+  } else if(krd<0){
+    resEl.innerHTML=`<span style="color:var(--gold)">${-krn}</span><span style="color:var(--muted);font-size:1rem;"> / </span><span style="color:var(--purple)">${-krd}</span>`;
+  } else {
+    resEl.innerHTML=`<span style="color:var(--gold)">${krn}</span><span style="color:var(--muted);font-size:1rem;"> / </span><span style="color:var(--purple)">${krd}</span>`;
+  }
+  document.getElementById('fc-steps').innerHTML=steps;
+}
+
+['fa1','fb1','fa2','fb2'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',fcCalc);
+});
+fcCalc();
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
