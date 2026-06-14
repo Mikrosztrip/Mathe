@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 17 – Binomische Formeln · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.75;min-height:100vh;overflow-x:hidden;}
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.above{position:relative;z-index:1;}
+.site-header{text-align:center;padding:1.1rem 2rem .9rem;font-family:'Courier New',monospace;font-size:.78rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);background:rgba(7,13,31,.88);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;}
+.site-header strong{color:var(--gold);}
+.hero{text-align:center;padding:3.5rem 1.5rem 2rem;background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%);}
+.hero .hero-icon{font-size:3.6rem;display:block;margin-bottom:.5rem;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--gold);text-shadow:0 0 30px rgba(245,200,66,.35);margin-bottom:.3rem;}
+.hero .subtitle{font-size:.88rem;color:var(--muted);font-style:italic;font-family:'Courier New',monospace;}
+.ch-nav{display:flex;justify-content:center;align-items:center;gap:.8rem;padding:.9rem 1.5rem 1.6rem;flex-wrap:wrap;}
+.ch-nav a,.ch-nav .cur{display:inline-flex;align-items:center;padding:.45rem 1.2rem;border-radius:50px;font-size:.88rem;font-family:'Courier New',monospace;text-decoration:none;transition:all .2s;}
+.ch-nav a{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);}
+.ch-nav a:hover{background:rgba(255,255,255,.12);color:var(--gold);}
+.ch-nav .cur{background:var(--gold);color:#1a0e00;font-weight:700;border:none;}
+.wrap{max-width:780px;margin:0 auto;padding:0 1.2rem 6rem;}
+.section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 2.2rem;margin-bottom:1.4rem;}
+.section h2{font-size:1.15rem;font-weight:700;color:var(--gold);margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.section p{margin-bottom:.85rem;}
+.section p:last-child{margin-bottom:0;}
+.dlg{border-left:4px solid;border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin:.7rem 0;font-style:italic;line-height:1.65;}
+.dlg.sterni{border-color:var(--gold);background:rgba(245,200,66,.07);color:var(--gold);}
+.dlg.zweistein{border-color:var(--blue);background:rgba(91,164,207,.07);color:var(--blue);}
+.dlg.lektion{border-color:var(--cyan);background:rgba(78,205,196,.06);color:#a0e8e4;}
+.dlg .who{font-style:normal;font-weight:700;font-size:.82rem;letter-spacing:.04em;}
+.rechenweg{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin:1rem 0;}
+.rechenweg .rw-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.rw-step{display:flex;align-items:flex-start;gap:.7rem;flex-wrap:wrap;margin:.5rem 0;font-family:'Courier New',monospace;font-size:.97rem;}
+.rw-arrow{color:var(--muted);}
+.rw-result{color:var(--cyan);font-weight:800;}
+.rw-note{font-size:.8rem;color:var(--muted);font-style:italic;font-family:'Segoe UI',sans-serif;}
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.8rem;margin:1rem 0;}
+.formula-card{border-radius:12px;padding:1rem 1.2rem;text-align:center;}
+.formula-card .fc-name{font-family:'Courier New',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.5rem;font-weight:700;}
+.formula-card .fc-formula{font-family:'Courier New',monospace;font-size:1rem;font-weight:800;line-height:1.8;}
+.formula-card .fc-note{font-size:.78rem;color:var(--muted);margin-top:.4rem;}
+.formula-card.w{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);}
+.formula-card.w .fc-name,.formula-card.w .fc-formula{color:var(--gold);}
+.formula-card.g{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.3);}
+.formula-card.g .fc-name,.formula-card.g .fc-formula{color:var(--cyan);}
+.formula-card.p{background:rgba(155,137,224,.08);border:1px solid rgba(155,137,224,.3);}
+.formula-card.p .fc-name,.formula-card.p .fc-formula{color:var(--purple);}
+.task-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
+.task-card .tc-head{display:flex;align-items:center;gap:.5rem;padding:.6rem 1.3rem;font-family:'Courier New',monospace;font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);}
+.task-card .tc-head.gold{background:rgba(245,200,66,.1);color:var(--gold);}
+.task-card .tc-head.cyan{background:rgba(78,205,196,.1);color:var(--cyan);}
+.task-card .tc-head.purple{background:rgba(155,137,224,.1);color:var(--purple);}
+.task-card .tc-head.green{background:rgba(76,175,136,.12);color:var(--green);}
+.task-card .tc-head.orange{background:rgba(232,131,74,.12);color:var(--orange);}
+.task-card .tc-body{padding:1.1rem 1.3rem;}
+.task-card .tc-body p{margin-bottom:.8rem;}
+.q-opts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0;}
+.q-btn{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.55rem 1.1rem;font-size:.93rem;color:var(--text);cursor:pointer;transition:all .18s;font-weight:600;font-family:'Courier New',monospace;}
+.q-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.q-btn.ok{background:rgba(76,175,136,.2);border-color:var(--green);color:var(--green);}
+.q-btn.fail{background:rgba(224,90,90,.15);border-color:var(--red);color:var(--red);}
+.q-fb{font-size:.86rem;margin-top:.4rem;min-height:1.2rem;}
+.q-fb.ok{color:var(--green);}
+.q-fb.fail{color:var(--red);}
+.regel-box{border-radius:14px;padding:1.3rem 1.5rem;margin:1rem 0;}
+.regel-box.gold{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.3);}
+.regel-box.cyan{background:rgba(78,205,196,.05);border:1px solid rgba(78,205,196,.3);}
+.regel-box.purple{background:rgba(155,137,224,.05);border:1px solid rgba(155,137,224,.3);}
+.regel-box .rb-title{font-family:'Courier New',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:.7rem;font-weight:700;}
+.regel-box.gold .rb-title{color:var(--gold);}
+.regel-box.cyan .rb-title{color:var(--cyan);}
+.regel-box.purple .rb-title{color:var(--purple);}
+.rb-formel{font-family:'Courier New',monospace;font-size:1.1rem;font-weight:800;text-align:center;padding:.6rem;border-radius:8px;margin:.6rem 0;}
+.rb-formel.gold{color:var(--gold);background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);}
+.rb-formel.cyan{color:var(--cyan);background:rgba(78,205,196,.06);border:1px solid rgba(78,205,196,.2);}
+.rb-formel.purple{color:var(--purple);background:rgba(155,137,224,.06);border:1px solid rgba(155,137,224,.2);}
+.warn-box{background:rgba(232,90,90,.06);border:1px solid rgba(232,90,90,.3);border-radius:12px;padding:1rem 1.3rem;margin:.8rem 0;font-size:.9rem;}
+.warn-box .wb-title{font-family:'Courier New',monospace;font-size:.72rem;color:var(--red);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.4rem;font-weight:700;}
+/* Interaktiver Rechner */
+.binom-calc{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1rem 0;}
+.binom-calc .bc-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.bc-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;}
+.bc-select{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:.4rem .8rem;color:var(--gold);font-family:'Courier New',monospace;font-size:.9rem;cursor:pointer;}
+.bc-select:focus{outline:none;border-color:var(--gold);}
+.bc-input{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:.4rem .6rem;color:var(--text);font-family:'Courier New',monospace;font-size:1.1rem;width:80px;text-align:center;}
+.bc-input:focus{outline:none;border-color:var(--gold);}
+.bc-result{background:rgba(0,0,0,.2);border-radius:10px;padding:1rem;margin-top:.5rem;font-family:'Courier New',monospace;font-size:.92rem;line-height:2;}
+.bc-result .res-formula{color:var(--gold);font-weight:800;font-size:1.1rem;}
+.bc-result .res-steps{color:var(--muted);}
+.bc-result .res-final{color:var(--cyan);font-weight:800;}
+.ch-end{text-align:center;margin:1.4rem 0;}
+.ch-end .big-star{font-size:3rem;display:block;margin-bottom:.5rem;}
+.ch-end h2{font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:.35rem;}
+.ch-end p{color:var(--muted);font-size:.95rem;}
+.bot-nav{display:flex;justify-content:center;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+.bot-nav a{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:50px;color:var(--gold);text-decoration:none;font-size:.9rem;font-family:'Courier New',monospace;transition:all .2s;}
+.bot-nav a:hover{background:rgba(245,200,66,.16);}
+footer{text-align:center;font-size:.76rem;color:var(--muted);font-family:'Courier New',monospace;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);}
+@media(max-width:600px){.wrap{padding:0 .8rem 5rem;}.section{padding:1.3rem 1.1rem;}}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 17
+</header>
+
+<div class="hero">
+  <span class="hero-icon">💎</span>
+  <h1>17. Binomische Formeln</h1>
+  <p class="subtitle">Wenn Klammern Muster bilden — und warum das Erkennen schneller ist als Rechnen</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="kapitel-16-rechnen-mit-variablen.html">← Kapitel 16</a>
+  <span class="cur">17 – Binome</span>
+  <a href="kapitel-18-gleichungen.html">Kapitel 18 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. SIEBZEHNTE NACHT ═══ -->
+<div class="section">
+  <h2>Die siebzehnte Nacht – Das Muster im Nebel</h2>
+
+  <p>Das Raumschiff passierte gerade einen pulsierenden Doppelstern — zwei gleich große Sonnen, die sich umkreisten wie ein perfektes Spiegelbild. Sterni starrte auf die Sensordaten.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus, der Computer sagt, der Abstand zwischen den Sternen ist <strong>(a + b)²</strong> Lichtjahre. Wie rechne ich das aus?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Erinnere dich: Eine Potenz ist wiederholte Multiplikation. Also ist (a + b)² einfach (a + b) · (a + b). Du weißt bereits, wie man Klammern auflöst."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Okay… ich nehme jeden Term des ersten Binoms und multipliziere ihn mit jedem Term des zweiten. Also: a·a + a·b + b·a + b·b."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Perfekt. Und a·a ist a², und a·b und b·a sind dasselbe — zusammen 2ab. Und b·b ist b². Was bekommst du?"
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„<strong>a² + 2ab + b²</strong>. — Moment. Das ist ein wunderschönes Muster."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau das ist es. Und dieses Muster taucht so häufig in der Mathematik auf, dass es einen eigenen Namen hat: die <em>erste binomische Formel</em>. Wer das Muster erkennt, muss nie wieder ausrechnen."
+  </div>
+</div>
+
+<!-- ═══ 2. WAS IST EIN BINOM ═══ -->
+<div class="section">
+  <h2>Was ist ein Binom?</h2>
+
+  <p>Das Wort kommt aus dem Lateinischen: <em>bi</em> = zwei, <em>nomen</em> = Name. Ein <strong>Binom</strong> ist ein algebraischer Ausdruck mit genau <strong>zwei Termen</strong>, verbunden durch + oder −.</p>
+
+  <div style="display:flex;justify-content:center;margin:1.2rem 0;">
+    <svg viewBox="0 0 500 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:'Segoe UI',sans-serif;">
+      <rect x="10" y="10" width="480" height="120" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.25)" stroke-width="1.2"/>
+      <!-- (a + b) -->
+      <text x="130" y="80" fill="#dde5ff" font-size="38" font-weight="300" font-family="'Courier New',monospace">(</text>
+      <text x="158" y="80" fill="#f5c842" font-size="38" font-weight="900" font-family="'Courier New',monospace">a</text>
+      <text x="188" y="80" fill="#dde5ff" font-size="38" font-weight="300" font-family="'Courier New',monospace"> + </text>
+      <text x="244" y="80" fill="#4ecdc4" font-size="38" font-weight="900" font-family="'Courier New',monospace">b</text>
+      <text x="272" y="80" fill="#dde5ff" font-size="38" font-weight="300" font-family="'Courier New',monospace">)</text>
+      <!-- Pfeile -->
+      <line x1="162" y1="92" x2="162" y2="115" stroke="#f5c842" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="100" y="130" fill="#f5c842" font-size="11">1. Term</text>
+      <line x1="248" y1="92" x2="248" y2="115" stroke="#4ecdc4" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="220" y="130" fill="#4ecdc4" font-size="11">2. Term</text>
+      <!-- Label -->
+      <text x="250" y="38" fill="#9b89e0" font-size="12" font-weight="700" text-anchor="middle">Binom = zwei Terme</text>
+    </svg>
+  </div>
+
+  <div class="formula-grid">
+    <div class="formula-card w">
+      <span class="fc-name">✅ Binom</span>
+      <div class="fc-formula">(a + b)<br>(x − 3)<br>(2x + y)</div>
+      <div class="fc-note">Genau zwei Terme</div>
+    </div>
+    <div class="formula-card p">
+      <span class="fc-name">🔢 Binom²</span>
+      <div class="fc-formula">(a + b)²<br>= (a+b)·(a+b)</div>
+      <div class="fc-note">Das Binom mit sich selbst multipliziert</div>
+    </div>
+    <div class="formula-card g">
+      <span class="fc-name">🎯 Ziel</span>
+      <div class="fc-formula">Muster erkennen<br>→ direkt umformen</div>
+      <div class="fc-note">Statt lang auszumultiplizieren</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 3. DIE DREI FORMELN ═══ -->
+<div class="section">
+  <h2>Die drei binomischen Formeln — jede aus einer Idee</h2>
+
+  <p>Keine dieser Formeln muss auswendig gelernt werden. Jede ergibt sich zwingend aus dem Distributivgesetz. Wer das Prinzip versteht, findet sie immer wieder selbst.</p>
+
+  <!-- ─── FORMEL 1 ─── -->
+  <div class="regel-box gold">
+    <span class="rb-title">1. Binomische Formel — Summe zum Quadrat</span>
+
+    <div class="dlg zweistein" style="margin:.5rem 0 .8rem;">
+      <span class="who">Erklärus: </span>„Multipliziere (a + b) · (a + b). Jeden Term des ersten mit jedem Term des zweiten."
+    </div>
+    <div class="dlg sterni" style="margin:.5rem 0 .8rem;">
+      <span class="who">Sterni: </span>„a·a = a² … a·b = ab … b·a = ab … b·b = b². Die beiden ab-Terme addieren sich: <strong>a² + 2ab + b²</strong>."
+    </div>
+
+    <div class="rechenweg">
+      <span class="rw-label">🧠 Schritt für Schritt — sichtbar gemacht</span>
+      <div style="display:flex;justify-content:center;margin:.7rem 0 1.2rem;">
+        <svg viewBox="0 0 500 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:540px;font-family:'Courier New',monospace;">
+          <!-- (a + b)(a + b) -->
+          <text x="20" y="60" fill="#dde5ff" font-size="18">(</text>
+          <text x="32" y="60" fill="#f5c842" font-size="18" font-weight="800">a</text>
+          <text x="47" y="60" fill="#dde5ff" font-size="18">+</text>
+          <text x="62" y="60" fill="#f5c842" font-size="18" font-weight="800">b</text>
+          <text x="77" y="60" fill="#dde5ff" font-size="18">)·(</text>
+          <text x="102" y="60" fill="#4ecdc4" font-size="18" font-weight="800">a</text>
+          <text x="117" y="60" fill="#dde5ff" font-size="18">+</text>
+          <text x="132" y="60" fill="#4ecdc4" font-size="18" font-weight="800">b</text>
+          <text x="147" y="60" fill="#dde5ff" font-size="18">)</text>
+          <!-- Verbindungsbögen -->
+          <!-- a→a -->
+          <path d="M 36 48 Q 70 20 106 48" fill="none" stroke="#f5c842" stroke-width="1.6" stroke-dasharray="3,2"/>
+          <text x="68" y="18" fill="#f5c842" font-size="9">a²</text>
+          <!-- a→b -->
+          <path d="M 36 48 Q 90 8 136 48" fill="none" stroke="#9b89e0" stroke-width="1.6" stroke-dasharray="3,2"/>
+          <text x="95" y="10" fill="#9b89e0" font-size="9">ab</text>
+          <!-- b→a -->
+          <path d="M 66 48 Q 84 30 106 48" fill="none" stroke="#9b89e0" stroke-width="1.6" stroke-dasharray="3,2"/>
+          <!-- b→b -->
+          <path d="M 66 48 Q 100 25 136 48" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-dasharray="3,2"/>
+          <text x="104" y="28" fill="#4ecdc4" font-size="9">b²</text>
+          <!-- Pfeil -->
+          <line x1="170" y1="55" x2="200" y2="55" stroke="#7a85b8" stroke-width="2"/>
+          <polygon points="200,51 210,55 200,59" fill="#7a85b8"/>
+          <!-- Ergebnis -->
+          <text x="218" y="48" fill="#f5c842" font-size="16" font-weight="800">a²</text>
+          <text x="242" y="48" fill="#dde5ff" font-size="16">+</text>
+          <text x="257" y="48" fill="#9b89e0" font-size="16" font-weight="800">2ab</text>
+          <text x="292" y="48" fill="#dde5ff" font-size="16">+</text>
+          <text x="307" y="48" fill="#4ecdc4" font-size="16" font-weight="800">b²</text>
+          <text x="262" y="72" fill="#7a85b8" font-size="9">ab + ab = 2ab</text>
+        </svg>
+      </div>
+      <div class="rw-step">
+        <span style="color:var(--muted);font-size:.85rem;">Warum 2ab?</span>
+        <span class="rw-arrow">Weil a·b und b·a dasselbe sind — das mittlere Glied entsteht immer <strong style="color:var(--purple)">doppelt</strong></span>
+      </div>
+    </div>
+    <div class="rb-formel gold">(a + b)² = a² + 2ab + b²</div>
+  </div>
+
+  <!-- ─── FORMEL 2 ─── -->
+  <div class="regel-box cyan">
+    <span class="rb-title">2. Binomische Formel — Differenz zum Quadrat</span>
+
+    <div class="dlg zweistein" style="margin:.5rem 0 .8rem;">
+      <span class="who">Erklärus: </span>„Und wenn das Vorzeichen zwischen den Termen ein Minus ist? Was ändert sich bei (a − b)²?"
+    </div>
+    <div class="dlg sterni" style="margin:.5rem 0 .8rem;">
+      <span class="who">Sterni: </span>„(a − b)·(a − b)… a·a = a², dann a·(−b) = −ab, dann (−b)·a = −ab, und (−b)·(−b) = +b². Also <strong>a² − 2ab + b²</strong>. Das mittlere Glied ist jetzt negativ!"
+    </div>
+
+    <div class="rechenweg">
+      <span class="rw-label">🔑 Der Unterschied zur 1. Formel</span>
+      <div class="rw-step">
+        <span style="color:var(--gold);font-weight:800;">1. Formel:</span>
+        <span class="rw-arrow">(a <span style="color:var(--green)">+</span> b)² = a² <span style="color:var(--green)">+</span> 2ab + b²</span>
+      </div>
+      <div class="rw-step">
+        <span style="color:var(--cyan);font-weight:800;">2. Formel:</span>
+        <span class="rw-arrow">(a <span style="color:var(--red)">−</span> b)² = a² <span style="color:var(--red)">−</span> 2ab + b²</span>
+      </div>
+      <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+        <span style="color:var(--muted);font-size:.85rem;">Merkhilfe:</span>
+        <span class="rw-arrow">Das Vorzeichen des mittleren Gliedes <strong style="color:var(--cyan)">übernimmt</strong> das Vorzeichen aus der Klammer. Das letzte Glied b² ist immer <strong style="color:var(--green)">positiv</strong> — weil (−b)·(−b) = +b².</span>
+      </div>
+    </div>
+    <div class="rb-formel cyan">(a − b)² = a² − 2ab + b²</div>
+  </div>
+
+  <!-- ─── FORMEL 3 ─── -->
+  <div class="regel-box purple">
+    <span class="rb-title">3. Binomische Formel — Dritte binomische Formel (Differenz der Quadrate)</span>
+
+    <div class="dlg zweistein" style="margin:.5rem 0 .8rem;">
+      <span class="who">Erklärus: </span>„Jetzt die überraschendste: Was ist (a + b) · (a − b)? Diesmal sind beide Klammern verschieden."
+    </div>
+    <div class="dlg sterni" style="margin:.5rem 0 .8rem;">
+      <span class="who">Sterni: </span>„a·a = a² … a·(−b) = −ab … b·a = +ab … b·(−b) = −b². Moment — die beiden ab-Terme heben sich auf! Es bleibt nur <strong>a² − b²</strong>!"
+    </div>
+    <div class="dlg zweistein" style="margin:.5rem 0 .8rem;">
+      <span class="who">Erklärus: </span>„Das ist das Schönste an dieser Formel: Das mittlere Glied verschwindet vollständig. Plus ab und minus ab ergeben null. Ergebnis: nur die Differenz der Quadrate."
+    </div>
+
+    <div class="rechenweg">
+      <span class="rw-label">🧮 Die Auslöschung sichtbar machen</span>
+      <div style="display:flex;justify-content:center;margin:.7rem 0 1.2rem;">
+        <svg viewBox="0 0 500 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:540px;font-family:'Courier New',monospace;">
+          <text x="20" y="50" fill="#dde5ff" font-size="16">(a+b)·(a−b) =</text>
+          <text x="165" y="50" fill="#f5c842" font-size="16" font-weight="800">a²</text>
+          <text x="185" y="50" fill="#dde5ff" font-size="16">−</text>
+          <text x="198" y="50" fill="#9b89e0" font-size="16" font-weight="800">ab</text>
+          <text x="222" y="50" fill="#dde5ff" font-size="16">+</text>
+          <text x="235" y="50" fill="#9b89e0" font-size="16" font-weight="800">ab</text>
+          <text x="259" y="50" fill="#dde5ff" font-size="16">−</text>
+          <text x="272" y="50" fill="#4ecdc4" font-size="16" font-weight="800">b²</text>
+          <!-- Durchstreichen der ab-Terme -->
+          <line x1="196" y1="38" x2="258" y2="58" stroke="#e05a5a" stroke-width="2"/>
+          <!-- Pfeil -->
+          <line x1="300" y1="50" x2="325" y2="50" stroke="#7a85b8" stroke-width="2"/>
+          <polygon points="325,46 335,50 325,54" fill="#7a85b8"/>
+          <text x="342" y="44" fill="#f5c842" font-size="16" font-weight="800">a²</text>
+          <text x="362" y="44" fill="#dde5ff" font-size="16">−</text>
+          <text x="375" y="44" fill="#4ecdc4" font-size="16" font-weight="800">b²</text>
+          <text x="358" y="68" fill="#7a85b8" font-size="9">−ab + ab = 0</text>
+        </svg>
+      </div>
+    </div>
+    <div class="rb-formel purple">(a + b)·(a − b) = a² − b²</div>
+  </div>
+
+  <!-- Zusammenfassung aller drei -->
+  <div style="background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin:1.2rem 0;">
+    <div style="font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;">📋 Alle drei Formeln im Überblick</div>
+    <div style="display:grid;gap:.7rem;">
+      <div style="background:rgba(245,200,66,.05);border-radius:8px;padding:.7rem 1rem;font-family:'Courier New',monospace;">
+        <span style="color:var(--gold);font-weight:800;">(a + b)²</span>
+        <span style="color:var(--muted);"> = </span>
+        <span style="color:var(--gold);">a² + 2ab + b²</span>
+        <span style="color:var(--muted);font-size:.8rem;margin-left:.8rem;">1. Binomische Formel</span>
+      </div>
+      <div style="background:rgba(78,205,196,.05);border-radius:8px;padding:.7rem 1rem;font-family:'Courier New',monospace;">
+        <span style="color:var(--cyan);font-weight:800;">(a − b)²</span>
+        <span style="color:var(--muted);"> = </span>
+        <span style="color:var(--cyan);">a² − 2ab + b²</span>
+        <span style="color:var(--muted);font-size:.8rem;margin-left:.8rem;">2. Binomische Formel</span>
+      </div>
+      <div style="background:rgba(155,137,224,.05);border-radius:8px;padding:.7rem 1rem;font-family:'Courier New',monospace;">
+        <span style="color:var(--purple);font-weight:800;">(a+b)·(a−b)</span>
+        <span style="color:var(--muted);"> = </span>
+        <span style="color:var(--purple);">a² − b²</span>
+        <span style="color:var(--muted);font-size:.8rem;margin-left:.8rem;">3. Binomische Formel</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. MUSTER ERKENNEN — RÜCKWÄRTS ═══ -->
+<div class="section">
+  <h2>Formeln rückwärts lesen — Faktorisieren</h2>
+
+  <p>Die binomischen Formeln können in beide Richtungen gelesen werden. Das nennt man <em>Faktorisieren</em>: aus einem langen Ausdruck eine kompakte Klammerschreibweise machen.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus — der Sensor zeigt den Ausdruck <strong>x² − 9</strong>. Ich erkenne das Muster! Das ist doch a² − b², also die dritte Formel — mit a = x und b = 3!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. x² − 9 = x² − 3² = (x + 3)·(x − 3). Du hast gerade faktorisiert — das Gegenteil vom Ausmultiplizieren."
+  </div>
+
+  <div class="rechenweg">
+    <span class="rw-label">🔄 Drei Beispiele — rückwärts gelesen</span>
+    <div class="rw-step">
+      <span style="color:var(--gold);font-weight:800;">x² + 6x + 9</span>
+      <span class="rw-arrow">= x² + 2·x·3 + 3²</span>
+      <span class="rw-result">= (x + 3)²</span>
+      <span class="rw-note">1. Formel rückwärts</span>
+    </div>
+    <div class="rw-step">
+      <span style="color:var(--cyan);font-weight:800;">x² − 10x + 25</span>
+      <span class="rw-arrow">= x² − 2·x·5 + 5²</span>
+      <span class="rw-result">= (x − 5)²</span>
+      <span class="rw-note">2. Formel rückwärts</span>
+    </div>
+    <div class="rw-step">
+      <span style="color:var(--purple);font-weight:800;">4x² − 49</span>
+      <span class="rw-arrow">= (2x)² − 7²</span>
+      <span class="rw-result">= (2x+7)·(2x−7)</span>
+      <span class="rw-note">3. Formel rückwärts</span>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <span class="wb-title">⚠️ Häufiger Fehler</span>
+    <p style="color:#f0b0b0;font-size:.9rem;">
+      <strong style="color:var(--red);">Falsch:</strong> (a + b)² = a² + b² &nbsp;— das mittlere Glied 2ab fehlt!<br>
+      <strong style="color:var(--green);">Richtig:</strong> (a + b)² = a² + 2ab + b²<br><br>
+      Tipp: Immer das mittlere Glied prüfen — es ist das Erkennungszeichen der binomischen Formeln.
+    </p>
+  </div>
+</div>
+
+<!-- ═══ 5. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Sternis Formel-Rechner — interaktiv ausprobieren</h2>
+
+  <div class="binom-calc">
+    <span class="bc-label">💎 Binomische Formel auswählen und auswerten</span>
+    <div class="bc-row">
+      <label style="font-family:'Courier New',monospace;font-size:.85rem;color:var(--muted);">Formel:</label>
+      <select class="bc-select" id="binom-formel" onchange="binomCalc()">
+        <option value="1">1. Formel: (a + b)²</option>
+        <option value="2">2. Formel: (a − b)²</option>
+        <option value="3">3. Formel: (a + b)·(a − b)</option>
+      </select>
+    </div>
+    <div class="bc-row">
+      <label style="font-family:'Courier New',monospace;font-size:.85rem;color:var(--muted);">a =</label>
+      <input class="bc-input" type="number" id="binom-a" value="3" step="1" oninput="binomCalc()">
+      <label style="font-family:'Courier New',monospace;font-size:.85rem;color:var(--muted);">b =</label>
+      <input class="bc-input" type="number" id="binom-b" value="2" step="1" oninput="binomCalc()">
+    </div>
+    <div class="bc-result" id="binom-result"></div>
+  </div>
+</div>
+
+<!-- ═══ 6. AUFGABEN ═══ -->
+<div class="section">
+  <h2>Sternis Übungen — Muster erkennen und anwenden</h2>
+
+  <!-- Aufgabe 1 -->
+  <div class="task-card">
+    <div class="tc-head gold">⭐ Aufgabe 1 — 1. Binomische Formel</div>
+    <div class="tc-body">
+      <p>Erklärus fragt: Was ergibt <strong style="color:var(--gold);">(x + 4)²</strong> nach der ersten binomischen Formel?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! Das mittlere Glied fehlt. (x+4)² = x² + 2·x·4 + 4² = x² + 8x + 16.')">x² + 16</button>
+        <button class="q-btn" onclick="q(this,true,'q1','Richtig! a=x, b=4: x² + 2·x·4 + 4² = x² + 8x + 16.')">x² + 8x + 16</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 2·x·4 = 8x, nicht 4x. Das mittlere Glied ist immer 2ab.')">x² + 4x + 16</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! Das Vorzeichen beim mittleren Glied ist +, nicht −. Die 1. Formel hat + zwischen den Termen.')">x² − 8x + 16</button>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 2 -->
+  <div class="task-card">
+    <div class="tc-head cyan">🔵 Aufgabe 2 — 2. Binomische Formel</div>
+    <div class="tc-body">
+      <p>Sterni berechnet: <strong style="color:var(--cyan);">(2x − 3)²</strong> = ?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! a=2x, b=3: (2x)²=4x², 2·2x·3=12x, 3²=9. Ergebnis: 4x²−12x+9.')">4x² + 12x + 9</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! (2x)² = 4x², nicht 2x². Aufpassen beim Koeffizienten!')">2x² − 12x + 9</button>
+        <button class="q-btn" onclick="q(this,true,'q2','Richtig! a=2x, b=3: (2x)²−2·(2x)·3+3² = 4x²−12x+9.')">4x² − 12x + 9</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 2·(2x)·3 = 12x, nicht 6x. Achtung: 2ab, nicht ab.')">4x² − 6x + 9</button>
+      </div>
+      <div class="q-fb" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 3 -->
+  <div class="task-card">
+    <div class="tc-head purple">🟣 Aufgabe 3 — 3. Binomische Formel</div>
+    <div class="tc-body">
+      <p>Erklärus zeigt: <strong style="color:var(--purple);">(x + 7)·(x − 7)</strong> = ?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Das ist die 1. Formel. Hier gilt die 3. Formel: (a+b)·(a−b) = a²−b².')">x² + 14x + 49</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Bei der 3. Formel heben sich die mittleren Glieder auf. Es bleibt nur x²−49.')">x² − 14x + 49</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! x²−7 wäre falsch. b=7, also b²=49.')">x² − 7</button>
+        <button class="q-btn" onclick="q(this,true,'q3','Richtig! (a+b)·(a−b) = a²−b². Hier: x²−7²= x²−49. Das mittlere Glied verschwindet.')">x² − 49</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 4 -->
+  <div class="task-card">
+    <div class="tc-head green">🟢 Aufgabe 4 — Faktorisieren (rückwärts)</div>
+    <div class="tc-body">
+      <p>Sterni sieht im Bordcomputer: <strong style="color:var(--green);">x² − 16</strong>. Welche Faktorisierung ist korrekt?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Das wäre (x+4)² = x²+8x+16. Aber hier fehlt das mittlere Glied.')">( x + 4 )²</button>
+        <button class="q-btn" onclick="q(this,true,'q4','Richtig! x²−16 = x²−4² = (x+4)·(x−4). Das ist die 3. Formel rückwärts.')">( x+4 )·( x−4 )</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! (x−4)² = x²−8x+16. Das mittlere Glied −8x fehlt in x²−16.')">( x − 4 )²</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Die Basis ist x, nicht x². Also b=4, denn 4²=16.')">( x²+4 )·( x²−4 )</button>
+      </div>
+      <div class="q-fb" id="q4-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 5 — Transfer -->
+  <div class="task-card">
+    <div class="tc-head orange">🟠 Aufgabe 5 — Zahlen schnell berechnen</div>
+    <div class="tc-body">
+      <p>Erklärus lächelt: <em>„Sterni, berechne 103² im Kopf — ohne Taschenrechner."</em> Tipp: Schreibe 103 als (100 + 3) und verwende die <strong style="color:var(--orange);">1. binomische Formel</strong>.</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! (100+3)² = 100²+2·100·3+3² = 10000+600+9 = 10609.')">10309</button>
+        <button class="q-btn" onclick="q(this,true,'q5','Richtig! 100²+2·100·3+3² = 10000+600+9 = 10609. Die binomische Formel als Rechentrick!')">10609</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! 2·100·3 = 600, nicht 60. Das mittlere Glied ist 2ab = 2·100·3.')">10069</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! 100² = 10000, nicht 1000. Null zählen!')">1609</button>
+      </div>
+      <div class="q-fb" id="q5-fb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. ABSCHLUSS ═══ -->
+<div class="section">
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich hätte nie gedacht, dass ich 103² im Kopf berechnen kann. Das ist kein Trick — das ist Mathematik!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Die binomischen Formeln sind kein Selbstzweck. Sie sind Werkzeuge — zum schnellen Rechnen, zum Faktorisieren, und bald auch zum Lösen von Gleichungen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und das Schöne ist: Ich muss keine Formel auswendig lernen. Wenn ich (a+b)·(a+b) einfach ausmultipliziere, komme ich immer selbst drauf."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist die wertvollste Einsicht der ganzen Reise. Eine Formel, die man versteht, kann man vergessen und wiederfinden. Eine Formel, die man auswendig gelernt hat, kann man nur vergessen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Gleichungen im nächsten Kapitel — da werden wir die binomischen Formeln brauchen, oder?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Mehr als du glaubst. Schalten wir den Antrieb ein."
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Siebzehnte Lektion: </span>„Ein Binom ist ein Ausdruck mit zwei Termen. Die drei binomischen Formeln: (a+b)²=a²+2ab+b², (a−b)²=a²−2ab+b², (a+b)·(a−b)=a²−b². Keine muss auswendig gelernt werden — jede ergibt sich aus dem Distributivgesetz. Vorwärts: ausmultiplizieren. Rückwärts: faktorisieren. Das mittlere Glied ist der Schlüssel — es verrät, welche Formel vorliegt."
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">💎</span>
+  <h2>Kapitel 17 abgeschlossen</h2>
+  <p>Binomische Formeln — Muster erkennen ist schneller als Rechnen.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-16-rechnen-mit-variablen.html">← Kapitel 16: Variablen</a>
+  <a href="kapitel-18-gleichungen.html">Kapitel 18 →</a>
+</div>
+
+</main>
+
+<footer>Erklärus &amp; Sterni · Mathematik für Denker · Kapitel 17</footer>
+</div>
+
+<script>
+/* ── Sternenhimmel ── */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    stars=Array.from({length:220},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.4+.2,
+      o:Math.random()*.7+.1,
+      s:Math.random()*.4+.05
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(Math.random()>.5?1:-1);
+      s.o=Math.max(.05,Math.min(.85,s.o));
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,230,255,${s.o})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+  window.addEventListener('resize',init);
+})();
+
+/* ── Binom-Rechner ── */
+function binomCalc(){
+  const formel = parseInt(document.getElementById('binom-formel').value);
+  const a = parseFloat(document.getElementById('binom-a').value);
+  const b = parseFloat(document.getElementById('binom-b').value);
+  const out = document.getElementById('binom-result');
+  if(isNaN(a)||isNaN(b)){ out.innerHTML='—'; return; }
+
+  const f = n => Number.isInteger(n) ? n : n.toFixed(4);
+  let html = '';
+
+  if(formel === 1){
+    const a2 = a*a, ab2 = 2*a*b, b2 = b*b, res = a2+ab2+b2;
+    html = `<div class="res-formula">(${f(a)} + ${f(b)})² = a² + 2ab + b²</div>
+      <div class="res-steps">
+        a² = ${f(a)}² = <span style="color:var(--gold)">${f(a2)}</span><br>
+        2ab = 2·${f(a)}·${f(b)} = <span style="color:var(--purple)">${f(ab2)}</span><br>
+        b² = ${f(b)}² = <span style="color:var(--cyan)">${f(b2)}</span>
+      </div>
+      <div class="res-final">= ${f(a2)} + ${f(ab2)} + ${f(b2)} = ${f(res)}</div>`;
+  } else if(formel === 2){
+    const a2 = a*a, ab2 = 2*a*b, b2 = b*b, res = a2-ab2+b2;
+    html = `<div class="res-formula">(${f(a)} − ${f(b)})² = a² − 2ab + b²</div>
+      <div class="res-steps">
+        a² = ${f(a)}² = <span style="color:var(--gold)">${f(a2)}</span><br>
+        2ab = 2·${f(a)}·${f(b)} = <span style="color:var(--purple)">${f(ab2)}</span><br>
+        b² = ${f(b)}² = <span style="color:var(--cyan)">${f(b2)}</span>
+      </div>
+      <div class="res-final">= ${f(a2)} − ${f(ab2)} + ${f(b2)} = ${f(res)}</div>`;
+  } else {
+    const a2 = a*a, b2 = b*b, res = a2-b2;
+    html = `<div class="res-formula">(${f(a)} + ${f(b)})·(${f(a)} − ${f(b)}) = a² − b²</div>
+      <div class="res-steps">
+        a² = ${f(a)}² = <span style="color:var(--gold)">${f(a2)}</span><br>
+        b² = ${f(b)}² = <span style="color:var(--cyan)">${f(b2)}</span><br>
+        <span style="color:var(--purple)">Mittleres Glied hebt sich auf → 0</span>
+      </div>
+      <div class="res-final">= ${f(a2)} − ${f(b2)} = ${f(res)}</div>`;
+  }
+  out.innerHTML = html;
+}
+
+binomCalc();
+
+/* ── Quiz ── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
