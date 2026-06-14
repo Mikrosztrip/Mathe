@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 18 – Gleichungen · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size: 17px; line-height: 1.75; min-height: 100vh; overflow-x: hidden; }
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.above { position: relative; z-index: 1; }
+.site-header { text-align: center; padding: 1.1rem 2rem .9rem; font-family: 'Courier New',monospace; font-size: .78rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); background: rgba(7,13,31,.88); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+.site-header strong { color: var(--gold); }
+.hero { text-align: center; padding: 3.5rem 1.5rem 2rem; background: linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; }
+.hero h1 { font-size: clamp(1.8rem,4vw,2.6rem); font-weight: 800; color: var(--gold); text-shadow: 0 0 30px rgba(245,200,66,.35); margin-bottom: .3rem; }
+.hero .subtitle { font-size: .88rem; color: var(--muted); font-style: italic; font-family: 'Courier New',monospace; }
+.ch-nav { display: flex; justify-content: center; align-items: center; gap: .8rem; padding: .9rem 1.5rem 1.6rem; flex-wrap: wrap; }
+.ch-nav a, .ch-nav .cur { display: inline-flex; align-items: center; padding: .45rem 1.2rem; border-radius: 50px; font-size: .88rem; font-family: 'Courier New',monospace; text-decoration: none; transition: all .2s; }
+.ch-nav a { background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--text); }
+.ch-nav a:hover { background: rgba(255,255,255,.12); color: var(--gold); }
+.ch-nav .cur { background: var(--gold); color: #1a0e00; font-weight: 700; border: none; }
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 1.2rem 6rem; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 2.2rem; margin-bottom: 1.4rem; }
+.section h2 { font-size: 1.15rem; font-weight: 700; color: var(--gold); margin-bottom: .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.section p { margin-bottom: .85rem; }
+.section p:last-child { margin-bottom: 0; }
+.dlg { border-left: 4px solid; border-radius: 0 10px 10px 0; padding: .85rem 1.1rem; margin: .7rem 0; font-style: italic; line-height: 1.65; }
+.dlg.sterni { border-color: var(--gold); background: rgba(245,200,66,.07); color: var(--gold); }
+.dlg.zweistein { border-color: var(--blue); background: rgba(91,164,207,.07); color: var(--blue); }
+.dlg.lektion { border-color: var(--cyan); background: rgba(78,205,196,.06); color: #a0e8e4; }
+.dlg .who { font-style: normal; font-weight: 700; font-size: .82rem; letter-spacing: .04em; }
+.rechenweg { background: var(--card3); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem 1.5rem; margin: 1rem 0; }
+.rechenweg .rw-label { font-family: 'Courier New',monospace; font-size: .72rem; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 1rem; }
+.rw-step { display: flex; align-items: flex-start; gap: .7rem; flex-wrap: wrap; margin: .55rem 0; font-family: 'Courier New',monospace; font-size: .97rem; }
+.rw-result { color: var(--cyan); font-weight: 800; }
+.rw-note { font-size: .8rem; color: var(--muted); font-style: italic; font-family: 'Segoe UI',sans-serif; }
+/* Waage */
+.waage-wrap { display: flex; justify-content: center; margin: 1.4rem 0; }
+/* Regel-Boxen */
+.regel-box { border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.regel-box.gold { background: rgba(245,200,66,.05); border: 1px solid rgba(245,200,66,.3); }
+.regel-box.cyan { background: rgba(78,205,196,.05); border: 1px solid rgba(78,205,196,.3); }
+.regel-box.purple { background: rgba(155,137,224,.05); border: 1px solid rgba(155,137,224,.3); }
+.regel-box.green { background: rgba(76,175,136,.05); border: 1px solid rgba(76,175,136,.3); }
+.rb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: .7rem; font-weight: 700; }
+.regel-box.gold .rb-title { color: var(--gold); }
+.regel-box.cyan .rb-title { color: var(--cyan); }
+.regel-box.purple .rb-title { color: var(--purple); }
+.regel-box.green .rb-title { color: var(--green); }
+.rb-formel { font-family: 'Courier New',monospace; font-size: 1.05rem; font-weight: 800; text-align: center; padding: .6rem; border-radius: 8px; margin: .6rem 0; }
+.rb-formel.gold { color: var(--gold); background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.rb-formel.cyan { color: var(--cyan); background: rgba(78,205,196,.06); border: 1px solid rgba(78,205,196,.2); }
+.rb-formel.purple { color: var(--purple); background: rgba(155,137,224,.06); border: 1px solid rgba(155,137,224,.2); }
+.warn-box { background: rgba(232,90,90,.06); border: 1px solid rgba(232,90,90,.3); border-radius: 12px; padding: 1rem 1.3rem; margin: .8rem 0; font-size: .9rem; }
+.warn-box .wb-title { font-family: 'Courier New',monospace; font-size: .72rem; color: var(--red); text-transform: uppercase; letter-spacing: .1em; display: block; margin-bottom: .4rem; font-weight: 700; }
+/* Interaktive Waage */
+.gl-calc { background: var(--card3); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin: 1rem 0; }
+.gl-calc .gc-label { font-family: 'Courier New',monospace; font-size: .72rem; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 1rem; }
+.gc-eq { font-family: 'Courier New',monospace; font-size: 1.1rem; font-weight: 800; color: var(--gold); text-align: center; padding: .7rem; background: rgba(245,200,66,.06); border-radius: 8px; margin-bottom: 1rem; }
+.gc-steps { font-family: 'Courier New',monospace; font-size: .9rem; line-height: 2.1; }
+.gc-steps .s-op { color: var(--muted); font-size: .78rem; }
+.gc-steps .s-val { color: var(--cyan); font-weight: 800; }
+.gc-steps .s-res { color: var(--gold); font-weight: 800; font-size: 1.1rem; }
+.gc-input { background: var(--card2); border: 1px solid var(--border); border-radius: 7px; padding: .4rem .6rem; color: var(--text); font-family: 'Courier New',monospace; font-size: 1.05rem; width: 80px; text-align: center; }
+.gc-input:focus { outline: none; border-color: var(--gold); }
+.gc-row { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.gc-btn { background: rgba(245,200,66,.12); border: 1px solid rgba(245,200,66,.3); border-radius: 8px; padding: .45rem 1.1rem; color: var(--gold); font-family: 'Courier New',monospace; font-size: .9rem; cursor: pointer; transition: all .18s; }
+.gc-btn:hover { background: rgba(245,200,66,.22); }
+/* Quiz */
+.task-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.task-card .tc-head { display: flex; align-items: center; gap: .5rem; padding: .6rem 1.3rem; font-family: 'Courier New',monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--border); }
+.task-card .tc-head.gold { background: rgba(245,200,66,.1); color: var(--gold); }
+.task-card .tc-head.cyan { background: rgba(78,205,196,.1); color: var(--cyan); }
+.task-card .tc-head.purple { background: rgba(155,137,224,.1); color: var(--purple); }
+.task-card .tc-head.green { background: rgba(76,175,136,.12); color: var(--green); }
+.task-card .tc-head.orange { background: rgba(232,131,74,.12); color: var(--orange); }
+.task-card .tc-body { padding: 1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom: .8rem; }
+.q-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.q-btn { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: .55rem 1.1rem; font-size: .93rem; color: var(--text); cursor: pointer; transition: all .18s; font-weight: 600; font-family: 'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.q-btn.ok { background: rgba(76,175,136,.2); border-color: var(--green); color: var(--green); }
+.q-btn.fail { background: rgba(224,90,90,.15); border-color: var(--red); color: var(--red); }
+.q-fb { font-size: .86rem; margin-top: .4rem; min-height: 1.2rem; }
+.q-fb.ok { color: var(--green); }
+.q-fb.fail { color: var(--red); }
+.ch-end { text-align: center; margin: 1.4rem 0; }
+.ch-end .big-star { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.ch-end h2 { font-size: 1.5rem; font-weight: 800; color: var(--gold); margin-bottom: .35rem; }
+.ch-end p { color: var(--muted); font-size: .95rem; }
+.bot-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+.bot-nav a { display: inline-flex; align-items: center; gap: .4rem; padding: .6rem 1.4rem; background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.3); border-radius: 50px; color: var(--gold); text-decoration: none; font-size: .9rem; font-family: 'Courier New',monospace; transition: all .2s; }
+.bot-nav a:hover { background: rgba(245,200,66,.16); }
+footer { text-align: center; font-size: .76rem; color: var(--muted); font-family: 'Courier New',monospace; padding: 1.5rem; margin-top: 2rem; border-top: 1px solid var(--border); }
+@media(max-width:600px) { .wrap { padding: 0 .8rem 5rem; } .section { padding: 1.3rem 1.1rem; } }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 18
+</header>
+
+<div class="hero">
+  <span class="hero-icon">⚖️</span>
+  <h1>18. Gleichungen</h1>
+  <p class="subtitle">Die Waage des Universums — wenn beide Seiten im Gleichgewicht sein müssen</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="kapitel-17-binomische-formeln.html">← Kapitel 17</a>
+  <span class="cur">18 – Gleichungen</span>
+  <a href="kapitel-19-messreihen.html">Kapitel 19 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. ACHTZEHNTE NACHT ═══ -->
+<div class="section">
+  <h2>Die achtzehnte Nacht — Die Waage im Weltraum</h2>
+
+  <p>Das Schiff näherte sich einer alten Raumstation, die schon seit Jahrhunderten verlassen war. Im Inneren fanden Sterni und Erklärus eine riesige mechanische Waage — ein Relikt aus einer längst vergessenen Zivilisation. Auf der linken Schale lagen mehrere unbekannte Kristalle und ein Gewicht mit der Aufschrift „5". Auf der rechten Schale stand nur die Zahl „14". Die Waage war im Gleichgewicht.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus — die Waage ist ausgeglichen. Das bedeutet, beide Seiten wiegen gleich viel. Aber ich weiß nicht, wie schwer die Kristalle sind."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Du hast gerade eine Gleichung beschrieben. Links steht 5 plus die unbekannte Masse x. Rechts steht 14. Weil die Waage ausgeglichen ist, gilt: <strong>5 + x = 14</strong>."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„x = 9, das sehe ich sofort. Aber wie würde ich das beweisen, wenn es nicht so einfach wäre?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Indem du die Waage im Gleichgewicht hältst. Was auch immer du mit einer Seite machst — du musst dasselbe mit der anderen Seite tun. Nur dann bleibt die Waage ausgeglichen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also: Ich nehme von beiden Seiten 5 weg. Links bleibt x. Rechts bleibt 14 − 5 = 9. Fertig!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist das Grundprinzip aller Gleichungen — und es hat sich seit Tausenden von Jahren nicht geändert. Händler auf alten Märkten haben es mit echten Waagen entdeckt. Du hast es in zehn Sekunden verstanden."
+  </div>
+</div>
+
+<!-- ═══ 2. WAAGE — ANIMATION ═══ -->
+<div class="section">
+  <h2>Die Waage — das Herz der Gleichung</h2>
+
+  <p>Eine Gleichung ist wie eine <strong>Waage im Gleichgewicht</strong>: Die linke Seite und die rechte Seite haben denselben Wert. Das Gleichheitszeichen „=" ist der Drehpunkt.</p>
+
+  <!-- Interaktive Waage SVG -->
+  <div class="waage-wrap">
+    <svg id="waage-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:540px;font-family:'Courier New',monospace;">
+      <!-- Ständer -->
+      <rect x="256" y="80" width="8" height="100" rx="4" fill="rgba(100,120,200,.4)"/>
+      <rect x="220" y="170" width="80" height="10" rx="5" fill="rgba(100,120,200,.3)"/>
+      <!-- Waagebalken (ausgeglichen) -->
+      <line id="balken" x1="80" y1="80" x2="440" y2="80" stroke="rgba(245,200,66,.7)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="260" cy="80" r="7" fill="var(--gold)" opacity=".8"/>
+      <!-- Linke Kette -->
+      <line x1="120" y1="80" x2="120" y2="110" stroke="rgba(245,200,66,.4)" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <!-- Rechte Kette -->
+      <line x1="400" y1="80" x2="400" y2="110" stroke="rgba(78,205,196,.4)" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <!-- Linke Schale -->
+      <ellipse cx="120" cy="120" rx="55" ry="14" fill="rgba(245,200,66,.08)" stroke="rgba(245,200,66,.35)" stroke-width="1.5"/>
+      <!-- Rechte Schale -->
+      <ellipse cx="400" cy="120" rx="55" ry="14" fill="rgba(78,205,196,.08)" stroke="rgba(78,205,196,.35)" stroke-width="1.5"/>
+      <!-- Linker Inhalt -->
+      <text x="120" y="115" fill="var(--gold)" font-size="14" font-weight="800" text-anchor="middle">5 + x</text>
+      <!-- Rechter Inhalt -->
+      <text x="400" y="115" fill="var(--cyan)" font-size="14" font-weight="800" text-anchor="middle">14</text>
+      <!-- Label oben -->
+      <text x="260" y="35" fill="var(--muted)" font-size="11" text-anchor="middle">Gleichgewicht → linke Seite = rechte Seite</text>
+      <text x="260" y="52" fill="var(--gold)" font-size="14" font-weight="800" text-anchor="middle">5 + x = 14</text>
+      <!-- Pfeile unten -->
+      <text x="120" y="155" fill="var(--gold)" font-size="10" text-anchor="middle">Linke Seite</text>
+      <text x="400" y="155" fill="var(--cyan)" font-size="10" text-anchor="middle">Rechte Seite</text>
+      <text x="260" y="155" fill="var(--muted)" font-size="10" text-anchor="middle">= Drehpunkt</text>
+    </svg>
+  </div>
+
+  <div class="regel-box gold">
+    <span class="rb-title">Das Gleichgewichtsprinzip</span>
+    <p style="font-size:.92rem;">Was du mit einer Seite der Gleichung machst, musst du <strong style="color:var(--gold);">immer auch mit der anderen Seite</strong> tun — sonst kippt die Waage.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.8rem;">
+      <div style="background:rgba(76,175,136,.07);border:1px solid rgba(76,175,136,.25);border-radius:8px;padding:.6rem;text-align:center;font-family:'Courier New',monospace;font-size:.88rem;">
+        <div style="color:var(--green);font-weight:700;font-size:.75rem;text-transform:uppercase;margin-bottom:.3rem;">✓ Erlaubt</div>
+        <div style="color:var(--text);">Beide Seiten +3</div>
+        <div style="color:var(--text);">Beide Seiten ×5</div>
+        <div style="color:var(--text);">Beide Seiten −7</div>
+        <div style="color:var(--text);">Beide Seiten ÷2</div>
+      </div>
+      <div style="background:rgba(224,90,90,.06);border:1px solid rgba(224,90,90,.25);border-radius:8px;padding:.6rem;text-align:center;font-family:'Courier New',monospace;font-size:.88rem;">
+        <div style="color:var(--red);font-weight:700;font-size:.75rem;text-transform:uppercase;margin-bottom:.3rem;">✗ Verboten</div>
+        <div style="color:var(--text);">Nur links +3</div>
+        <div style="color:var(--text);">Nur rechts ×5</div>
+        <div style="color:var(--text);">Verschiedene Werte</div>
+        <div style="color:var(--text);">÷ 0 (nie!)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 3. GLEICHUNG LÖSEN — SCHRITT FÜR SCHRITT ═══ -->
+<div class="section">
+  <h2>Gleichungen lösen — die Schritte</h2>
+
+  <p>Das Ziel beim Lösen einer Gleichung ist immer dasselbe: die Variable <strong>allein auf eine Seite bringen</strong>. Dazu verwendet man die <em>Umkehroperation</em> — Addition wird zu Subtraktion, Multiplikation zu Division, und umgekehrt.</p>
+
+  <!-- Typ 1: Addition/Subtraktion -->
+  <div class="regel-box gold">
+    <span class="rb-title">Typ 1 — Addition / Subtraktion</span>
+    <div class="dlg zweistein" style="margin:.4rem 0 .7rem;">
+      <span class="who">Erklärus: </span>„Löse: 5 + x = 14. Was ist die Gegenaktion zu +5?"
+    </div>
+    <div class="dlg sterni" style="margin:.4rem 0 .7rem;">
+      <span class="who">Sterni: </span>„−5. Ich subtrahiere 5 von beiden Seiten!"
+    </div>
+    <div class="rechenweg">
+      <span class="rw-label">📐 Schritt für Schritt</span>
+      <div class="rw-step"><span style="color:var(--gold);font-weight:800;">5 + x = 14</span><span style="color:var(--muted);font-size:.8rem;">| Ausgangslage</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">−5 auf beiden Seiten:</span><span>5 + x <strong style="color:var(--red);">− 5</strong> = 14 <strong style="color:var(--red);">− 5</strong></span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Vereinfachen:</span><span>x = 9</span><span class="rw-note">(5 − 5 = 0, verschwindet)</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Probe:</span><span class="rw-result">5 + 9 = 14 ✓</span></div>
+    </div>
+    <div class="rb-formel gold">Immer Probe machen: Lösung in die Originalgleichung einsetzen!</div>
+  </div>
+
+  <!-- Typ 2: Multiplikation/Division -->
+  <div class="regel-box cyan">
+    <span class="rb-title">Typ 2 — Multiplikation / Division</span>
+    <div class="dlg zweistein" style="margin:.4rem 0 .7rem;">
+      <span class="who">Erklärus: </span>„Löse: 3x = 21. Hier ist x mit 3 multipliziert. Was ist die Gegenaktion?"
+    </div>
+    <div class="dlg sterni" style="margin:.4rem 0 .7rem;">
+      <span class="who">Sterni: </span>„Division durch 3 — auf beiden Seiten!"
+    </div>
+    <div class="rechenweg">
+      <span class="rw-label">📐 Schritt für Schritt</span>
+      <div class="rw-step"><span style="color:var(--cyan);font-weight:800;">3x = 21</span><span style="color:var(--muted);font-size:.8rem;">| Ausgangslage</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">÷3 auf beiden Seiten:</span><span>3x <strong style="color:var(--red);">÷ 3</strong> = 21 <strong style="color:var(--red);">÷ 3</strong></span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Vereinfachen:</span><span>x = 7</span><span class="rw-note">(3÷3 = 1, also 1·x = x)</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Probe:</span><span class="rw-result">3 · 7 = 21 ✓</span></div>
+    </div>
+  </div>
+
+  <!-- Typ 3: Kombination -->
+  <div class="regel-box purple">
+    <span class="rb-title">Typ 3 — Kombination: erst addieren/subtrahieren, dann multiplizieren/dividieren</span>
+    <div class="dlg zweistein" style="margin:.4rem 0 .7rem;">
+      <span class="who">Erklärus: </span>„Jetzt zusammen: 2x + 3 = 11. Welche Operation machst du zuerst?"
+    </div>
+    <div class="dlg sterni" style="margin:.4rem 0 .7rem;">
+      <span class="who">Sterni: </span>„Erst die +3 wegbringen — also −3 auf beiden Seiten. Dann bleibt 2x = 8. Dann ÷2. x = 4!"
+    </div>
+    <div class="rechenweg">
+      <span class="rw-label">📐 Zwei Schritte kombiniert</span>
+      <div class="rw-step"><span style="color:var(--purple);font-weight:800;">2x + 3 = 11</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Schritt 1, −3:</span><span>2x + 3 − 3 = 11 − 3</span><span class="rw-note">→ 2x = 8</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Schritt 2, ÷2:</span><span>2x ÷ 2 = 8 ÷ 2</span><span class="rw-note">→ x = 4</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">Probe:</span><span class="rw-result">2·4 + 3 = 8 + 3 = 11 ✓</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. FORMELN UMSTELLEN ═══ -->
+<div class="section">
+  <h2>Formeln umstellen — eine Gleichung, viele Antworten</h2>
+
+  <p>Das Gleichgewichtsprinzip gilt nicht nur für Aufgaben mit konkreten Zahlen. Es erlaubt auch, <strong>Formeln umzustellen</strong> — eine der mächtigsten Fähigkeiten in der Mathematik.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus, in Kapitel 13 haben wir Prozente berechnet mit: <strong>W = G · p ÷ 100</strong>. Was wenn ich den Grundwert G suche, aber nur W und p kenne?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Dann stellst du dieselbe Formel nach G um. Du hast eine Gleichung — nutze das Gleichgewichtsprinzip."
+  </div>
+
+  <div class="rechenweg">
+    <span class="rw-label">🔄 Formel umstellen: W = G · p ÷ 100</span>
+    <div class="rw-step"><span style="color:var(--gold);font-weight:800;">W = G · p ÷ 100</span><span style="color:var(--muted);font-size:.8rem;">| Ausgangslage — nach G umstellen</span></div>
+    <div class="rw-step"><span style="color:var(--muted);">·100 auf beiden Seiten:</span><span>W · 100 = G · p</span></div>
+    <div class="rw-step"><span style="color:var(--muted);">÷p auf beiden Seiten:</span><span class="rw-result">G = W · 100 ÷ p ✓</span></div>
+    <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border);">
+      <div class="rw-step"><span style="color:var(--cyan);font-weight:800;">W = G · p ÷ 100</span><span style="color:var(--muted);font-size:.8rem;">| nach p umstellen</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">·100 auf beiden Seiten:</span><span>W · 100 = G · p</span></div>
+      <div class="rw-step"><span style="color:var(--muted);">÷G auf beiden Seiten:</span><span class="rw-result">p = W · 100 ÷ G ✓</span></div>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das heißt — ich muss nicht drei verschiedene Formeln auswendig lernen. Ich lerne eine und kann sie in jede Richtung umstellen!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Eine Formel ist eine Gleichung. Eine Gleichung ist eine Waage. Eine Waage kann nach jeder Seite hin ausgerichtet werden — solange das Gleichgewicht erhalten bleibt."
+  </div>
+</div>
+
+<!-- ═══ 5. INTERAKTIVER GLEICHUNGS-LÖSER ═══ -->
+<div class="section">
+  <h2>Sternis Gleichungs-Löser — interaktiv</h2>
+  <p>Gib eine Gleichung der Form <strong style="color:var(--gold);">ax + b = c</strong> ein, und sieh die Lösungsschritte:</p>
+
+  <div class="gl-calc">
+    <span class="gc-label">⚖️ Gleichung der Form: ax + b = c</span>
+    <div class="gc-row">
+      <label style="font-family:'Courier New',monospace;font-size:.85rem;color:var(--muted);">a =</label>
+      <input class="gc-input" type="number" id="gl-a" value="2" step="1">
+      <label style="font-family:'Courier New',monospace;font-size:.85rem;color:var(--muted);">b =</label>
+      <input class="gc-input" type="number" id="gl-b" value="3" step="1">
+      <label style="font-family:'Courier New',monospace;font-size:.85rem;color:var(--muted);">c =</label>
+      <input class="gc-input" type="number" id="gl-c" value="11" step="1">
+      <button class="gc-btn" onclick="gleichungLoesen()">Lösen ⚖️</button>
+    </div>
+    <div id="gl-output"></div>
+  </div>
+</div>
+
+<!-- ═══ 6. AUFGABEN ═══ -->
+<div class="section">
+  <h2>Sternis Übungen — die Waage im Gleichgewicht halten</h2>
+
+  <!-- Aufgabe 1 -->
+  <div class="task-card">
+    <div class="tc-head gold">⭐ Aufgabe 1 — Einfache Gleichung</div>
+    <div class="tc-body">
+      <p>Erklärus legt auf die Waage: <strong style="color:var(--gold);">x + 7 = 15</strong>. Was ist x?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! x + 7 = 15 → x = 15 − 7 = 8.')">x = 22</button>
+        <button class="q-btn" onclick="q(this,true,'q1','Richtig! 15 − 7 = 8. Probe: 8 + 7 = 15 ✓')">x = 8</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 15 ÷ 7 ist nicht die richtige Operation. Hier steht +7, also −7 auf beiden Seiten.')">x ≈ 2,14</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! x = 15 wäre nur richtig, wenn b = 0 wäre. Vergiss nicht das +7!')">x = 15</button>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 2 -->
+  <div class="task-card">
+    <div class="tc-head cyan">🔵 Aufgabe 2 — Multiplikation</div>
+    <div class="tc-body">
+      <p>Sterni findet im Lagerraum: <strong style="color:var(--cyan);">4x = 36</strong>. Welchen Wert hat x?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 4x = 36 → x = 36 ÷ 4 = 9, nicht 32.')">x = 32</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 36 − 4 = 32, aber das ist falsch. Bei 4x muss man dividieren, nicht subtrahieren.')">x = 9,5</button>
+        <button class="q-btn" onclick="q(this,true,'q2','Richtig! 36 ÷ 4 = 9. Probe: 4 · 9 = 36 ✓')">x = 9</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 4 + 36 = 40, das ist Addition — hier brauchen wir Division: 36 ÷ 4.')">x = 40</button>
+      </div>
+      <div class="q-fb" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 3 -->
+  <div class="task-card">
+    <div class="tc-head purple">🟣 Aufgabe 3 — Kombination</div>
+    <div class="tc-body">
+      <p>Das Navigationssystem zeigt: <strong style="color:var(--purple);">3x − 6 = 12</strong>. Wie lautet x?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Schritt 1: +6 auf beiden Seiten → 3x = 18. Schritt 2: ÷3 → x = 6.')">x = 2</button>
+        <button class="q-btn" onclick="q(this,true,'q3','Richtig! +6 auf beiden Seiten: 3x = 18. ÷3: x = 6. Probe: 3·6−6 = 18−6 = 12 ✓')">x = 6</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! x = 4 würde 3·4−6 = 6 ergeben, nicht 12.')">x = 4</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! x = 3 würde 3·3−6 = 3 ergeben, nicht 12.')">x = 3</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 4 -->
+  <div class="task-card">
+    <div class="tc-head green">🟢 Aufgabe 4 — Formel umstellen</div>
+    <div class="tc-body">
+      <p>Erklärus fragt: Die Formel für den Weg lautet <strong style="color:var(--green);">d = v · t</strong>. Wie lautet die Formel umgestellt nach <strong style="color:var(--green);">t</strong>?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! t = d − v wäre Subtraktion, aber in d = v·t ist v multipliziert → Gegenaktion ist Division.')">t = d − v</button>
+        <button class="q-btn" onclick="q(this,true,'q4','Richtig! d = v·t → ÷v auf beiden Seiten → t = d ÷ v. Probe: v · (d÷v) = d ✓')">t = d ÷ v</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! t = d · v würde d = v·(d·v) ergeben — das stimmt nicht.')">t = d · v</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! t = v ÷ d wäre umgekehrt falsch.')">t = v ÷ d</button>
+      </div>
+      <div class="q-fb" id="q4-fb"></div>
+    </div>
+  </div>
+
+  <!-- Aufgabe 5 — Praxisaufgabe -->
+  <div class="task-card">
+    <div class="tc-head orange">🟠 Aufgabe 5 — Praxis: alles zusammen</div>
+    <div class="tc-body">
+      <p>Sterni berechnet: Der Treibstoffvorrat reicht für <strong style="color:var(--orange);">5x + 20 = 70</strong> Lichtjahre, wobei x die Zahl der Antriebseinheiten ist. Wie viele Antriebseinheiten werden benötigt?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! −20 auf beiden Seiten: 5x = 50. Dann ÷5: x = 10.')">x = 18</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! Schritt 1: 5x = 70 − 20 = 50. Schritt 2: x = 50 ÷ 5 = 10.')">x = 14</button>
+        <button class="q-btn" onclick="q(this,true,'q5','Richtig! −20: 5x = 50. ÷5: x = 10. Probe: 5·10+20 = 50+20 = 70 ✓')">x = 10</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! x = 7 würde 5·7+20 = 55 ergeben, nicht 70.')">x = 7</button>
+      </div>
+      <div class="q-fb" id="q5-fb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. ABSCHLUSS ═══ -->
+<div class="section">
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus, ich glaube, Gleichungen sind das Werkzeug, das alles zusammenbringt. Variablen, Rechenregeln, Formeln — alles landet hier."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Du hast recht. Eine Gleichung ist eine Frage, die die Mathematik sich selbst stellt: Welche Zahl macht diese Aussage wahr? Und die Antwort findet man nicht durch Raten, sondern durch logisches Umformen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und das Schönste: Die Waage erklärt alles. Was auch immer ich tue — ich muss es auf beiden Seiten tun. Das ist so klar, dass ich es nie vergessen kann."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Händler haben dieses Prinzip vor Tausenden von Jahren auf Märkten entdeckt — mit echten Gewichten und echten Waagschalen. Die Mathematik hat es formalisiert. Du hast es verstanden. Das ist die Geschichte der menschlichen Vernunft in miniatur."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich bin gespannt, was das nächste Kapitel bringt."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Die Reise geht weiter. Und du wirst feststellen, dass alles Neue auf dem aufbaut, was du bereits weißt."
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Achtzehnte Lektion: </span>„Eine Gleichung ist eine Waage im Gleichgewicht — beide Seiten haben denselben Wert. Das Gleichheitszeichen ist der Drehpunkt. Was man mit einer Seite tut, muss man mit der anderen auch tun. Ziel: die Variable allein auf eine Seite bringen. Werkzeuge: Umkehroperation (+↔−, ×↔÷). Immer Probe machen! Formeln sind Gleichungen — sie können nach jeder enthaltenen Variablen umgestellt werden. Eine Formel gelernt bedeutet: alle Variationen kostenlos inklusive."
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">⚖️</span>
+  <h2>Kapitel 18 abgeschlossen</h2>
+  <p>Gleichungen — die Waage des Universums, die seit Tausenden Jahren im Gleichgewicht ist.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-17-binomische-formeln.html">← Kapitel 17: Binome</a>
+  <a href="kapitel-19-messreihen.html">Kapitel 19 →</a>
+</div>
+
+</main>
+
+<footer>Erklärus &amp; Sterni · Mathematik für Denker · Kapitel 18</footer>
+</div>
+
+<script>
+/* ── Sternenhimmel ── */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    stars=Array.from({length:220},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.4+.2,
+      o:Math.random()*.7+.1,
+      s:Math.random()*.4+.05
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(Math.random()>.5?1:-1);
+      s.o=Math.max(.05,Math.min(.85,s.o));
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,230,255,${s.o})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+  window.addEventListener('resize',init);
+})();
+
+/* ── Gleichungs-Löser ── */
+function gleichungLoesen(){
+  const a = parseFloat(document.getElementById('gl-a').value);
+  const b = parseFloat(document.getElementById('gl-b').value);
+  const c = parseFloat(document.getElementById('gl-c').value);
+  const out = document.getElementById('gl-output');
+
+  if(isNaN(a)||isNaN(b)||isNaN(c)){out.innerHTML='<p style="color:var(--muted);font-family:\'Courier New\',monospace;">Bitte alle Felder ausfüllen.</p>';return;}
+  if(a===0){out.innerHTML='<p style="color:var(--red);font-family:\'Courier New\',monospace;">a darf nicht 0 sein — sonst ist x nicht bestimmbar!</p>';return;}
+
+  const f = n => Number.isInteger(n) ? n : parseFloat(n.toFixed(4));
+  const x = (c - b) / a;
+  const probe = a * x + b;
+
+  const sign = n => n >= 0 ? `+ ${f(Math.abs(n))}` : `− ${f(Math.abs(n))}`;
+
+  out.innerHTML = `
+    <div class="gc-eq">${f(a)}x ${sign(b)} = ${f(c)}</div>
+    <div class="gc-steps">
+      <span class="s-op">Ausgangslage:</span> &nbsp;${f(a)}x ${sign(b)} = ${f(c)}<br>
+      <span class="s-op">Schritt 1 (${b>=0?'−':'+'} ${f(Math.abs(b))} auf beiden Seiten):</span> &nbsp;${f(a)}x = ${f(c)} ${b>=0?'− ':'+ '}${f(Math.abs(b))} = <span class="s-val">${f(c-b)}</span><br>
+      <span class="s-op">Schritt 2 (÷ ${f(a)} auf beiden Seiten):</span> &nbsp;x = ${f(c-b)} ÷ ${f(a)} = <span class="s-res">${f(x)}</span><br>
+      <span class="s-op">Probe:</span> &nbsp;${f(a)} · ${f(x)} ${sign(b)} = ${f(probe)} ${Math.abs(probe-c)<0.0001?'<span style="color:var(--green)">= '+f(c)+' ✓</span>':'<span style="color:var(--red)">≠ '+f(c)+' — Fehler!</span>'}
+    </div>`;
+}
+
+gleichungLoesen();
+
+/* ── Quiz ── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
