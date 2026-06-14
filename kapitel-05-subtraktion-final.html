@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 5 – Subtraktion · Erklärus & Sterni</title>
+<style>
+/* ══════════════════════════════════════════════════════
+   RESET & BASIS  – identisch mit Kapitel 4
+══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Hintergrund */
+  --bg:       #070d1f;
+  --bg2:      #0d1530;
+  /* Karten */
+  --card:     #111c3a;
+  --card2:    #162040;
+  --card3:    #0e1830;
+  --border:   rgba(100,120,200,.25);
+  /* Text */
+  --text:     #dde5ff;
+  --muted:    #7a85b8;
+  /* Akzente – wie Kap 4 */
+  --gold:     #f5c842;      /* Sterni spricht */
+  --blue:     #5ba4cf;      /* Erklärus spricht */
+  --cyan:     #4ecdc4;
+  --purple:   #9b89e0;
+  --green:    #4caf88;
+  --red:      #e05a5a;
+  --orange:   #e8834a;
+  /* Ziffern-Farben wie Kap 4 */
+  --dig-gold:   #f5c842;
+  --dig-green:  #4caf88;
+  --dig-blue:   #5ba4cf;
+  --dig-red:    #e05a5a;
+  --dig-carry:  #e05a5a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══ CANVAS – Sternenhimmel mit Sternschnuppen ══ */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.above { position: relative; z-index: 1; }
+
+/* ══════════════════════════════════════════════════════
+   SITE HEADER  (wie Kap 4: zentriert, Courier, CAPS)
+══════════════════════════════════════════════════════ */
+.site-header {
+  text-align: center;
+  padding: 1.1rem 2rem .9rem;
+  font-family: 'Courier New', monospace;
+  font-size: .78rem;
+  letter-spacing: .18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(7,13,31,.85);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.site-header strong { color: var(--gold); }
+
+/* ══════════════════════════════════════════════════════
+   HERO – großes Icon, Titel, Untertitel  (wie Kap 4)
+══════════════════════════════════════════════════════ */
+.hero {
+  text-align: center;
+  padding: 3.5rem 1.5rem 2rem;
+  background: linear-gradient(180deg, rgba(13,21,48,.95) 0%, rgba(7,13,31,0) 100%);
+}
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; }
+.hero h1 {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(245,200,66,.4);
+  margin-bottom: .3rem;
+}
+.hero .subtitle {
+  font-size: .88rem;
+  color: var(--muted);
+  font-style: italic;
+  font-family: 'Courier New', monospace;
+}
+
+/* ══════════════════════════════════════════════════════
+   KAPITEL-NAVIGATION (Pill-Buttons wie Kap 4)
+══════════════════════════════════════════════════════ */
+.ch-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .8rem;
+  padding: .9rem 1.5rem 1.6rem;
+}
+.ch-nav a, .ch-nav .cur {
+  display: inline-flex;
+  align-items: center;
+  padding: .45rem 1.2rem;
+  border-radius: 50px;
+  font-size: .88rem;
+  font-family: 'Courier New', monospace;
+  text-decoration: none;
+  transition: all .2s;
+}
+.ch-nav a {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.ch-nav a:hover { background: rgba(255,255,255,.12); color: var(--gold); }
+.ch-nav .cur {
+  background: var(--gold);
+  color: #0b0c1a;
+  font-weight: 700;
+  border: none;
+}
+
+/* ══════════════════════════════════════════════════════
+   HAUPT-CONTAINER
+══════════════════════════════════════════════════════ */
+.wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1.2rem 6rem;
+}
+
+/* ══════════════════════════════════════════════════════
+   INHALTS-KARTEN  (wie Kap 4: abgerundete Karten)
+══════════════════════════════════════════════════════ */
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem 2.2rem;
+  margin-bottom: 1.4rem;
+}
+.section h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: .9rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border);
+}
+.section p { margin-bottom: .85rem; }
+.section p:last-child { margin-bottom: 0; }
+
+/* ══════════════════════════════════════════════════════
+   DIALOG-BOXEN  (wie Kap 4: Balken links, farbig)
+══════════════════════════════════════════════════════ */
+.dlg {
+  border-left: 4px solid;
+  border-radius: 0 10px 10px 0;
+  padding: .85rem 1.1rem;
+  margin: .7rem 0;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.dlg.sterni {
+  border-color: var(--gold);
+  background: rgba(245,200,66,.07);
+  color: var(--gold);
+}
+.dlg.zweistein {
+  border-color: var(--blue);
+  background: rgba(91,164,207,.07);
+  color: var(--blue);
+}
+.dlg .who {
+  font-style: normal;
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  display: inline;
+}
+/* Lektion-Box (goldener Balken, kursiv wie Kap 4) */
+.dlg.lektion {
+  border-color: var(--gold);
+  background: rgba(245,200,66,.06);
+  color: #e8d080;
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════════════════════
+   FORMEL-BLOCK  (wie Kap 4: dunkler Kasten)
+══════════════════════════════════════════════════════ */
+.formula-box {
+  background: var(--card3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.3rem 1.5rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+.formula-box .f-label {
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--purple);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  display: block;
+  margin-bottom: .6rem;
+}
+.formula-box .f-main {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .04em;
+  font-family: 'Courier New', monospace;
+}
+.formula-box .f-main .fm-min  { color: var(--gold); }
+.formula-box .f-main .fm-op   { color: var(--purple); }
+.formula-box .f-main .fm-sub  { color: var(--cyan); }
+.formula-box .f-main .fm-eq   { color: var(--muted); }
+.formula-box .f-main .fm-diff { color: var(--green); }
+.formula-box .f-sub {
+  font-size: .85rem;
+  color: var(--muted);
+  margin-top: .5rem;
+  display: block;
+}
+.formula-box .f-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: .8rem;
+}
+.formula-box .f-term { font-size: .82rem; color: var(--muted); text-align: center; }
+.formula-box .f-term strong { display: block; color: var(--text); font-size: .95rem; }
+
+/* ══════════════════════════════════════════════════════
+   SCHRIFTLICHE RECHNUNG  – Ziffern-Blöcke wie Kap 4
+══════════════════════════════════════════════════════ */
+.calc-wrap {
+  background: var(--card3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.3rem 1.5rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+.calc-wrap .cw-label {
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--purple);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  display: block;
+  margin-bottom: .9rem;
+}
+
+/* ── Rechnung: Grid-Layout für perfekte Ausrichtung ── */
+/*
+  Layout pro Zeile:
+  [op-Spalte] [Ziffern-Grid] [Label-Spalte]
+
+  Das Ziffern-Grid hat für jede mögliche Stelle eine feste Spalte.
+  Alle Zeilen (Header, Minuend, Subtrahend, Ergebnis) nutzen dasselbe Grid
+  → Ziffern stehen garantiert untereinander.
+*/
+
+.calc-table {
+  display: inline-block; /* schrumpft auf Inhalt */
+  min-width: 100%;
+}
+
+/* Eine Zeile = op-Zelle + Ziffern-Zellen + label-Zelle */
+.calc-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 3px 0;
+}
+
+/* Operator-Zelle (links) */
+.calc-row .c-op {
+  width: 32px;
+  min-width: 32px;
+  text-align: right;
+  padding-right: 6px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--purple);
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* Label (rechts) */
+.calc-row .c-lbl {
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+  margin-left: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Ziffern-Container: alle Boxen in einer Reihe, feste Breite */
+.calc-row .c-digits {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Stellenwert-Header-Zeile */
+.sv-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2px;
+}
+.sv-header .sv-op-gap {
+  width: 32px;
+  min-width: 32px;
+  flex-shrink: 0;
+}
+.sv-header .sv-digits {
+  display: flex;
+  gap: 4px;
+}
+.sv-header .sv-cell {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+}
+.sv-header .sv-comma {
+  width: 18px;
+  min-width: 18px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+/* Einzelne Ziffer-Box */
+.dbox {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: default;
+  transition: all .2s;
+  position: relative;
+}
+.dbox.clickable { cursor: pointer; }
+.dbox.clickable:hover { border-color: var(--purple); background: rgba(155,137,224,.12); transform: scale(1.08); }
+.dbox.active   { border-color: var(--purple) !important; background: rgba(155,137,224,.2) !important; }
+
+/* Farben wie Kap 4 */
+.dbox.c-gold   { color: var(--dig-gold);  }
+.dbox.c-green  { color: var(--dig-green); }
+.dbox.c-blue   { color: var(--dig-blue);  }
+.dbox.c-white  { color: #fff; }
+.dbox.c-muted  { color: var(--muted); }
+.dbox.c-result { color: var(--dig-gold); background: rgba(245,200,66,.08); border-color: rgba(245,200,66,.2); }
+
+/* Übertrags-Zahl oben links in Box */
+.dbox .carry {
+  position: absolute;
+  top: -10px;
+  left: 2px;
+  font-size: .6rem;
+  color: var(--dig-carry);
+  font-weight: 900;
+  background: var(--card);
+  border-radius: 3px;
+  padding: 0 2px;
+  line-height: 1.2;
+}
+/* Borgen-Marker */
+.dbox .borrow {
+  position: absolute;
+  top: -10px;
+  right: 2px;
+  font-size: .58rem;
+  color: var(--red);
+  font-weight: 900;
+  background: var(--card);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+/* Komma zwischen Stellen */
+.dbox.comma {
+  width: 18px;
+  background: transparent;
+  border-color: transparent;
+  font-size: 1.5rem;
+  color: var(--muted);
+  cursor: default;
+}
+.dbox.comma:hover { transform: none; border-color: transparent; background: transparent; }
+
+/* Trennlinie */
+.calc-line {
+  height: 2px;
+  background: var(--purple);
+  border-radius: 2px;
+  margin: 5px 0 5px 32px; /* 32px = Operator-Spalte überspringen */
+}
+
+/* Info-Box unter Rechnung */
+.calc-info {
+  background: rgba(155,137,224,.1);
+  border: 1px solid rgba(155,137,224,.25);
+  border-radius: 8px;
+  padding: .65rem 1rem;
+  font-size: .9rem;
+  color: var(--text);
+  min-height: 2.5rem;
+  margin-top: .6rem;
+  transition: all .3s;
+}
+
+/* Ergebnis-Zeile Anmerkung */
+.calc-result-note {
+  text-align: center;
+  font-size: .88rem;
+  color: var(--gold);
+  margin-top: .5rem;
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════
+   SCHRITT-NAVIGATOR  (wie Kap 4)
+══════════════════════════════════════════════════════ */
+.step-nav-wrap {
+  background: var(--card3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.3rem 1.5rem;
+  margin: 1rem 0;
+}
+.step-nav-wrap .sn-label {
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--purple);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  display: block;
+  margin-bottom: .9rem;
+}
+.step-item {
+  display: flex;
+  gap: .8rem;
+  align-items: flex-start;
+  padding: .5rem 0 .5rem .9rem;
+  border-left: 3px solid var(--border);
+  margin-bottom: .3rem;
+  opacity: .3;
+  transition: opacity .35s, border-color .35s;
+  font-size: .93rem;
+}
+.step-item.on { opacity: 1; border-color: var(--purple); }
+.step-item .st-n { color: var(--gold); font-family: 'Courier New', monospace; font-weight: 700; min-width: 5.5rem; }
+.step-item .st-t { color: var(--muted); }
+.step-item .st-t strong { color: var(--gold); }
+.step-item .st-tag {
+  font-size: .64rem;
+  background: rgba(155,137,224,.2);
+  color: var(--purple);
+  border-radius: 4px;
+  padding: .1rem .4rem;
+  white-space: nowrap;
+  margin-top: .18rem;
+}
+.step-btns { display: flex; gap: .5rem; margin-top: 1rem; }
+.step-btns button {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .4rem .95rem;
+  color: var(--text);
+  font-size: .88rem;
+  cursor: pointer;
+  transition: all .18s;
+}
+.step-btns button:hover:not(:disabled) { border-color: var(--purple); color: var(--gold); }
+.step-btns button:disabled { opacity: .3; cursor: default; }
+
+/* ══════════════════════════════════════════════════════
+   TRICKS-GRID  (wie Kap 4: 2×2)
+══════════════════════════════════════════════════════ */
+.tricks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .9rem;
+  margin: 1rem 0;
+}
+@media(max-width:520px){ .tricks { grid-template-columns: 1fr; } }
+.trick {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+.trick .tr-icon { font-size: 1.4rem; display: block; margin-bottom: .3rem; }
+.trick .tr-name { font-weight: 700; color: var(--text); font-size: .95rem; display: block; margin-bottom: .25rem; }
+.trick .tr-ex   { font-family: 'Courier New', monospace; font-size: .9rem; color: var(--gold); display: block; }
+.trick .tr-desc { font-size: .82rem; color: var(--muted); margin-top: .25rem; }
+
+/* ══════════════════════════════════════════════════════
+   RECHNER  (wie Kap 4)
+══════════════════════════════════════════════════════ */
+.calculator {
+  background: var(--card3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.2rem;
+  max-width: 380px;
+  margin: 1rem 0;
+}
+.calc-display {
+  background: #060a1a;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1.7rem;
+  color: var(--gold);
+  text-align: right;
+  margin-bottom: .9rem;
+  min-height: 3.2rem;
+}
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .45rem;
+}
+.calc-btn {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: .7rem .3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all .15s;
+}
+.calc-btn:hover   { background: rgba(155,137,224,.2); color: var(--gold); }
+.calc-btn.op      { color: var(--gold); }
+.calc-btn.op-sub  { color: var(--gold); }
+.calc-btn.eq      { background: var(--green); color: #fff; border-color: var(--green); font-size: 1.1rem; }
+.calc-btn.eq:hover{ background: #3d9870; }
+.calc-btn.cl      { background: rgba(224,90,90,.18); color: var(--red); border-color: rgba(224,90,90,.3); }
+
+/* ══════════════════════════════════════════════════════
+   AUFGABEN  (wie Kap 4: Karte mit farbigem Header)
+══════════════════════════════════════════════════════ */
+.task-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.task-card .tc-head {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1.3rem;
+  font-family: 'Courier New', monospace;
+  font-size: .76rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  border-bottom: 1px solid var(--border);
+}
+.task-card .tc-head.green { background: rgba(76,175,136,.12); color: var(--green); }
+.task-card .tc-head.blue  { background: rgba(91,164,207,.12); color: var(--blue);  }
+.task-card .tc-head.gold  { background: rgba(245,200,66,.1);  color: var(--gold);  }
+.task-card .tc-body { padding: 1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom: .8rem; }
+
+.q-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.q-btn {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: .55rem 1.1rem;
+  font-size: .95rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: all .18s;
+  font-weight: 600;
+}
+.q-btn:hover:not(:disabled) { border-color: var(--purple); color: var(--gold); }
+.q-btn.ok   { background: rgba(76,175,136,.2);  border-color: var(--green); color: var(--green); }
+.q-btn.fail { background: rgba(224,90,90,.15);  border-color: var(--red);   color: var(--red); }
+.q-fb { font-size: .86rem; margin-top: .4rem; min-height: 1.2rem; }
+.q-fb.ok   { color: var(--green); }
+.q-fb.fail { color: var(--red); }
+
+/* ══════════════════════════════════════════════════════
+   INFOBOXEN  (Universum, Fehler, Notizbuch, Tip)
+══════════════════════════════════════════════════════ */
+.info-card {
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  margin: 1rem 0;
+}
+.info-card .ic-title {
+  font-size: .78rem;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  display: block;
+  margin-bottom: .65rem;
+}
+.info-card p { font-size: .95rem; margin-bottom: .55rem; }
+.info-card p:last-child { margin-bottom: 0; }
+.info-card.uni  { background: rgba(91,164,207,.1);  border: 1px solid rgba(91,164,207,.3);  }
+.info-card.uni  .ic-title { color: var(--blue);   }
+.info-card.uni  p         { color: #b8d8ec; }
+.info-card.err  { background: rgba(224,90,90,.1);   border: 1px solid rgba(224,90,90,.3);   }
+.info-card.err  .ic-title { color: var(--red);    }
+.info-card.err  p         { color: #ecc; }
+.info-card.nb   { background: rgba(245,200,66,.07); border: 1px solid rgba(245,200,66,.25); }
+.info-card.nb   .ic-title { color: var(--gold);   }
+.info-card.nb   p         { color: #e8dfa0; }
+.info-card.tip  { background: rgba(155,137,224,.1); border: 1px solid rgba(155,137,224,.3); }
+.info-card.tip  .ic-title { color: var(--purple);  }
+.info-card.tip  p         { color: #ccc8f0; }
+.info-card.brain{ background: rgba(78,205,196,.08); border: 1px solid rgba(78,205,196,.25); }
+.info-card.brain .ic-title { color: var(--cyan); }
+.info-card.brain p         { color: #a8e8e4; }
+
+/* ══════════════════════════════════════════════════════
+   ABSCHLUSS  (wie Kap 4: Formel-Box + Stern)
+══════════════════════════════════════════════════════ */
+.summary-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin: 1.4rem 0;
+}
+.summary-box .sb-label {
+  font-family: 'Courier New', monospace;
+  font-size: .72rem;
+  color: var(--purple);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  display: block;
+  margin-bottom: 1rem;
+}
+.summary-box .sb-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: .8rem;
+}
+.summary-box .sb-formula span { color: var(--gold); }
+.summary-box .sb-sub {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.ch-end {
+  text-align: center;
+  margin: 1.4rem 0;
+}
+.ch-end .big-star { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.ch-end h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: .4rem;
+}
+.ch-end p { color: var(--muted); font-size: .95rem; }
+
+/* ══════════════════════════════════════════════════════
+   NAVIGATION UNTEN  (wie Kap 4)
+══════════════════════════════════════════════════════ */
+.bot-nav {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.bot-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .6rem 1.4rem;
+  background: rgba(245,200,66,.1);
+  border: 1px solid rgba(245,200,66,.3);
+  border-radius: 50px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: .9rem;
+  font-family: 'Courier New', monospace;
+  transition: all .2s;
+}
+.bot-nav a:hover { background: rgba(245,200,66,.2); }
+
+/* ══ FOOTER ══ */
+footer {
+  text-align: center;
+  font-size: .76rem;
+  color: var(--muted);
+  font-family: 'Courier New', monospace;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+@media(max-width:600px){
+  .wrap { padding: 0 .8rem 5rem; }
+  .site-header { padding: .8rem 1rem; }
+  .section { padding: 1.3rem 1.1rem; }
+  .formula-box .f-main { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ STERNENHIMMEL ══ -->
+<canvas id="starfield"></canvas>
+
+<div class="above">
+
+<!-- SITE HEADER -->
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 5
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-icon">➖</span>
+  <h1>5. Subtraktion</h1>
+  <p class="subtitle">Wegnehmen – auf Papier, im Kopf und im Universum</p>
+</div>
+
+<!-- KAPITEL-NAVIGATION -->
+<nav class="ch-nav">
+  <a href="kapitel-04-addition.html">← Kapitel 4</a>
+  <span class="cur">5 – Subtraktion</span>
+  <a href="kapitel-06-multiplikation.html">Kapitel 6 →</a>
+</nav>
+
+<!-- ══════ HAUPTINHALT ══════ -->
+<main class="wrap">
+
+<!-- ═══ 1. DIE FÜNFTE NACHT ═══ -->
+<div class="section">
+  <h2>Die fünfte Nacht – was bleibt, wenn etwas erlischt?</h2>
+
+  <p>Es war die fünfte Nacht. Sterni hatte aufgehört, die Nächte zu zählen – jetzt zählte sie Sterne. Das hatte Erklärus ihr beigebracht.</p>
+  <p>Erklärus saß am Schreibtisch, das Notizbuch aufgeschlagen. Er hatte vorhin 719 Sterne addiert – Sektor A, B und C aus Sternis Karte. Aber jetzt war eine neue Frage da.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wenn 248 Sterne aus Sektor A erloschen sind – wie viele leuchten dort noch?"
+  </div>
+
+  <p>Erklärus legte den Bleistift hin. Er wusste, was jetzt kam.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Dafür brauchen wir heute etwas Neues. Nicht zusammenzählen – wegnehmen. Die Subtraktion."
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das klingt trauriger als Addition."
+  </div>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das klingt so. Aber was übrig bleibt, wenn etwas weggeht – das ist immer noch etwas. Und genau das beschreibt die Subtraktion."
+  </div>
+</div>
+
+<!-- ═══ 2. WAS IST SUBTRAKTION ═══ -->
+<div class="section">
+  <h2>Was ist Subtraktion?</h2>
+
+  <p>Die Subtraktion ist die <strong>Differenz zwischen zwei oder mehreren Mengen</strong>. Es handelt sich um eine alltägliche Operation – wie die Addition –, die du in vielen Bereichen nutzen kannst.</p>
+  <p>Es ist wichtig zu beachten, dass die Zahlen auf die gleiche Weise geschrieben werden wie bei der Addition, aber die Operation ist <strong>nicht kommutativ</strong>. Das bedeutet, es macht einen Unterschied, welche Zahl du von welcher subtrahierst.</p>
+
+  <div class="formula-box">
+    <span class="f-label">Die Grundformel</span>
+    <div class="f-main">
+      <span class="fm-min">Minuend</span>
+      <span class="fm-op"> − </span>
+      <span class="fm-sub">Subtrahend</span>
+      <span class="fm-eq"> = </span>
+      <span class="fm-diff">Differenz</span>
+    </div>
+    <span class="f-sub">Beispiel: 937 − 821 = 116 &nbsp;·&nbsp; Aber: 821 − 937 ≠ 116 – Reihenfolge zählt!</span>
+    <div class="f-row">
+      <div class="f-term"><strong style="color:var(--gold)">Minuend</strong>Zahl, von der abgezogen wird</div>
+      <div class="f-term"><strong style="color:var(--cyan)">Subtrahend</strong>Zahl, die abgezogen wird</div>
+      <div class="f-term"><strong style="color:var(--green)">Differenz</strong>das Ergebnis</div>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Die Reihenfolge ist nicht egal? Bei der Addition war sie egal!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Das Kommutativgesetz gilt bei der Addition – nicht bei der Subtraktion. Wenn du 5 Schritte gehst und dann 3 zurück, bist du woanders als wenn du 3 gehst und 5 zurück. Subtraktion hat eine Richtung."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wie der Weg nach Hause. Den kann man nicht einfach umdrehen."
+  </div>
+</div>
+
+<!-- ═══ 3. ABZIEHVERFAHREN ═══ -->
+<div class="section">
+  <h2>Das Abziehverfahren – Schritt für Schritt</h2>
+
+  <p>Auch für die Subtraktion gibt es verschiedene Methoden. In der Schule wirst du vom <strong>Abziehverfahren</strong> und vom <strong>Ergänzungsverfahren</strong> hören.</p>
+  <p>Beim Abziehverfahren schreibst du die Zahlen untereinander – Einer unter Einer, Zehner unter Zehner. Dann rechnest du von <strong>rechts nach links</strong>, Stelle für Stelle. Klicke auf eine Ergebnis-Ziffer:</p>
+
+  <!-- Interaktive Rechnung 937 − 821 -->
+  <div class="calc-wrap">
+    <span class="cw-label">➖ Abziehverfahren: 937 − 821 = ?</span>
+
+    <!-- Stellenwert-Header -->
+    <div class="sv-header">
+      <div class="sv-op-gap"></div>
+      <div class="sv-digits">
+        <div class="sv-cell">H</div>
+        <div class="sv-cell">Z</div>
+        <div class="sv-cell">E</div>
+      </div>
+    </div>
+
+    <!-- Minuend -->
+    <div class="calc-row">
+      <span class="c-op"></span>
+      <div class="c-digits">
+        <div class="dbox c-gold">9</div>
+        <div class="dbox c-gold">3</div>
+        <div class="dbox c-gold">7</div>
+      </div>
+      <span class="c-lbl">← Minuend</span>
+    </div>
+
+    <!-- Subtrahend -->
+    <div class="calc-row">
+      <span class="c-op">−</span>
+      <div class="c-digits">
+        <div class="dbox c-blue">8</div>
+        <div class="dbox c-blue">2</div>
+        <div class="dbox c-blue">1</div>
+      </div>
+      <span class="c-lbl">← Subtrahend</span>
+    </div>
+
+    <div class="calc-line" style="margin-left:32px;"></div>
+
+    <!-- Ergebnis – anklickbar -->
+    <div class="calc-row">
+      <span class="c-op"></span>
+      <div class="c-digits">
+        <div class="dbox c-result clickable" onclick="show937('H',this)" title="Klicke!">1</div>
+        <div class="dbox c-result clickable" onclick="show937('Z',this)" title="Klicke!">1</div>
+        <div class="dbox c-result clickable" onclick="show937('E',this)" title="Klicke!">6</div>
+      </div>
+      <span class="c-lbl">← Differenz · Klicke!</span>
+    </div>
+
+    <div class="calc-info" id="box937">← Klicke eine Ergebnis-Ziffer an!</div>
+  </div>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Immer von rechts anfangen – von den Einern. Du ziehst die untere Ziffer von der oberen ab, Stelle für Stelle. Kein Borgen nötig, wenn die obere Ziffer immer größer oder gleich der unteren ist."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„9 − 8, 3 − 2, 7 − 1. Das kann ich im Kopf!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Gut. Aber was, wenn die obere Ziffer kleiner ist als die untere?"
+  </div>
+</div>
+
+<!-- ═══ 4. ERGÄNZUNGSVERFAHREN / BORGEN ═══ -->
+<div class="section">
+  <h2>Das Ergänzungsverfahren – und das Borgen</h2>
+
+  <p>Beim Ergänzungsverfahren fragst du nicht „wie viel bleibt?" – sondern: <em>„Was muss ich zum Subtrahenden addieren, um den Minuenden zu erreichen?"</em></p>
+  <p>Wenn eine Stelle des Minuenden kleiner ist als die entsprechende Stelle des Subtrahenden, <strong>addierst du 10</strong> zum Minuenden dieser Stelle – und erhöhst gleichzeitig den Subtrahenden der nächsten Stelle um 1. Das nennt man das <strong>Borgen</strong>.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Stell dir vor: du hast 6 Sterne in der Hand und sollst 9 weitergeben. Das geht nicht – also leihst du dir zehn von der nächsten Stelle. Jetzt hast du 16. Und du fragst: 9 + ? = 16."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„? = 7. Und die Stelle, von der ich geborgt habe, hat jetzt eine weniger?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Nichts verschwindet – es wandert eine Stelle weiter. Wie Energie im Universum."
+  </div>
+
+  <p>Klicke dich durch das vollständige Beispiel:</p>
+
+  <!-- Schritt-Navigator -->
+  <div class="step-nav-wrap">
+    <span class="sn-label">🔢 Ergänzungsverfahren: 336,16 − 166,69 = ? · Schritt für Schritt</span>
+    <div id="erg-steps">
+      <div class="step-item on" id="es0">
+        <span class="st-n">Schritt 1</span>
+        <span class="st-t">Hundertstel: 6 &lt; 9 → addiere 10 → 16. <strong>9 + ? = 16 → 7.</strong> Schreibe 7. Subtrahend Zehntel +1.</span>
+        <span class="st-tag">borgen</span>
+      </div>
+      <div class="step-item" id="es1">
+        <span class="st-n">Schritt 2</span>
+        <span class="st-t">Zehntel: Subtrahend ist 7 (6+1). 1 &lt; 7 → addiere 10 → 11. <strong>7 + ? = 11 → 4.</strong> Schreibe 4. Subtrahend Einer +1.</span>
+        <span class="st-tag">borgen</span>
+      </div>
+      <div class="step-item" id="es2">
+        <span class="st-n">Komma</span>
+        <span class="st-t">Das Komma bleibt an seiner Stelle – unveränderlich. Schreibe das Komma.</span>
+        <span class="st-tag">Komma</span>
+      </div>
+      <div class="step-item" id="es3">
+        <span class="st-n">Schritt 3</span>
+        <span class="st-t">Einer: Subtrahend ist 7 (6+1). 6 &lt; 7 → addiere 10 → 16. <strong>7 + ? = 16 → 9.</strong> Schreibe 9. Subtrahend Zehner +1.</span>
+        <span class="st-tag">borgen</span>
+      </div>
+      <div class="step-item" id="es4">
+        <span class="st-n">Schritt 4</span>
+        <span class="st-t">Zehner: Subtrahend ist 7 (6+1). 3 &lt; 7 → addiere 10 → 13. <strong>7 + ? = 13 → 6.</strong> Schreibe 6. Subtrahend Hunderter +1.</span>
+        <span class="st-tag">borgen</span>
+      </div>
+      <div class="step-item" id="es5">
+        <span class="st-n">Schritt 5</span>
+        <span class="st-t">Hunderter: Subtrahend ist 2 (1+1). 3 ≥ 2 – kein Borgen. <strong>2 + ? = 3 → 1.</strong> Schreibe 1.</span>
+        <span class="st-tag">fertig</span>
+      </div>
+      <div class="step-item" id="es6">
+        <span class="st-n" style="color:var(--gold)">Ergebnis</span>
+        <span class="st-t" style="color:var(--gold);font-size:1rem;font-family:'Courier New',monospace;">336,16 − 166,69 = <strong>169,47</strong> ✓</span>
+      </div>
+    </div>
+    <div class="step-btns">
+      <button id="ep" onclick="ergNav(-1)" disabled>← Zurück</button>
+      <button id="en" onclick="ergNav(1)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- Vollständige schriftliche Rechnung mit Stellenwert-Boxen -->
+  <div class="calc-wrap">
+    <span class="cw-label">✍️ Vollständige schriftliche Rechnung: 336,16 − 166,69</span>
+
+    <!-- Stellenwert-Header -->
+    <div class="sv-header">
+      <div class="sv-op-gap"></div>
+      <div class="sv-digits">
+        <div class="sv-cell">H</div>
+        <div class="sv-cell">Z</div>
+        <div class="sv-cell">E</div>
+        <div class="sv-comma">,</div>
+        <div class="sv-cell">z</div>
+        <div class="sv-cell">h</div>
+      </div>
+    </div>
+
+    <!-- Minuend mit Borgen-Markierungen -->
+    <div class="calc-row">
+      <span class="c-op"></span>
+      <div class="c-digits">
+        <div class="dbox c-gold"><span class="borrow">−1</span>3</div>
+        <div class="dbox c-gold"><span class="borrow">−1</span>3</div>
+        <div class="dbox c-gold"><span class="borrow">−1</span>6</div>
+        <div class="dbox comma">,</div>
+        <div class="dbox c-gold"><span class="borrow">−1</span>1</div>
+        <div class="dbox c-gold">6</div>
+      </div>
+      <span class="c-lbl">← Minuend</span>
+    </div>
+
+    <!-- Subtrahend -->
+    <div class="calc-row">
+      <span class="c-op">−</span>
+      <div class="c-digits">
+        <div class="dbox c-blue">1</div>
+        <div class="dbox c-blue">6</div>
+        <div class="dbox c-blue">6</div>
+        <div class="dbox comma">,</div>
+        <div class="dbox c-blue">6</div>
+        <div class="dbox c-blue">9</div>
+      </div>
+      <span class="c-lbl">← Subtrahend</span>
+    </div>
+
+    <div class="calc-line" style="margin-left:32px;"></div>
+
+    <!-- Ergebnis -->
+    <div class="calc-row">
+      <span class="c-op"></span>
+      <div class="c-digits">
+        <div class="dbox c-result">1</div>
+        <div class="dbox c-result">6</div>
+        <div class="dbox c-result">9</div>
+        <div class="dbox comma">,</div>
+        <div class="dbox c-result">4</div>
+        <div class="dbox c-result">7</div>
+      </div>
+      <span class="c-lbl">← Differenz</span>
+    </div>
+
+    <div class="calc-result-note">336,16 − 166,69 = 169,47 ✓</div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das klingt weniger wie Wegnehmen. Mehr wie Umwandeln."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist der klügste Satz, den du diese Woche gesagt hast."
+  </div>
+</div>
+
+<!-- ═══ 5. KOPFRECHNEN ═══ -->
+<div class="section">
+  <h2>🧠 Kopfrechnen – Tricks für den Alltag</h2>
+
+  <p>Kopfrechnen trainiert die Logik. Wer schnell im Kopf subtrahieren kann, denkt strukturiert – nicht nur in Mathematik, sondern überall. Hier sind die wichtigsten Tricks:</p>
+
+  <div class="tricks">
+    <div class="trick">
+      <span class="tr-icon">🎯</span>
+      <span class="tr-name">Auf runde Zahl ergänzen</span>
+      <span class="tr-ex">83 − 47 → 83 − 50 + 3 = 36</span>
+      <span class="tr-desc">Den Subtrahenden aufrunden – Unterschied am Ende korrigieren.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">✂️</span>
+      <span class="tr-name">Zerlegen</span>
+      <span class="tr-ex">95 − 38 → 95 − 30 − 8 = 57</span>
+      <span class="tr-desc">Subtrahenden in Zehner und Einer aufteilen, nacheinander abziehen.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">🪜</span>
+      <span class="tr-name">Schrittweise</span>
+      <span class="tr-ex">247 − 158 → 247−100−50−8=89</span>
+      <span class="tr-desc">Hunderter, Zehner, Einer nacheinander abziehen.</span>
+    </div>
+    <div class="trick">
+      <span class="tr-icon">↔️</span>
+      <span class="tr-name">Ergänzen statt abziehen</span>
+      <span class="tr-ex">71 − 68 → 68 + ? = 71 → 3</span>
+      <span class="tr-desc">Was addiere ich zum Subtrahenden, um den Minuenden zu erreichen?</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Warum soll ich das lernen, wenn es Taschenrechner gibt?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Weil ein Taschenrechner dir sagt, <em>was</em> das Ergebnis ist – aber nicht <em>warum</em>. Wer im Kopf rechnen kann, versteht die Struktur der Zahlen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und wenn der Taschenrechner kaputt ist?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Im Universum gibt es keine Steckdosen."
+  </div>
+</div>
+
+<!-- ═══ 6. UNIVERSUM ═══ -->
+<div class="section">
+  <div class="info-card uni">
+    <span class="ic-title">🌌 Subtraktion im Universum &amp; in der Logik</span>
+    <p>Die NASA berechnet täglich Flugbahnen mit Subtraktion: <strong>aktuelle Position minus Zielposition</strong> = Abweichung. Bereits 0,001° Fehler bedeuten über 400.000 km eine Fehlstrecke von fast 7 km – ohne Subtraktion keine Mondlandung.</p>
+    <p>Astronomen entdecken unsichtbare Objekte durch Subtraktion: <strong>Gesamtmasse − sichtbare Masse</strong> = unsichtbare Masse. So wurden Schwarze Löcher berechnet, bevor man sie direkt sehen konnte.</p>
+    <p>In der Logik: Wenn eine Aussage wahr ist und eine falsch – die Differenz zwischen ihnen ist ein Widerspruch. Mathematik ist die Sprache, in der das Universum über sich selbst nachdenkt.</p>
+  </div>
+</div>
+
+<!-- ═══ 7. RECHNER ═══ -->
+<div class="section">
+  <h2>🧮 Probiere es selbst – Subtraktions-Rechner</h2>
+  <p>Rechne zuerst im Kopf oder auf Papier – dann prüfe dein Ergebnis hier:</p>
+
+  <div class="calculator">
+    <div class="calc-display" id="disp">0</div>
+    <div class="calc-grid">
+      <button class="calc-btn" onclick="kc('7')">7</button>
+      <button class="calc-btn" onclick="kc('8')">8</button>
+      <button class="calc-btn" onclick="kc('9')">9</button>
+      <button class="calc-btn cl" onclick="kClear()">C</button>
+      <button class="calc-btn" onclick="kc('4')">4</button>
+      <button class="calc-btn" onclick="kc('5')">5</button>
+      <button class="calc-btn" onclick="kc('6')">6</button>
+      <button class="calc-btn op" onclick="kOp('+')">+</button>
+      <button class="calc-btn" onclick="kc('1')">1</button>
+      <button class="calc-btn" onclick="kc('2')">2</button>
+      <button class="calc-btn" onclick="kc('3')">3</button>
+      <button class="calc-btn op-sub" onclick="kOp('−')">−</button>
+      <button class="calc-btn" onclick="kc('0')" style="grid-column:span 2;">0</button>
+      <button class="calc-btn" onclick="kc('.')">.</button>
+      <button class="calc-btn eq" onclick="kEqual()">=</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 8. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head green">➖ Aufgabe 1 – Abziehverfahren</div>
+  <div class="tc-body">
+    <p>Was ist das Ergebnis von <strong>937 − 821</strong>?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Das wäre 937 − 820. Überprüfe die Einer-Stelle: 7 − 1 = 6.')">117</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! E: 7−1=6 · Z: 3−2=1 · H: 9−8=1 → 116 ✓')">116</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Überprüfe die Hunderter-Stelle: 9 − 8 = 1, nicht 2.')">216</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Überprüfe alle drei Stellen von rechts nach links.')">126</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">🧠 Aufgabe 2 – Ergänzungsverfahren</div>
+  <div class="tc-body">
+    <p>Berechne <strong>336,16 − 166,69</strong>. Erklärus denkt: „Schritt für Schritt, immer von rechts." Was ist das Ergebnis?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Prüfe das Borgen an den Hundertstel- und Zehntel-Stellen.')">170,47</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Fast – aber die Zehner-Stelle ist 6, nicht 7.')">169,57</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! 336,16 − 166,69 = 169,47 ✓')">169,47</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Überprüfe die Hunderter-Stelle: 3 − 2 = 1.')">269,47</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head gold">🌌 Aufgabe 3 – Sternis Reise</div>
+  <div class="tc-body">
+    <p>Sterni hat insgesamt <strong>719 Sterne</strong> vor sich. Sie hat bereits <strong>248</strong> passiert. Wie viele fehlen noch?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q3','Prüfe die Zehner-Stelle: 1 − 4 geht nicht – borgen!')">481</button>
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! E: 9−8=1 · Z: 1−4 borgen → 11−4=7 · H: 7−1−2=4 → 471 ✓')">471</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Das wäre 719 + 248. Wir subtrahieren!')">967</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Überprüfe alle Stellen von rechts nach links.')">461</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ 9. HÄUFIGER FEHLER ═══ -->
+<div class="section">
+  <div class="info-card err">
+    <span class="ic-title">❌ Häufiger Fehler</span>
+    <p>Der häufigste Fehler bei der schriftlichen Subtraktion: Das <strong>Borgen vergessen oder nicht weiterführen</strong>.</p>
+    <p>Beispiel: 53 − 27 → Einer: 3 − 7 geht nicht → borge → 13 − 7 = 6. Wer vergisst, dass die Zehner-Stelle von 5 auf 4 gesunken ist, rechnet 5 − 2 = 3 statt <strong>4 − 2 = 2</strong> → Ergebnis 36 statt <strong>26</strong>.</p>
+    <p>Tipp: Schreibe das Borgen immer sichtbar klein über die Stelle. Was sichtbar ist, wird nicht vergessen!</p>
+  </div>
+
+  <div class="info-card brain">
+    <span class="ic-title">💡 Warum Subtraktion das Denken schärft</span>
+    <p>Subtraktion ist nicht nur Rechnen – sie ist strukturiertes Denken. Wer den Unterschied zwischen zwei Mengen berechnet, vergleicht, analysiert und zieht Schlüsse. Genau das tun Programmierer, Ingenieure und Wissenschaftler täglich: Sie subtrahieren Ist-Zustände von Soll-Zuständen, um Fehler zu finden. Subtraktion ist die Grundlage der Diagnose.</p>
+  </div>
+</div>
+
+<!-- ═══ 10. ENDE DIESER NACHT ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Erklärus legte den Bleistift ab. Draußen zog die Milchstraße langsam über den Novemberhimmel.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also ist Subtraktion nicht das Verschwinden von etwas. Es ist das Beschreiben von dem, was bleibt – und dem, was fehlt."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau. Wenn ein Stern erlischt, verschwindet er nicht wirklich – er hinterlässt Wärme, Schwerkraft, Staub. Die Differenz ist immer noch etwas."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wie ich. Ich bin weg von zu Hause – aber ich bin nicht verschwunden. Ich bin die Differenz zwischen dort und hier."
+  </div>
+
+  <p>Erklärus schrieb diesen Satz ins Notizbuch. Sterni schlief auf seiner Schulter ein. Fünfte Nacht. Noch viele Kapitel. Aber jede Zahl, die man versteht, ist ein Schritt auf dem Weg nach Hause.</p>
+
+  <div class="dlg lektion">
+    „Fünfte Lektion: Subtraktion ist das Beschreiben von Differenzen. Minuend − Subtrahend = Differenz. Kein Kommutativgesetz – Richtung zählt. Schriftlich von rechts, Stelle für Stelle. Borgen heißt nicht Verlieren – es heißt Weiterleiten. Im Kopf: aufrunden, zerlegen, schrittweise, ergänzen."
+  </div>
+</div>
+
+<!-- WAS DU HEUTE GELERNT HAST -->
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-formula">
+    <span>a</span> − <span>b</span> ≠ <span>b</span> − <span>a</span>
+  </div>
+  <div class="sb-sub">
+    Schriftlich: von rechts · Stelle für Stelle · Borgen nicht vergessen<br>
+    Kopf: auf runde Zahlen ergänzen · zerlegen · schrittweise · ergänzen statt abziehen
+  </div>
+</div>
+
+<!-- ABSCHLUSS -->
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Zweistins Notizbuch – Seite 5</span>
+    <p>„Subtraktion: Minuend − Subtrahend = Differenz. Nicht kommutativ – die Reihenfolge bestimmt die Richtung. Abziehverfahren: von rechts, Stelle für Stelle. Ergänzungsverfahren: Borgen heißt nicht Verlieren – es heißt Weiterleiten. Sterni hat gesagt: sie ist die Differenz zwischen dort und hier. Das werde ich nicht vergessen."</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">🌟</span>
+  <h2>Kapitel 5 gemeistert!</h2>
+  <p>471 Sterne noch vor Sterni – subtrahiert, verstanden, weitergemacht.<br>
+     Die Reise geht Schritt für Schritt. Zahl für Zahl.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-06-multiplikation.html">
+    Weiter zu Kapitel 6 – Multiplikation →
+  </a>
+</div>
+
+</main><!-- /wrap -->
+
+<!-- FOOTER -->
+<footer>
+  © 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 5
+</footer>
+
+</div><!-- /above -->
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+/* ─── Sternenhimmel mit Sternschnuppen (wie Kap 4) ─── */
+(function(){
+  const cv = document.getElementById('starfield');
+  const cx = cv.getContext('2d');
+  let stars = [], meteors = [];
+
+  function resize(){
+    cv.width  = window.innerWidth;
+    cv.height = window.innerHeight;
+  }
+
+  function initStars(){
+    stars = [];
+    const n = Math.floor(cv.width * cv.height / 2800);
+    for(let i = 0; i < n; i++){
+      // Manche Sterne sind groß und hell (wie Kap 4)
+      const big = Math.random() < 0.08;
+      const med = Math.random() < 0.18;
+      stars.push({
+        x:  Math.random() * cv.width,
+        y:  Math.random() * cv.height,
+        r:  big ? (2.2 + Math.random() * 1.8) : med ? (1.2 + Math.random() * 1.0) : (0.2 + Math.random() * 0.8),
+        o:  big ? 0.95 : med ? (0.6 + Math.random() * 0.35) : (0.25 + Math.random() * 0.5),
+        sp: big ? (0.003 + Math.random() * 0.004) : (0.004 + Math.random() * 0.012),
+        ph: Math.random() * Math.PI * 2,
+        big, med
+      });
+    }
+  }
+
+  function spawnMeteor(){
+    const x = Math.random() * cv.width * 1.5;
+    meteors.push({
+      x, y: -10,
+      vx: -3.5 - Math.random() * 3,
+      vy:  2.5 + Math.random() * 2.5,
+      len: 80 + Math.random() * 120,
+      alpha: 1,
+      fade: 0.012 + Math.random() * 0.008
+    });
+  }
+
+  function draw(t){
+    cx.clearRect(0, 0, cv.width, cv.height);
+
+    /* Sterne */
+    for(const s of stars){
+      const a = s.o * (0.45 + 0.55 * Math.sin(t * s.sp + s.ph));
+      cx.beginPath();
+      cx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      cx.fillStyle = `rgba(255,240,180,${a})`;
+      cx.fill();
+      // Große Sterne: Kreuz-Glitzer
+      if(s.big && a > 0.5){
+        const g = s.r * 4.5 * a;
+        cx.strokeStyle = `rgba(255,240,180,${a * 0.5})`;
+        cx.lineWidth = 0.7;
+        cx.beginPath(); cx.moveTo(s.x - g, s.y); cx.lineTo(s.x + g, s.y); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x, s.y - g); cx.lineTo(s.x, s.y + g); cx.stroke();
+        const g2 = g * 0.6;
+        cx.strokeStyle = `rgba(255,240,180,${a * 0.25})`;
+        cx.beginPath(); cx.moveTo(s.x - g2, s.y - g2); cx.lineTo(s.x + g2, s.y + g2); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x + g2, s.y - g2); cx.lineTo(s.x - g2, s.y + g2); cx.stroke();
+      }
+    }
+
+    /* Sternschnuppen */
+    for(let i = meteors.length - 1; i >= 0; i--){
+      const m = meteors[i];
+      const grd = cx.createLinearGradient(m.x, m.y, m.x - m.vx / Math.hypot(m.vx, m.vy) * m.len, m.y - m.vy / Math.hypot(m.vx, m.vy) * m.len);
+      grd.addColorStop(0, `rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1, 'rgba(255,255,200,0)');
+      cx.beginPath();
+      cx.moveTo(m.x, m.y);
+      cx.lineTo(m.x - m.vx / Math.hypot(m.vx, m.vy) * m.len, m.y - m.vy / Math.hypot(m.vx, m.vy) * m.len);
+      cx.strokeStyle = grd;
+      cx.lineWidth = 1.8;
+      cx.stroke();
+      m.x += m.vx; m.y += m.vy; m.alpha -= m.fade;
+      if(m.alpha <= 0 || m.y > cv.height + 20) meteors.splice(i, 1);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize(); initStars();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  requestAnimationFrame(draw);
+
+  /* Sternschnuppe alle 4–9 Sekunden */
+  function scheduleMeteor(){
+    spawnMeteor();
+    setTimeout(scheduleMeteor, 4000 + Math.random() * 5000);
+  }
+  setTimeout(scheduleMeteor, 1500);
+})();
+
+/* ─── 937 − 821 Ziffern anklicken ─── */
+const D937 = {
+  H: 'Hunderter: <strong style="color:var(--gold)">9 − 8 = 1</strong>. Kein Borgen nötig, 9 ≥ 8.',
+  Z: 'Zehner: <strong style="color:var(--gold)">3 − 2 = 1</strong>. Kein Borgen nötig, 3 ≥ 2.',
+  E: 'Einer: <strong style="color:var(--gold)">7 − 1 = 6</strong>. Kein Borgen nötig, 7 ≥ 1.'
+};
+let activeC = null;
+function show937(k, btn){
+  if(activeC) activeC.classList.remove('active');
+  btn.classList.add('active');
+  activeC = btn;
+  document.getElementById('box937').innerHTML = D937[k];
+}
+
+/* ─── Ergänzungsverfahren Navigator ─── */
+let eStep = 0; const eMax = 7;
+function ergNav(dir){
+  document.getElementById('es' + eStep).classList.remove('on');
+  eStep = Math.max(0, Math.min(eMax - 1, eStep + dir));
+  document.getElementById('es' + eStep).classList.add('on');
+  document.getElementById('ep').disabled = (eStep === 0);
+  document.getElementById('en').disabled = (eStep === eMax - 1);
+}
+
+/* ─── Quiz ─── */
+function q(btn, ok, id, msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  btn.classList.add(ok ? 'ok' : 'fail');
+  fb.innerHTML = (ok ? '✓ ' : '✗ ') + msg;
+  fb.className = 'q-fb ' + (ok ? 'ok' : 'fail');
+}
+
+/* ─── Rechner ─── */
+let dv = '0', op = null, fNum = null, fresh = false;
+function kc(v){
+  if(v === '.' && dv.includes('.')) return;
+  if(fresh){ dv = ''; fresh = false; }
+  dv = (dv === '0') ? v : dv + v;
+  if(dv.length > 14) dv = dv.slice(0, -1);
+  document.getElementById('disp').textContent = dv;
+}
+function kOp(o){ fNum = parseFloat(dv); op = o; fresh = true; }
+function kEqual(){
+  if(op === null || fNum === null) return;
+  const n2 = parseFloat(dv);
+  let r = op === '+' ? fNum + n2 : fNum - n2;
+  r = Math.round(r * 1e10) / 1e10;
+  dv = String(r);
+  document.getElementById('disp').textContent = dv;
+  op = null; fNum = null; fresh = true;
+}
+function kClear(){
+  dv = '0'; op = null; fNum = null; fresh = false;
+  document.getElementById('disp').textContent = '0';
+}
+</script>
+
+</body>
+</html>
