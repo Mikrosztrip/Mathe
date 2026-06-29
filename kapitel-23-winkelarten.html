@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 23 – Winkelarten · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size: 17px; line-height: 1.75; min-height: 100vh; overflow-x: hidden; }
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.above { position: relative; z-index: 1; }
+.site-header { text-align: center; padding: 1.1rem 2rem .9rem; font-family: 'Courier New',monospace; font-size: .78rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); background: rgba(7,13,31,.88); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+.site-header strong { color: var(--gold); }
+.hero { text-align: center; padding: 3.5rem 1.5rem 2rem; background: linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; }
+.hero h1 { font-size: clamp(1.8rem,4vw,2.6rem); font-weight: 800; color: var(--gold); text-shadow: 0 0 30px rgba(245,200,66,.35); margin-bottom: .3rem; }
+.hero .subtitle { font-size: .88rem; color: var(--muted); font-style: italic; font-family: 'Courier New',monospace; }
+.ch-nav { display: flex; justify-content: center; align-items: center; gap: .8rem; padding: .9rem 1.5rem 1.6rem; flex-wrap: wrap; }
+.ch-nav a, .ch-nav .cur { display: inline-flex; align-items: center; padding: .45rem 1.2rem; border-radius: 50px; font-size: .88rem; font-family: 'Courier New',monospace; text-decoration: none; transition: all .2s; }
+.ch-nav a { background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--text); }
+.ch-nav a:hover { background: rgba(255,255,255,.12); color: var(--gold); }
+.ch-nav .cur { background: var(--gold); color: #1a0e00; font-weight: 700; border: none; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 0 1.2rem 6rem; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 2.2rem; margin-bottom: 1.4rem; }
+.section h2 { font-size: 1.15rem; font-weight: 700; color: var(--gold); margin-bottom: .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.section p { margin-bottom: .85rem; }
+.section p:last-child { margin-bottom: 0; }
+.dlg { border-left: 4px solid; border-radius: 0 10px 10px 0; padding: .85rem 1.1rem; margin: .7rem 0; font-style: italic; line-height: 1.65; }
+.dlg.sterni { border-color: var(--gold); background: rgba(245,200,66,.07); color: var(--gold); }
+.dlg.zweistein { border-color: var(--blue); background: rgba(91,164,207,.07); color: var(--blue); }
+.dlg.lektion { border-color: var(--cyan); background: rgba(78,205,196,.06); color: #a0e8e4; }
+.dlg .who { font-style: normal; font-weight: 700; font-size: .82rem; letter-spacing: .04em; }
+.svg-wrap { display: flex; justify-content: center; margin: 1.2rem 0; }
+.regel-box { border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.regel-box.gold { background: rgba(245,200,66,.05); border: 1px solid rgba(245,200,66,.3); }
+.regel-box.cyan { background: rgba(78,205,196,.05); border: 1px solid rgba(78,205,196,.3); }
+.regel-box.purple { background: rgba(155,137,224,.05); border: 1px solid rgba(155,137,224,.3); }
+.regel-box.green { background: rgba(76,175,136,.05); border: 1px solid rgba(76,175,136,.3); }
+.rb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: .7rem; font-weight: 700; }
+.regel-box.gold .rb-title { color: var(--gold); }
+.regel-box.cyan .rb-title { color: var(--cyan); }
+.regel-box.purple .rb-title { color: var(--purple); }
+.regel-box.green .rb-title { color: var(--green); }
+.rb-formel { font-family: 'Courier New',monospace; font-size: 1.1rem; font-weight: 800; text-align: center; padding: .6rem; border-radius: 8px; margin: .6rem 0; }
+.rb-formel.gold { color: var(--gold); background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.rb-formel.cyan { color: var(--cyan); background: rgba(78,205,196,.06); border: 1px solid rgba(78,205,196,.2); }
+/* Interaktive Konstruktion */
+.constr-wrap { background: var(--card3); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin: 1rem 0; }
+.constr-wrap .pw-label { font-family: 'Courier New',monospace; font-size: .72rem; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 1rem; }
+.plotter-controls { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+.pc-input { background: var(--card2); border: 1px solid var(--border); border-radius: 7px; padding: .4rem .6rem; color: var(--text); font-family: 'Courier New',monospace; font-size: 1.05rem; width: 75px; text-align: center; }
+.pc-input:focus { outline: none; border-color: var(--gold); }
+.pc-label { font-family: 'Courier New',monospace; font-size: .85rem; color: var(--muted); }
+.pc-formula { font-family: 'Courier New',monospace; font-size: 1rem; font-weight: 800; color: var(--gold); background: rgba(245,200,66,.07); border: 1px solid rgba(245,200,66,.2); border-radius: 8px; padding: .4rem .9rem; min-width: 160px; text-align: center; }
+.pc-info { font-family: 'Courier New',monospace; font-size: .85rem; color: var(--muted); margin-top: .7rem; line-height: 1.8; }
+.pc-info span { color: var(--cyan); font-weight: 700; }
+/* Quiz */
+.task-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.task-card .tc-head { display: flex; align-items: center; gap: .5rem; padding: .6rem 1.3rem; font-family: 'Courier New',monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--border); }
+.task-card .tc-head.gold { background: rgba(245,200,66,.1); color: var(--gold); }
+.task-card .tc-head.cyan { background: rgba(78,205,196,.1); color: var(--cyan); }
+.task-card .tc-head.purple { background: rgba(155,137,224,.1); color: var(--purple); }
+.task-card .tc-head.green { background: rgba(76,175,136,.12); color: var(--green); }
+.task-card .tc-head.orange { background: rgba(232,131,74,.12); color: var(--orange); }
+.task-card .tc-body { padding: 1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom: .8rem; }
+.q-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.q-btn { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: .55rem 1.1rem; font-size: .93rem; color: var(--text); cursor: pointer; transition: all .18s; font-weight: 600; font-family: 'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.q-btn.ok { background: rgba(76,175,136,.2); border-color: var(--green); color: var(--green); }
+.q-btn.fail { background: rgba(224,90,90,.15); border-color: var(--red); color: var(--red); }
+.q-fb { font-size: .86rem; margin-top: .4rem; min-height: 1.2rem; }
+.q-fb.ok { color: var(--green); }
+.q-fb.fail { color: var(--red); }
+.ch-end { text-align: center; margin: 1.4rem 0; }
+.ch-end .big-star { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.ch-end h2 { font-size: 1.5rem; font-weight: 800; color: var(--gold); margin-bottom: .35rem; }
+.ch-end p { color: var(--muted); font-size: .95rem; }
+.bot-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+.bot-nav a { display: inline-flex; align-items: center; gap: .4rem; padding: .6rem 1.4rem; background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.3); border-radius: 50px; color: var(--gold); text-decoration: none; font-size: .9rem; font-family: 'Courier New',monospace; transition: all .2s; }
+.bot-nav a:hover { background: rgba(245,200,66,.16); }
+footer { text-align: center; font-size: .76rem; color: var(--muted); font-family: 'Courier New',monospace; padding: 1.5rem; margin-top: 2rem; border-top: 1px solid var(--border); }
+@media(max-width:600px) { .wrap { padding: 0 .8rem 5rem; } .section { padding: 1.3rem 1.1rem; } }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 23
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🧭</span>
+  <h1>23. Winkelarten</h1>
+  <p class="subtitle">Von spitz bis voll — die Familie der Winkel</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="kapitel-22-parallele-normale.html">← Kapitel 22</a>
+  <span class="cur">23 – Winkelarten</span>
+  <a href="kapitel-24.html">Kapitel 24 →</a>
+</nav>
+
+<main class="wrap">
+<!-- ═══ 1. DREIUNDZWANZIGSTE NACHT ═══ -->
+<div class="section">
+  <h2>Die dreiundzwanzigste Nacht — Der Kompass der alten Sternfahrer</h2>
+
+  <p>In einer verlassenen Raumstation am Rand des Gitterraums fand Sterni ein altes Gerät — ein halbrundes Zifferblatt aus Metall, mit feinen Strichen von 0 bis 180 beschriftet. Erklärus erkannte es sofort.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Was ist das für ein seltsames Ding? Es sieht aus wie ein halber Mond aus Metall."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Das ist ein Winkelmesser, wie ihn die alten Sternfahrer benutzt haben, um ihren Kurs zu bestimmen. Wir kennen jetzt schon den rechten Winkel — 90°, wie bei deiner Normalen. Aber Winkel können noch viel mehr Formen annehmen. Es wird Zeit, dass du die ganze Familie der Winkel kennenlernst."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Eine ganze Familie? Ich dachte, ein Winkel ist einfach... ein Winkel."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Jeder Winkel hat seine eigene Größe und damit seinen eigenen Charakter. Aber bevor wir die Familie sortieren, müssen wir erst verstehen, woraus ein Winkel überhaupt besteht."
+  </div>
+</div>
+
+<!-- ═══ 2. BAUTEILE EINES WINKELS ═══ -->
+<div class="section">
+  <h2>Die Bauteile eines Winkels</h2>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Ein Winkel wird von zwei Strahlen begrenzt, die einen gemeinsamen Anfangspunkt haben. Diesen gemeinsamen Punkt nennt man <strong>Scheitelpunkt S</strong>. Die beiden Strahlen selbst heißen <strong>Schenkel</strong> — s₁ und s₂."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wie die Beine eines Zirkels, die im Scheitelpunkt zusammenkommen!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Ein treffendes Bild. Und der Bogen, der die Öffnung zwischen den beiden Schenkeln markiert, heißt <strong>Winkelbogen b</strong>. Er zeigt dir genau, welcher der beiden möglichen Winkel gemeint ist."
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:440px;font-family:'Segoe UI',sans-serif;">
+      <rect x="8" y="8" width="444" height="244" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.2)" stroke-width="1.2"/>
+      <!-- Scheitelpunkt -->
+      <circle cx="120" cy="200" r="4" fill="#f5c842"/>
+      <text x="100" y="222" fill="#f5c842" font-size="15" font-weight="800" font-family="'Courier New',monospace">S</text>
+      <!-- Schenkel -->
+      <line x1="120" y1="200" x2="380" y2="200" stroke="#5ba4cf" stroke-width="2.5"/>
+      <text x="386" y="204" fill="#5ba4cf" font-size="14" font-weight="800" font-family="'Courier New',monospace">s₁</text>
+      <line x1="120" y1="200" x2="280" y2="55" stroke="#5ba4cf" stroke-width="2.5"/>
+      <text x="286" y="50" fill="#5ba4cf" font-size="14" font-weight="800" font-family="'Courier New',monospace">s₂</text>
+      <!-- Winkelbogen -->
+      <path d="M 180 200 A 60 60 0 0 0 152.5 153" fill="none" stroke="#4ecdc4" stroke-width="2.5"/>
+      <text x="178" y="168" fill="#4ecdc4" font-size="14" font-weight="800" font-family="'Courier New',monospace">b</text>
+      <!-- Winkel Symbol -->
+      <text x="205" y="190" fill="#9b89e0" font-size="20" font-weight="800" font-family="'Courier New',monospace">α</text>
+      <text x="240" y="240" fill="#7a85b8" font-size="12" text-anchor="middle">Scheitelpunkt S, Schenkel s₁ &amp; s₂, Winkelbogen b, Winkel α</text>
+    </svg>
+  </div>
+
+  <div class="regel-box gold">
+    <span class="rb-title">Vereinbarung — Winkel werden mit griechischen Buchstaben bezeichnet</span>
+    <div style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;font-family:'Courier New',monospace;font-size:1.1rem;">
+      <span style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.25);border-radius:8px;padding:.4rem .9rem;color:var(--gold);">α (Alpha)</span>
+      <span style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.25);border-radius:8px;padding:.4rem .9rem;color:var(--gold);">β (Beta)</span>
+      <span style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.25);border-radius:8px;padding:.4rem .9rem;color:var(--gold);">γ (Gamma)</span>
+      <span style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.25);border-radius:8px;padding:.4rem .9rem;color:var(--gold);">δ (Delta)</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also: S ist der Treffpunkt, s₁ und s₂ sind die zwei Strahlen, b ist der Bogen dazwischen — und α, β, γ sind nur Namen für die Winkel, so wie A, B, C Namen für Punkte sind?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau richtig erfasst. Und gemessen wird ein Winkel — wie du bereits weißt — mit deinem Geodreieck oder Winkelmesser, in Grad. Du liest dabei immer auf der Skala ab, die an dem Schenkel beginnt, an den du angelegt hast."
+  </div>
+</div>
+
+<!-- ═══ 3. DIE WINKELFAMILIE ═══ -->
+<div class="section">
+  <h2>Die Winkelfamilie — von spitz bis voll</h2>
+
+  <p>Erinnerst du dich an Sternis Geburtstagskuchen aus dem letzten Kapitel? Genau dieses Prinzip nutzen wir jetzt, um alle Winkelarten zu sortieren — nach ihrer Gradzahl.</p>
+
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Jeder Winkel zwischen 0° und 360° gehört zu einer bestimmten Familie. Je größer die Gradzahl, desto weiter öffnet sich der Winkel — bis er sich am Ende wieder ganz schließt."
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.7rem;margin-top:1rem;">
+    <div style="background:rgba(76,175,136,.07);border:1px solid rgba(76,175,136,.25);border-radius:10px;padding:.9rem 1rem;">
+      <div style="color:var(--green);font-weight:700;font-family:'Courier New',monospace;font-size:.9rem;">Spitzer Winkel</div>
+      <div style="color:var(--text);font-size:.88rem;margin-top:.2rem;">0° &lt; α &lt; 90°</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">kleiner als ein rechter Winkel</div>
+    </div>
+    <div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.25);border-radius:10px;padding:.9rem 1rem;">
+      <div style="color:var(--gold);font-weight:700;font-family:'Courier New',monospace;font-size:.9rem;">Rechter Winkel</div>
+      <div style="color:var(--text);font-size:.88rem;margin-top:.2rem;">α = 90°</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">genau ein Viertelkreis</div>
+    </div>
+    <div style="background:rgba(232,131,74,.07);border:1px solid rgba(232,131,74,.25);border-radius:10px;padding:.9rem 1rem;">
+      <div style="color:var(--orange);font-weight:700;font-family:'Courier New',monospace;font-size:.9rem;">Stumpfer Winkel</div>
+      <div style="color:var(--text);font-size:.88rem;margin-top:.2rem;">90° &lt; α &lt; 180°</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">größer als ein rechter Winkel</div>
+    </div>
+    <div style="background:rgba(91,164,207,.07);border:1px solid rgba(91,164,207,.25);border-radius:10px;padding:.9rem 1rem;">
+      <div style="color:var(--blue);font-weight:700;font-family:'Courier New',monospace;font-size:.9rem;">Gestreckter Winkel</div>
+      <div style="color:var(--text);font-size:.88rem;margin-top:.2rem;">α = 180°</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">ein halber Kreis — die Schenkel bilden eine Gerade</div>
+    </div>
+    <div style="background:rgba(155,137,224,.07);border:1px solid rgba(155,137,224,.25);border-radius:10px;padding:.9rem 1rem;">
+      <div style="color:var(--purple);font-weight:700;font-family:'Courier New',monospace;font-size:.9rem;">Erhabener Winkel</div>
+      <div style="color:var(--text);font-size:.88rem;margin-top:.2rem;">180° &lt; α &lt; 360°</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">überstumpf, mehr als ein halber Kreis</div>
+    </div>
+    <div style="background:rgba(232,122,171,.07);border:1px solid rgba(232,122,171,.25);border-radius:10px;padding:.9rem 1rem;">
+      <div style="color:var(--pink);font-weight:700;font-family:'Courier New',monospace;font-size:.9rem;">Voller Winkel</div>
+      <div style="color:var(--text);font-size:.88rem;margin-top:.2rem;">α = 360°</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem;">der ganze Kuchen, ein voller Kreis</div>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Spitz, recht, stumpf, gestreckt, erhaben, voll — sechs Mitglieder in der Familie! Und der rechte Winkel ist quasi die Grenze zwischen spitz und stumpf?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Genau das macht ihn so besonders — und genau deswegen war er auch der erste Winkel, den wir kennengelernt haben, als deine Geraden normal zueinander standen."
+  </div>
+</div>
+
+<!-- ═══ 4. INTERAKTIVE WINKELUHR ═══ -->
+<div class="section">
+  <h2>Sternis Winkeluhr — interaktiv</h2>
+  <p>Schiebe den Regler und beobachte, wie sich der Winkel vom Scheitelpunkt aus öffnet — und in welcher Familie er gerade landet.</p>
+
+  <div class="constr-wrap">
+    <span class="pw-label">🧭 Die Winkelfamilie live erleben</span>
+    <div class="plotter-controls">
+      <span class="pc-label">Winkel α:</span>
+      <input type="range" id="fam-slider" min="1" max="360" value="50" step="1" style="flex:1;min-width:140px;accent-color:#f5c842;">
+      <span class="pc-formula" id="fam-formula">50°</span>
+    </div>
+    <div class="svg-wrap" style="margin:.6rem 0;">
+      <canvas id="fam-canvas" width="420" height="300" style="width:100%;max-width:420px;border-radius:10px;background:rgba(7,13,31,.7);display:block;"></canvas>
+    </div>
+    <div class="pc-info" id="fam-info">Status: <span>—</span></div>
+  </div>
+</div>
+
+<!-- ═══ 5. WINKEL MESSEN ═══ -->
+<div class="section">
+  <h2>Einen Winkel messen — Schritt für Schritt</h2>
+
+  <div class="regel-box cyan">
+    <span class="rb-title">Methode — mit dem Geodreieck</span>
+    <div class="dlg zweistein" style="margin:.4rem 0 .7rem;">
+      <span class="who">Erklärus: </span>„Lege die Grundlinie deines Geodreiecks genau auf einen Schenkel des Winkels, mit dem Mittelpunkt der Skala genau auf dem Scheitelpunkt S."
+    </div>
+    <div class="dlg sterni" style="margin:.4rem 0 .7rem;">
+      <span class="who">Sterni: </span>„Und dann lese ich ab, wo der zweite Schenkel die Gradskala kreuzt?"
+    </div>
+    <div class="dlg zweistein" style="margin:.4rem 0 .7rem;">
+      <span class="who">Erklärus: </span>„Genau. Achte dabei nur darauf, von der richtigen Seite zu zählen — deshalb hat der Winkelmesser ja die doppelte Skala, einmal von links und einmal von rechts beginnend."
+    </div>
+    <div class="rb-formel cyan">Schenkel anlegen → Scheitelpunkt auf den Mittelpunkt → Gradzahl ablesen</div>
+  </div>
+</div>
+
+<!-- ═══ 6. ÜBUNGEN ═══ -->
+<div class="section">
+  <h2>Sternis Übungen — die Winkelfamilie erkennen</h2>
+
+  <div class="task-card">
+    <div class="tc-head gold">⭐ Aufgabe 1 — Die Bauteile</div>
+    <div class="tc-body">
+      <p>Wie heißt der gemeinsame Anfangspunkt der beiden Strahlen, die einen Winkel bilden?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! Der Winkelbogen b ist die Markierung der Öffnung zwischen den Schenkeln, nicht der Anfangspunkt.')">Winkelbogen</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! Schenkel sind die beiden Strahlen selbst, nicht ihr gemeinsamer Startpunkt.')">Schenkel</button>
+        <button class="q-btn" onclick="q(this,true,'q1','Richtig! Der gemeinsame Anfangspunkt der beiden Strahlen heißt Scheitelpunkt S.')">Scheitelpunkt</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! Ein Schnittpunkt entsteht, wenn sich zwei Geraden kreuzen, das ist ein anderer Begriff.')">Schnittpunkt</button>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head cyan">🔵 Aufgabe 2 — Welche Familie?</div>
+    <div class="tc-body">
+      <p>Ein Winkel hat 35°. Zu welcher Familie gehört er?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,true,'q2','Richtig! 35° liegt zwischen 0° und 90° — das ist ein spitzer Winkel.')">Spitzer Winkel</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! Ein rechter Winkel ist immer genau 90°, nicht 35°.')">Rechter Winkel</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! Ein stumpfer Winkel liegt zwischen 90° und 180° — 35° ist deutlich kleiner.')">Stumpfer Winkel</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! Ein gestreckter Winkel ist immer genau 180°.')">Gestreckter Winkel</button>
+      </div>
+      <div class="q-fb" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head purple">🟣 Aufgabe 3 — Stumpf oder erhaben?</div>
+    <div class="tc-body">
+      <p>Ein Winkel hat 250°. Zu welcher Familie gehört er?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Ein stumpfer Winkel liegt zwischen 90° und 180° — 250° ist viel größer.')">Stumpfer Winkel</button>
+        <button class="q-btn" onclick="q(this,true,'q3','Richtig! 250° liegt zwischen 180° und 360° — das ist ein erhabener (überstumpfer) Winkel.')">Erhabener Winkel</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Ein voller Winkel ist immer genau 360°.')">Voller Winkel</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Ein gestreckter Winkel ist immer genau 180°, nicht 250°.')">Gestreckter Winkel</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head green">🟢 Aufgabe 4 — Bezeichnung</div>
+    <div class="tc-body">
+      <p>Womit werden Winkel in der Mathematik üblicherweise bezeichnet?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Großbuchstaben wie A, B, C verwendet man für Punkte.')">Großbuchstaben (A, B, C)</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Kleinbuchstaben wie a, b, c verwendet man für Geraden.')">Kleinbuchstaben (a, b, c)</button>
+        <button class="q-btn" onclick="q(this,true,'q4','Richtig! Winkel werden mit griechischen Buchstaben wie α, β, γ, δ bezeichnet.')">Griechische Buchstaben (α, β, γ)</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Römische Zahlen werden in der Geometrie nicht zur Bezeichnung von Winkeln verwendet.')">Römische Zahlen (I, II, III)</button>
+      </div>
+      <div class="q-fb" id="q4-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head orange">🟠 Aufgabe 5 — Die Grenze zwischen den Familien</div>
+    <div class="tc-body">
+      <p>Bei welcher Gradzahl bilden die beiden Schenkel eines Winkels eine durchgehende Gerade?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! Bei 90° stehen die Schenkel senkrecht zueinander — das ist der rechte Winkel, keine Gerade.')">90°</button>
+        <button class="q-btn" onclick="q(this,true,'q5','Richtig! Bei 180° liegen beide Schenkel auf einer Linie — das ist der gestreckte Winkel.')">180°</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! Bei 270° ist der Winkel bereits erhaben (überstumpf), keine gerade Linie.')">270°</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! Bei 360° schließt sich der Winkel wieder vollständig — das ist der volle Winkel.')">360°</button>
+      </div>
+      <div class="q-fb" id="q5-fb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. ABSCHLUSS ═══ -->
+<div class="section">
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus — jetzt verstehe ich den alten Winkelmesser. Jede Gradzahl erzählt mir, in welcher Familie ein Winkel zuhause ist."
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Und mit diesem Wissen kannst du jede Form im Universum beschreiben — jede Ecke eines Kristalls, jede Kurve einer Umlaufbahn, jede Spitze eines Sterns lässt sich in Grad ausdrücken."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und was kommt als Nächstes auf unserer Reise?"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Jetzt, wo du Geraden, Parallele, Normale und Winkel kennst, sind wir bereit für die ersten richtigen Figuren. Im nächsten Kapitel betreten wir das Reich der Vierecke."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich bin gespannt!"
+  </div>
+  <div class="dlg zweistein">
+    <span class="who">Erklärus: </span>„Dann lass uns weiterfliegen."
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Dreiundzwanzigste Lektion: </span>„Ein Winkel besteht aus zwei Schenkeln (s₁, s₂), die sich im Scheitelpunkt S treffen; der Winkelbogen b markiert die Öffnung. Winkel werden mit griechischen Buchstaben (α, β, γ, δ …) bezeichnet. Die Winkelfamilie nach Gradzahl: spitzer Winkel (0°–90°), rechter Winkel (90°), stumpfer Winkel (90°–180°), gestreckter Winkel (180°), erhabener Winkel (180°–360°), voller Winkel (360°). Gemessen wird mit dem Geodreieck: Grundlinie an einen Schenkel anlegen, Mittelpunkt auf den Scheitelpunkt S, Gradzahl am zweiten Schenkel ablesen."
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">🧭</span>
+  <h2>Kapitel 23 abgeschlossen</h2>
+  <p>Winkelarten — von spitz bis voll, die ganze Familie der Winkel kennengelernt.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="kapitel-22-parallele-normale.html">← Kapitel 22: Parallele und Normale</a>
+  <a href="kapitel-24.html">Kapitel 24 →</a>
+</div>
+</main>
+<footer>Erklärus &amp; Sterni · Mathematik für Denker · Kapitel 23</footer>
+</div>
+
+<script>
+/* ── Sternenhimmel ── */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    stars=Array.from({length:220},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.4+.2,o:Math.random()*.7+.1,s:Math.random()*.4+.05
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(Math.random()>.5?1:-1);
+      s.o=Math.max(.05,Math.min(.85,s.o));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,230,255,${s.o})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init();draw();window.addEventListener('resize',init);
+})();
+
+/* ── Winkeluhr (Canvas) ── */
+(function(){
+  const slider = document.getElementById('fam-slider');
+  const formula = document.getElementById('fam-formula');
+  const info = document.getElementById('fam-info');
+  const canvas = document.getElementById('fam-canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Scheitelpunkt: unten-links, wie auf der Vorlage
+  const W = 420, H = 300;
+  const SX = 90, SY = 240;   // Scheitelpunkt S
+  const RAY = 180;            // Schenkellänge
+  const ARC_R = 55;           // Radius des Winkelbogens
+
+  // Farben nach Familie
+  const FAMILIES = [
+    { name: 'Spitzer Winkel (0° – 90°)',     color: '#4caf88', fill: 'rgba(76,175,136,.18)'  },
+    { name: 'Rechter Winkel (= 90°)',        color: '#f5c842', fill: 'rgba(245,200,66,.18)'  },
+    { name: 'Stumpfer Winkel (90° – 180°)',  color: '#e8834a', fill: 'rgba(232,131,74,.18)'  },
+    { name: 'Gestreckter Winkel (= 180°)',   color: '#5ba4cf', fill: 'rgba(91,164,207,.18)'  },
+    { name: 'Erhabener Winkel (180° – 360°)',color: '#9b89e0', fill: 'rgba(155,137,224,.18)' },
+    { name: 'Voller Winkel (= 360°)',        color: '#e87aab', fill: 'rgba(232,122,171,.18)' },
+  ];
+
+  function getFamily(deg) {
+    if (deg < 90)  return FAMILIES[0];
+    if (deg === 90) return FAMILIES[1];
+    if (deg < 180) return FAMILIES[2];
+    if (deg === 180) return FAMILIES[3];
+    if (deg < 360) return FAMILIES[4];
+    return FAMILIES[5];
+  }
+
+  function draw(deg) {
+    ctx.clearRect(0, 0, W, H);
+
+    const fam = getFamily(deg);
+    // s1 zeigt nach rechts (0°), s2 dreht sich gegen den Uhrzeigersinn
+    const a1 = 0;                        // s1: 0 Rad = nach rechts
+    const a2 = -deg * Math.PI / 180;     // s2: gegen Uhrzeigersinn
+
+    const s1x = SX + RAY * Math.cos(a1), s1y = SY + RAY * Math.sin(a1);
+    const s2x = SX + RAY * Math.cos(a2), s2y = SY + RAY * Math.sin(a2);
+
+    // ── Winkelbogen (gefüllt) ──
+    ctx.beginPath();
+    ctx.moveTo(SX, SY);
+    ctx.arc(SX, SY, ARC_R, a1, a2, true);   // gegen Uhrzeigersinn
+    ctx.closePath();
+    ctx.fillStyle = fam.fill;
+    ctx.fill();
+    ctx.strokeStyle = fam.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Rechter-Winkel-Kästchen bei exakt 90°
+    if (deg === 90) {
+      const SQ = 16;
+      ctx.strokeStyle = fam.color;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(SX, SY - SQ, SQ, SQ);
+    }
+
+    // ── Schenkel s1 (blau, fest nach rechts) ──
+    ctx.beginPath();
+    ctx.moveTo(SX, SY);
+    ctx.lineTo(s1x, s1y);
+    ctx.strokeStyle = '#5ba4cf';
+    ctx.lineWidth = 2.8;
+    ctx.stroke();
+
+    // ── Schenkel s2 (gold, dreht sich) ──
+    ctx.beginPath();
+    ctx.moveTo(SX, SY);
+    ctx.lineTo(s2x, s2y);
+    ctx.strokeStyle = '#f5c842';
+    ctx.lineWidth = 2.8;
+    ctx.stroke();
+
+    // ── Scheitelpunkt S ──
+    ctx.beginPath();
+    ctx.arc(SX, SY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#dde5ff';
+    ctx.fill();
+
+    // ── Beschriftungen ──
+    ctx.font = 'bold 14px "Courier New", monospace';
+    ctx.fillStyle = '#dde5ff';
+    ctx.fillText('S', SX - 16, SY + 4);
+
+    ctx.fillStyle = '#5ba4cf';
+    ctx.fillText('s₁', s1x + 6, s1y + 5);
+
+    ctx.fillStyle = '#f5c842';
+    const lx = s2x + (Math.cos(a2) >= 0 ? 6 : -28);
+    const ly = s2y + (Math.sin(a2) <= 0 ? -6 : 18);
+    ctx.fillText('s₂', lx, ly);
+
+    // ── α-Label im Bogen ──
+    const midA = a2 / 2;
+    const lrA = ARC_R * 0.62;
+    ctx.font = 'bold 15px "Courier New", monospace';
+    ctx.fillStyle = fam.color;
+    ctx.fillText('α', SX + lrA * Math.cos(midA) - 6, SY + lrA * Math.sin(midA) + 5);
+  }
+
+  function update() {
+    const deg = parseInt(slider.value);
+    formula.textContent = deg + '°';
+    draw(deg);
+    const fam = getFamily(deg);
+    info.innerHTML = `Winkelart: <span style="color:${fam.color};font-weight:700">${fam.name}</span>`;
+  }
+
+  slider.addEventListener('input', update);
+  update();
+})();
+
+/* ── Quiz ── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
