@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 13 – Schlussrechnung · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.75;min-height:100vh;overflow-x:hidden;}
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.above{position:relative;z-index:1;}
+
+.site-header{text-align:center;padding:1.1rem 2rem .9rem;font-family:'Courier New',monospace;font-size:.78rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);background:rgba(7,13,31,.88);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;}
+.site-header strong{color:var(--gold);}
+.hero{text-align:center;padding:3.5rem 1.5rem 2rem;background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%);}
+.hero .hero-icon{font-size:3.6rem;display:block;margin-bottom:.5rem;position:relative;animation:heroBob 3s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(245,200,66,0.6));}
+@keyframes heroBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--gold);text-shadow:0 0 30px rgba(245,200,66,.35);margin-bottom:.3rem;}
+.hero .subtitle{font-size:.88rem;color:var(--muted);font-style:italic;font-family:'Courier New',monospace;}
+.ch-nav{display:flex;justify-content:center;align-items:center;gap:.8rem;padding:.9rem 1.5rem 1.6rem;flex-wrap:wrap;}
+.ch-nav a,.ch-nav .cur{display:inline-flex;align-items:center;padding:.45rem 1.2rem;border-radius:50px;font-size:.88rem;font-family:'Courier New',monospace;text-decoration:none;transition:all .2s;}
+.ch-nav a{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);}
+.ch-nav a:hover{background:rgba(255,255,255,.12);color:var(--gold);}
+.ch-nav .cur{background:var(--gold);color:#1a0e00;font-weight:700;border:none;}
+.wrap{max-width:780px;margin:0 auto;padding:0 1.2rem 6rem;}
+.section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 2.2rem;margin-bottom:1.4rem;}
+.section h2{font-size:1.15rem;font-weight:700;color:var(--gold);margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.section p{margin-bottom:.85rem;}
+.section p:last-child{margin-bottom:0;}
+.dlg{border-left:4px solid;border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin:.7rem 0;font-style:italic;line-height:1.65;}
+.dlg.sterni{border-color:var(--gold);background:rgba(245,200,66,.07);color:var(--gold);}
+.dlg.erklaerus{border-color:var(--blue);background:rgba(91,164,207,.07);color:var(--blue);}
+.dlg.haendler{border-color:#9a8c78;background:rgba(154,140,120,.08);color:#c9bda6;}
+.dlg.lektion{border-color:var(--cyan);background:rgba(78,205,196,.06);color:#a0e8e4;}
+.dlg .who{font-style:normal;font-weight:700;font-size:.82rem;letter-spacing:.04em;}
+
+/* ── PROPORTIONALITÄTS-VISUALISIERUNG ── */
+.prop-vis{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin:1rem 0;}
+.prop-vis .pv-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.prop-table{width:100%;border-collapse:collapse;font-family:'Courier New',monospace;font-size:.92rem;margin:.5rem 0;}
+.prop-table th{background:rgba(245,200,66,.1);color:var(--gold);padding:.5rem .9rem;text-align:center;border:1px solid rgba(100,120,200,.2);}
+.prop-table td{padding:.5rem .9rem;text-align:center;border:1px solid rgba(100,120,200,.15);}
+.prop-table tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+.prop-table .td-known{color:var(--cyan);}
+.prop-table .td-unknown{color:var(--gold);font-weight:800;font-size:1.05rem;}
+.prop-table .td-factor{color:var(--purple);font-weight:700;}
+
+/* ── RECHENWEG ── */
+.rechenweg{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin:1rem 0;}
+.rechenweg .rw-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.rw-step{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.5rem 0;font-family:'Courier New',monospace;font-size:.97rem;}
+.rw-arrow{color:var(--muted);}
+.rw-result{color:var(--cyan);font-weight:800;}
+.rw-note{font-size:.8rem;color:var(--muted);font-style:italic;font-family:'Segoe UI',sans-serif;}
+.rw-note strong{color:var(--gold);}
+
+/* ── DIREKT / INDIREKT BADGES ── */
+.badge-row{display:flex;gap:.8rem;flex-wrap:wrap;margin:1rem 0;}
+.badge{border-radius:12px;padding:1rem 1.3rem;flex:1;min-width:200px;}
+.badge.direkt{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.3);}
+.badge.indirekt{background:rgba(232,122,171,.08);border:1px solid rgba(232,122,171,.3);}
+.badge .b-title{font-family:'Courier New',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.5rem;font-weight:700;}
+.badge.direkt .b-title{color:var(--cyan);}
+.badge.indirekt .b-title{color:var(--pink);}
+.badge .b-motto{font-size:1rem;font-weight:700;margin-bottom:.3rem;}
+.badge.direkt .b-motto{color:var(--cyan);}
+.badge.indirekt .b-motto{color:var(--pink);}
+.badge .b-note{font-size:.82rem;color:var(--muted);}
+.badge .b-formula{font-family:'Courier New',monospace;font-size:.88rem;margin-top:.5rem;padding:.5rem .7rem;background:rgba(0,0,0,.2);border-radius:7px;}
+.badge.direkt .b-formula{color:var(--cyan);}
+.badge.indirekt .b-formula{color:var(--pink);}
+
+/* ── KOSMOS-BOX ── */
+.kosmos-box{background:radial-gradient(ellipse at top left,rgba(91,164,207,.1) 0%,rgba(7,13,31,.95) 70%);border:1px solid rgba(91,164,207,.3);border-radius:16px;padding:1.6rem 1.8rem;margin:1rem 0;}
+.kosmos-box .kb-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:.8rem;}
+.kosmos-box p{font-size:.95rem;color:#b8d8ec;margin-bottom:.55rem;}
+.kosmos-box p:last-child{margin-bottom:0;}
+.kosmos-box strong{color:var(--blue);}
+
+/* ── INTERAKTIVER RECHNER ── */
+.schluss-calc{background:var(--card3);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1rem 0;}
+.schluss-calc .sc-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1rem;}
+.sc-mode-btns{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+.sc-mode-btn{padding:.4rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-family:'Courier New',monospace;font-size:.88rem;cursor:pointer;transition:all .18s;}
+.sc-mode-btn.active.direkt{border-color:var(--cyan);color:var(--cyan);background:rgba(78,205,196,.1);}
+.sc-mode-btn.active.indirekt{border-color:var(--pink);color:var(--pink);background:rgba(232,122,171,.1);}
+.sc-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:.7rem;align-items:center;margin-bottom:1rem;}
+.sc-col{background:rgba(0,0,0,.15);border-radius:10px;padding:.9rem 1rem;}
+.sc-col-title{font-family:'Courier New',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.6rem;color:var(--muted);}
+.sc-field{display:flex;flex-direction:column;gap:.3rem;margin:.35rem 0;}
+.sc-field label{font-size:.78rem;color:var(--muted);font-family:'Courier New',monospace;}
+.sc-input{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:.4rem .6rem;color:var(--text);font-family:'Courier New',monospace;font-size:1rem;width:100%;}
+.sc-input:focus{outline:none;border-color:var(--gold);}
+.sc-input.result-field{color:var(--gold);font-weight:800;font-size:1.1rem;border-color:rgba(245,200,66,.4);background:rgba(245,200,66,.05);}
+.sc-center-arrow{font-size:1.4rem;color:var(--muted);text-align:center;}
+.sc-explain{font-size:.88rem;color:var(--muted);line-height:1.8;min-height:2rem;}
+.sc-explain strong{color:var(--gold);}
+.sc-explain .up{color:var(--cyan);}
+.sc-explain .down{color:var(--pink);}
+
+/* ── INFO & TASK ── */
+.info-card{border-radius:12px;padding:1.2rem 1.4rem;margin:1rem 0;}
+.info-card .ic-title{font-size:.78rem;font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.65rem;}
+.info-card p{font-size:.95rem;margin-bottom:.55rem;}
+.info-card p:last-child{margin-bottom:0;}
+.info-card.uni{background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.25);}
+.info-card.uni .ic-title{color:var(--gold);}
+.info-card.uni p{color:#e8dfa0;}
+.info-card.nb{background:rgba(91,164,207,.08);border:1px solid rgba(91,164,207,.25);}
+.info-card.nb .ic-title{color:var(--blue);}
+.info-card.nb p{color:#b8d8ec;}
+.task-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
+.task-card .tc-head{display:flex;align-items:center;gap:.5rem;padding:.6rem 1.3rem;font-family:'Courier New',monospace;font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);}
+.task-card .tc-head.gold{background:rgba(245,200,66,.1);color:var(--gold);}
+.task-card .tc-head.cyan{background:rgba(78,205,196,.1);color:var(--cyan);}
+.task-card .tc-head.purple{background:rgba(155,137,224,.1);color:var(--purple);}
+.task-card .tc-head.green{background:rgba(76,175,136,.12);color:var(--green);}
+.task-card .tc-head.blue{background:rgba(91,164,207,.12);color:var(--blue);}
+.task-card .tc-head.pink{background:rgba(232,122,171,.1);color:var(--pink);}
+.task-card .tc-body{padding:1.1rem 1.3rem;}
+.task-card .tc-body p{margin-bottom:.8rem;}
+.q-opts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0;}
+.q-btn{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.55rem 1.1rem;font-size:.95rem;color:var(--text);cursor:pointer;transition:all .18s;font-weight:600;font-family:'Courier New',monospace;}
+.q-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.q-btn.ok{background:rgba(76,175,136,.2);border-color:var(--green);color:var(--green);}
+.q-btn.fail{background:rgba(224,90,90,.15);border-color:var(--red);color:var(--red);}
+.q-fb{font-size:.86rem;margin-top:.4rem;min-height:1.2rem;}
+.q-fb.ok{color:var(--green);}
+.q-fb.fail{color:var(--red);}
+
+/* ── SUMMARY & END ── */
+.summary-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;margin:1.4rem 0;}
+.summary-box .sb-label{font-family:'Courier New',monospace;font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.14em;display:block;margin-bottom:1rem;}
+.summary-box .sb-row{font-family:'Courier New',monospace;font-size:.95rem;font-weight:700;color:#fff;line-height:2.8;}
+.summary-box .sg{color:var(--gold);}
+.summary-box .sc2{color:var(--cyan);}
+.summary-box .sp{color:var(--pink);}
+.summary-box .sb-sub{font-size:.88rem;color:var(--muted);line-height:1.8;margin-top:.5rem;}
+.ch-end{text-align:center;margin:1.4rem 0;}
+.ch-end .big-star{font-size:3rem;display:block;margin-bottom:.5rem;}
+.ch-end h2{font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:.35rem;}
+.ch-end p{color:var(--muted);font-size:.95rem;}
+.bot-nav{display:flex;justify-content:center;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+.bot-nav a{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:50px;color:var(--gold);text-decoration:none;font-size:.9rem;font-family:'Courier New',monospace;transition:all .2s;}
+.bot-nav a:hover{background:rgba(245,200,66,.16);}
+footer{text-align:center;font-size:.76rem;color:var(--muted);font-family:'Courier New',monospace;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);}
+@media(max-width:600px){.wrap{padding:0 .8rem 5rem;}.section{padding:1.3rem 1.1rem;}.sc-grid{grid-template-columns:1fr;}.sc-center-arrow{transform:rotate(90deg);}}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 13
+</header>
+
+<div class="hero">
+  <span class="hero-icon">⚖️</span>
+  <h1>13. Schlussrechnung</h1>
+  <p class="subtitle">Direkte &amp; indirekte Proportionalität – Gravitation und Lichtgesetz</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-12-runden-von-zahlen.html">← Kapitel 12</a>
+  <span class="cur">13 – Schlussrechnung</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-14-prozentrechnungen.html">Kapitel 14 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DREIZEHNTE NACHT ═══ -->
+<div class="section">
+  <h2>Die dreizehnte Nacht – Treibstoff für die Heimreise</h2>
+
+  <p>Es war die dreizehnte Nacht. Sterni erzählte Erklärus von einer Erinnerung: einer kleinen Reparaturstation, die sie einst besucht hatte — ein winziger Außenposten, der im Schatten eines roten Zwergsterns schwebte. Sie hatte damals dringend Treibstoff gebraucht. Der Händler am Schalter hatte nur auf seinem Gerät herumgetippt.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich hatte gesagt: ‚Ich brauche 15 Treibstoffeinheiten. Wie viel kostet das?'"
+  </div>
+  <div class="dlg haendler">
+    <span class="who">Händler (Erinnerung): </span>„10 Einheiten kosten 240 Kredits. Rechne selbst."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich wusste es damals nicht. Aber jetzt, mit dir, würde ich es sofort lösen können."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Dann lass es uns gemeinsam nachrechnen. Das ist eine Schlussrechnung — du berechnest einen unbekannten vierten Wert aus drei bekannten. Hier gilt: je mehr Treibstoff, desto mehr Kredit. Das nennt man direkte Proportionalität."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Je mehr, desto mehr. Das klingt einfach."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Es gibt aber auch den umgekehrten Fall — je mehr, desto weniger. Den brauchen wir gleich auch noch."
+  </div>
+</div>
+
+<!-- ═══ 2. DIE ZWEI ARTEN ═══ -->
+<div class="section">
+  <h2>Zwei Arten der Schlussrechnung</h2>
+
+  <div class="badge-row">
+    <div class="badge direkt">
+      <span class="b-title">➕ Direkte Schlussrechnung</span>
+      <div class="b-motto">Je mehr · desto mehr</div>
+      <div class="b-motto" style="font-size:.9rem;">Je weniger · desto weniger</div>
+      <div class="b-note">Beide Größen ändern sich im gleichen Verhältnis. Direkte Proportionalität.</div>
+      <div class="b-formula">x = (Gesucht × Bekannt) ÷ Gegeben</div>
+    </div>
+    <div class="badge indirekt">
+      <span class="b-title">🔄 Indirekte Schlussrechnung</span>
+      <div class="b-motto">Je mehr · desto weniger</div>
+      <div class="b-motto" style="font-size:.9rem;">Je weniger · desto mehr</div>
+      <div class="b-note">Eine Größe steigt, die andere sinkt. Indirekte Proportionalität.</div>
+      <div class="b-formula">x = (Bekannt × Gegeben) ÷ Gesucht</div>
+    </div>
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Merksatz: </span>„Erkenne zuerst die Art: Steigen beide zusammen → direkt. Steigt eine, sinkt die andere → indirekt. Der Rest ist Logik."
+  </div>
+</div>
+
+<!-- ═══ 3. DIREKTE SCHLUSSRECHNUNG ═══ -->
+<div class="section">
+  <h2>Direkte Schlussrechnung – je mehr, desto mehr</h2>
+
+  <p>Sterni braucht 15 Treibstoffeinheiten. 10 Einheiten kosten 240 Kredits. Der Schlüssel: erst auf <strong style="color:var(--gold)">eine Einheit</strong> herunterrechnen, dann auf die gewünschte Menge hochrechnen.</p>
+
+  <div class="prop-vis">
+    <span class="pv-label">⛽ Treibstoff-Rechnung – direkt proportional</span>
+    <table class="prop-table">
+      <thead><tr><th>Treibstoff (Einheiten)</th><th>Preis (Kredits)</th><th>Verhältnis</th></tr></thead>
+      <tbody>
+        <tr><td class="td-known">10</td><td class="td-known">240</td><td class="td-factor">= 1×</td></tr>
+        <tr><td class="td-known">1</td><td class="td-unknown">24</td><td class="td-factor">÷10</td></tr>
+        <tr><td class="td-known">15</td><td class="td-unknown">360</td><td class="td-factor">×15</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rechenweg">
+    <span class="rw-label">📐 Rechenweg Schritt für Schritt</span>
+    <div class="rw-step">
+      <span>Schritt 1:</span>
+      <span>1 Einheit kostet:</span>
+      <span class="rw-arrow">240 ÷ 10 =</span>
+      <span class="rw-result">24 Kredits</span>
+      <span class="rw-note">→ auf <strong>Einheitswert</strong> herunterrechnen</span>
+    </div>
+    <div class="rw-step">
+      <span>Schritt 2:</span>
+      <span>15 Einheiten kosten:</span>
+      <span class="rw-arrow">24 × 15 =</span>
+      <span class="rw-result">360 Kredits</span>
+      <span class="rw-note">→ auf gewünschte Menge <strong>hochrechnen</strong></span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span>Kurzformel:</span>
+      <span class="rw-arrow">240 ÷ 10 × 15 =</span>
+      <span class="rw-result">360 Kredits ✓</span>
+    </div>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also immer erst durch die bekannte Menge, dann mal die gesuchte Menge. Egal wie groß die Zahlen sind."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Exakt. Und wenn du die Formel vergisst — denk logisch: 15 Einheiten sind 1,5-mal so viel wie 10. Also kostet es 1,5-mal so viel: 240 × 1,5 = 360. Gleiche Antwort."
+  </div>
+
+  <p><strong style="color:var(--gold)">Je weniger, desto weniger</strong> funktioniert genauso — nur dass die gesuchte Menge kleiner ist:</p>
+
+  <div class="rechenweg">
+    <span class="rw-label">📐 Je weniger, desto weniger – Beispiel</span>
+    <div class="rw-step">
+      <span>Gegeben:</span>
+      <span class="rw-arrow">9 kg Birnen = 15,09 €</span>
+      <span class="rw-note">Gesucht: Preis für 6 kg</span>
+    </div>
+    <div class="rw-step">
+      <span>1 kg =</span>
+      <span class="rw-arrow">15,09 ÷ 9 =</span>
+      <span class="rw-result">1,677 €</span>
+    </div>
+    <div class="rw-step">
+      <span>6 kg =</span>
+      <span class="rw-arrow">1,677 × 6 =</span>
+      <span class="rw-result">10,06 €</span>
+      <span class="rw-note">6 kg kostet weniger als 9 kg ✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. KOSMISCHE VERBINDUNG DIREKT ═══ -->
+<div class="section">
+  <h2>Das Universum und direkte Proportionalität</h2>
+
+  <div class="kosmos-box">
+    <span class="kb-label">🌌 Newtons Gravitationsgesetz</span>
+    <p>Die Gravitationskraft zwischen zwei Objekten ist <strong>direkt proportional</strong> zu ihren Massen. Verdoppelst du die Masse eines Planeten, verdoppelt sich auch seine Anziehungskraft. Verdreifachst du sie, verdreifacht sich die Kraft.</p>
+    <p>Wenn ein Planet der Masse M eine Anziehungskraft von F erzeugt, dann erzeugt ein Planet mit Masse 3M die Kraft 3F — direkte Proportionalität, wie bei Treibstoff und Preis.</p>
+    <p><strong>Beispiel:</strong> Jupiter ist 318-mal massereicher als die Erde. Seine Oberflächengravitation ist etwa 2,5-mal stärker (der Rest hängt auch vom Radius ab — aber die Masse ist direkt proportional eingebaut).</p>
+  </div>
+</div>
+
+<!-- ═══ 5. INDIREKTE SCHLUSSRECHNUNG ═══ -->
+<div class="section">
+  <h2>Indirekte Schlussrechnung – je mehr, desto weniger</h2>
+
+  <p>Nach dem Tanken hatte Sterni damals den restlichen Weg planen müssen. Die Sonde hatte Vorräte für <strong>4 Besatzungsmitglieder für 12 Tage</strong>. Doch zwei weitere Passagiere waren an Bord gekommen. Wie lange reichten die Vorräte nun?</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Mehr Personen — weniger Tage. Das ist umgekehrt!"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau — indirekte Proportionalität. Je mehr Personen, desto weniger Tage. Jetzt multiplizieren wir zuerst mit der kleineren Zahl, dann dividieren."
+  </div>
+
+  <div class="prop-vis">
+    <span class="pv-label">🍱 Vorrats-Rechnung – indirekt proportional</span>
+    <table class="prop-table">
+      <thead><tr><th>Personen</th><th>Tage</th><th>Produkt (immer gleich)</th></tr></thead>
+      <tbody>
+        <tr><td class="td-known">4</td><td class="td-known">12</td><td class="td-factor">4 × 12 = 48</td></tr>
+        <tr><td class="td-known">6</td><td class="td-unknown">?</td><td class="td-factor">6 × ? = 48</td></tr>
+        <tr><td class="td-known">6</td><td class="td-unknown">8</td><td class="td-factor">6 × 8 = 48 ✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rechenweg">
+    <span class="rw-label">📐 Rechenweg – indirekte Proportionalität</span>
+    <div class="rw-step">
+      <span>Schritt 1:</span>
+      <span class="rw-arrow">Gesamtvorrat = 4 × 12 =</span>
+      <span class="rw-result">48 Personentage</span>
+    </div>
+    <div class="rw-step">
+      <span>Schritt 2:</span>
+      <span class="rw-arrow">48 ÷ 6 Personen =</span>
+      <span class="rw-result">8 Tage</span>
+      <span class="rw-note">mehr Personen → weniger Tage ✓</span>
+    </div>
+    <div class="rw-step" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);">
+      <span>Kurzformel:</span>
+      <span class="rw-arrow">(4 × 12) ÷ 6 =</span>
+      <span class="rw-result">8 Tage ✓</span>
+    </div>
+  </div>
+
+  <p><strong style="color:var(--pink)">Je weniger, desto mehr</strong> — die Umkehrung: 2 Personen würden doppelt so lange mit den Vorräten auskommen:</p>
+
+  <div class="rechenweg">
+    <span class="rw-label">📐 Je weniger, desto mehr – Beispiel</span>
+    <div class="rw-step">
+      <span>4 Personen = 12 Tage → Gesamtvorrat:</span>
+      <span class="rw-arrow">4 × 12 =</span>
+      <span class="rw-result">48</span>
+    </div>
+    <div class="rw-step">
+      <span>2 Personen:</span>
+      <span class="rw-arrow">48 ÷ 2 =</span>
+      <span class="rw-result">24 Tage</span>
+      <span class="rw-note">halb so viele Personen → doppelt so viele Tage ✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. KOSMISCHE VERBINDUNG INDIREKT ═══ -->
+<div class="section">
+  <h2>Das Universum und indirekte Proportionalität</h2>
+
+  <div class="kosmos-box">
+    <span class="kb-label">💡 Das Inverse-Quadrat-Gesetz – Lichtintensität</span>
+    <p>Die Helligkeit eines Sterns nimmt mit dem <strong>Quadrat der Entfernung</strong> ab — indirekte Proportionalität. Wenn du doppelt so weit weg bist, ist das Licht nur noch ein Viertel so hell. Dreifache Entfernung → ein Neuntel der Helligkeit.</p>
+    <p><strong>Je mehr Entfernung, desto weniger Licht</strong> — klassische indirekte Proportionalität. Das ist der Grund, warum weiter entfernte Sterne schwächer erscheinen, obwohl sie oft viel heller sind als unsere Sonne.</p>
+    <p>Auch die Schwerkraft folgt diesem Gesetz: <strong>doppelte Entfernung → viertel Gravitationskraft</strong>. Sterni nutzt das täglich für die Navigation — je weiter das Schwarze Loch, desto sicherer der Kurs.</p>
+  </div>
+
+  <div class="info-card uni">
+    <span class="ic-title">🌌 Sternis Vorratsproblem – gelöst</span>
+    <p>Mit 8 statt 12 Tagen Vorrat hatte Sterni damals den Kurs anpassen müssen. Bei einer Reisegeschwindigkeit von 3 Lichteinheiten pro Tag — wie weit kam die Sonde in 8 Tagen? <strong>3 × 8 = 24 Lichteinheiten</strong>. Direkte Proportionalität: mehr Tage, mehr Strecke. Der nächste Versorgungsposten lag in 22 Lichteinheiten Entfernung — sie schaffte es!</p>
+  </div>
+</div>
+
+<!-- ═══ 7. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Interaktiver Schlussrechner</h2>
+  <p>Wähle die Art der Proportionalität, gib drei bekannte Werte ein — der vierte wird berechnet:</p>
+
+  <div class="schluss-calc">
+    <span class="sc-label">⚖️ Schlussrechner</span>
+    <div class="sc-mode-btns">
+      <button class="sc-mode-btn active direkt" id="btn-direkt" onclick="setMode('direkt')">➕ Direkt</button>
+      <button class="sc-mode-btn indirekt" id="btn-indirekt" onclick="setMode('indirekt')">🔄 Indirekt</button>
+    </div>
+    <div class="sc-grid">
+      <div class="sc-col">
+        <span class="sc-col-title" id="col1-title">Bekannte Menge A</span>
+        <div class="sc-field">
+          <label>Menge 1 (bekannt)</label>
+          <input type="number" id="sc-m1" class="sc-input" value="10" oninput="scCalc()">
+        </div>
+        <div class="sc-field">
+          <label>Wert 1 (bekannt)</label>
+          <input type="number" id="sc-v1" class="sc-input" value="240" oninput="scCalc()">
+        </div>
+      </div>
+      <div class="sc-center-arrow">⟶</div>
+      <div class="sc-col">
+        <span class="sc-col-title" id="col2-title">Gesuchte Menge B</span>
+        <div class="sc-field">
+          <label>Menge 2 (gesucht)</label>
+          <input type="number" id="sc-m2" class="sc-input" value="15" oninput="scCalc()">
+        </div>
+        <div class="sc-field">
+          <label>Wert 2 (Ergebnis)</label>
+          <input type="number" id="sc-v2" class="sc-input result-field" readonly>
+        </div>
+      </div>
+    </div>
+    <div class="sc-explain" id="sc-explain"></div>
+  </div>
+</div>
+
+<!-- ═══ 8. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head gold">⛽ Aufgabe 1 – Treibstoffpreis</div>
+  <div class="tc-body">
+    <p>5 Treibstoffeinheiten kosten 120 Kredits. Was kosten 8 Einheiten?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – erst pro Einheit: 120÷5=24. Dann ×8: 24×8=192.')">160</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! 120÷5=24 Kredits/Einheit · 24×8=192 Kredits ✓')">192</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – 8 Einheiten kosten 8×24=192, nicht 200.')">200</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – das wäre 5+8=13, aber wir multiplizieren den Einheitspreis.')">168</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">🍱 Aufgabe 2 – Vorräte und Besatzung</div>
+  <div class="tc-body">
+    <p>Vorräte für 3 Personen reichen 15 Tage. Wie lange reichen sie für 5 Personen? (Indirekt!)</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – indirekt: 3×15=45 Personentage. 45÷5=9 Tage.')">25</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! 3×15=45 Personentage · 45÷5=9 Tage ✓')">9</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – mehr Personen → weniger Tage, nicht mehr.')">45</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – 3×15÷5=9, nicht 5.')">5</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head purple">🌟 Aufgabe 3 – Lichtintensität</div>
+  <div class="tc-body">
+    <p>Ein Stern erscheint bei 2 Lichtjahren Entfernung mit Helligkeit 100. Bei 4 Lichtjahren — wie hell? (Indirekt: doppelte Distanz → viertel Helligkeit)</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – doppelte Distanz bedeutet viermal schwächer: 100÷4=25.')">50</button>
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! Inverse-Quadrat-Gesetz: doppelte Distanz → ¼ Helligkeit: 100÷4=25 ✓')">25</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 100÷2=50 wäre einfache indirekte Proportionalität, hier gilt das Quadrat.')">200</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – die Helligkeit sinkt, sie steigt nicht.')">400</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">🚀 Aufgabe 4 – Reisegeschwindigkeit</div>
+  <div class="tc-body">
+    <p>Bei Geschwindigkeit 6 braucht die Sonde 10 Tage für eine Strecke. Bei Geschwindigkeit 15 — wie lange? (Indirekt: mehr Tempo → weniger Zeit)</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – indirekt: 6×10=60 Einheiten Strecke. 60÷15=4 Tage.')">25</button>
+      <button class="q-btn" onclick="q(this,true, 'q4','Richtig! 6×10=60 · 60÷15=4 Tage. Mehr Tempo → weniger Zeit ✓')">4</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – das wäre direkte Proportionalität. Hier: je schneller, desto weniger Tage.')">15</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – 60÷15=4, nicht 6.')">6</button>
+    </div>
+    <div class="q-fb" id="q4-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head pink">🎯 Aufgabe 5 – Art erkennen</div>
+  <div class="tc-body">
+    <p>Sterni kauft mehr Sauerstoffpatronen — der Preis steigt. Welche Art von Proportionalität liegt vor?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,true, 'q5','Richtig! Je mehr Patronen, desto höher der Preis → direkte Proportionalität ✓')">Direkt – je mehr, desto mehr</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – Preis und Menge steigen gemeinsam → das ist direkte Proportionalität.')">Indirekt – je mehr, desto weniger</button>
+    </div>
+    <div class="q-fb" id="q5-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ 9. ABSCHLUSS ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Der Treibstoff war damals bezahlt worden. Die Vorräte waren neu kalkuliert worden. Und jetzt, in dieser Nacht bei Erklärus, hatte Sterni die ganze Geschichte noch einmal durchgerechnet — diesmal richtig, und ohne einen einzigen Fehler.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Direkt: gleich dividieren und multiplizieren. Indirekt: erst multiplizieren, dann dividieren."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Und wenn du unsicher bist — denk logisch. Steigen beide Größen zusammen? Direkt. Steigt eine, sinkt die andere? Indirekt. Das Universum macht das auch so."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Die Schwerkraft wächst mit der Masse — direkt. Das Licht schwächt sich mit der Distanz ab — indirekt. Ich sehe es überall. Und ich erinnere mich jetzt sogar an die Farbe des roten Zwergsterns über der Station."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein roter Zwergstern. Das notiere ich. Jetzt siehst du die Mathematik im Universum — und in deiner eigenen Erinnerung."
+  </div>
+
+  <div class="dlg lektion">
+    „Dreizehnte Lektion: Schlussrechnung berechnet einen unbekannten vierten Wert aus drei bekannten. Direkte Proportionalität: je mehr/mehr oder weniger/weniger → dividiere durch Bekanntes, multipliziere mit Gesuchtem. Indirekte Proportionalität: je mehr/weniger → multipliziere Bekannte, dividiere durch Gesuchtes. Im Zweifelsfall: Logik vor Formel."
+  </div>
+</div>
+
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-row">
+    <span class="sc2">Direkt:</span> x = Wert₁ ÷ Menge₁ × Menge₂<br>
+    <span class="sp">Indirekt:</span> x = (Menge₁ × Wert₁) ÷ Menge₂<br>
+    <span class="sg">Logik: Steigen beide? Direkt. Eine steigt, eine sinkt? Indirekt.</span>
+  </div>
+  <div class="sb-sub">
+    Gravitationskraft ∝ Masse (direkt) · Lichtintensität ∝ 1/Distanz² (indirekt)<br>
+    Der Einheitswert ist immer der Schlüssel zur direkten Schlussrechnung.
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Erklärus' Notizbuch – Seite 13</span>
+    <p>„Schlussrechnung. Direkt: beide steigen oder beide sinken. Indirekt: eine steigt, die andere sinkt. Sterni erinnerte sich, wie sie einst 360 Kredits für 15 Treibstoffeinheiten bezahlt hatte. Dann, wie sie die Vorräte für 6 Personen auf 8 Tage neu berechnen musste. Und dann erklärte sie mir, warum weiter entfernte Sterne schwächer leuchten. Alles Schlussrechnung. Das Universum auch.<br><br><em>Erinnerungs-Karte, Punkt 13: eine Reparaturstation im Schatten eines roten Zwergsterns, wo Sterni einst tankte, bevor sie sich verirrte.</em>"</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 13 gemeistert!</h2>
+  <p>Treibstoff getankt, Vorräte kalkuliert, Kurs gesetzt.<br>
+     Kapitel 14 wartet: Prozentrechnungen.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-12-runden-von-zahlen.html">← Kapitel 12</a>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-14-prozentrechnungen.html">Kapitel 14 – Prozentrechnungen →</a>
+</div>
+
+<nav class="ch-nav" style="margin-top:1.5rem">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-12-runden-von-zahlen.html">← Kapitel 12</a>
+  <span class="cur">13 – Schlussrechnung</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-14-prozentrechnungen.html">Kapitel 14 →</a>
+</nav>
+
+</main>
+<footer>© 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 13</footer>
+</div>
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'),cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08,med=Math.random()<0.18;
+      stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()):(.2+Math.random()*.8),
+        o:big?.95:med?(.6+Math.random()*.35):(.25+Math.random()*.5),
+        sp:big?(.003+Math.random()*.004):(.004+Math.random()*.012),
+        ph:Math.random()*Math.PI*2,big,med});
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({x:Math.random()*cv.width*1.5,y:-10,
+      vx:-3.5-Math.random()*3,vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120,alpha:1,fade:.012+Math.random()*.008});
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(.45+.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`;cx.fill();
+      if(s.big&&a>.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*.5})`;cx.lineWidth=.7;
+        cx.beginPath();cx.moveTo(s.x-g,s.y);cx.lineTo(s.x+g,s.y);cx.stroke();
+        cx.beginPath();cx.moveTo(s.x,s.y-g);cx.lineTo(s.x,s.y+g);cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const l=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath();cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/l*m.len,m.y-m.vy/l*m.len);
+      cx.strokeStyle=grd;cx.lineWidth=1.8;cx.stroke();
+      m.x+=m.vx;m.y+=m.vy;m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20)meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();initStars();
+  window.addEventListener('resize',()=>{resize();initStars();});
+  requestAnimationFrame(draw);
+  function sched(){spawnMeteor();setTimeout(sched,4000+Math.random()*5000);}
+  setTimeout(sched,1500);
+})();
+
+/* ─── Schlussrechner ─── */
+let scMode = 'direkt';
+
+function setMode(m){
+  scMode = m;
+  document.getElementById('btn-direkt').className = 'sc-mode-btn' + (m==='direkt'?' active direkt':'');
+  document.getElementById('btn-indirekt').className = 'sc-mode-btn' + (m==='indirekt'?' active indirekt':'');
+  scCalc();
+}
+
+function scCalc(){
+  const m1 = parseFloat(document.getElementById('sc-m1').value) || 0;
+  const v1 = parseFloat(document.getElementById('sc-v1').value) || 0;
+  const m2 = parseFloat(document.getElementById('sc-m2').value) || 0;
+  let result, explain;
+
+  if(scMode === 'direkt'){
+    result = (v1 / m1) * m2;
+    const unit = (v1/m1).toFixed(3);
+    explain = `Einheitswert: <strong>${v1} ÷ ${m1} = ${parseFloat(unit)}</strong> → ` +
+              `× ${m2} = <span class="up"><strong>${result.toFixed(2)}</strong></span> &nbsp;·&nbsp; ` +
+              `je mehr Menge → mehr Wert`;
+  } else {
+    result = (m1 * v1) / m2;
+    explain = `Gesamtprodukt: <strong>${m1} × ${v1} = ${m1*v1}</strong> → ` +
+              `÷ ${m2} = <span class="down"><strong>${result.toFixed(2)}</strong></span> &nbsp;·&nbsp; ` +
+              `je mehr Menge → weniger Wert`;
+  }
+
+  document.getElementById('sc-v2').value = isFinite(result) ? result.toFixed(2) : '—';
+  document.getElementById('sc-explain').innerHTML = explain;
+}
+
+scCalc();
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
