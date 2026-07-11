@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 25 – Das Dreieck · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size: 17px; line-height: 1.75; min-height: 100vh; overflow-x: hidden; }
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.above { position: relative; z-index: 1; }
+.site-header { text-align: center; padding: 1.1rem 2rem .9rem; font-family: 'Courier New',monospace; font-size: .78rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); background: rgba(7,13,31,.88); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+.site-header strong { color: var(--gold); }
+.hero { text-align: center; padding: 3.5rem 1.5rem 2rem; background: linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; position: relative; animation: heroBob 3s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(245,200,66,0.6)); }
+@keyframes heroBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.hero h1 { font-size: clamp(1.8rem,4vw,2.6rem); font-weight: 800; color: var(--gold); text-shadow: 0 0 30px rgba(245,200,66,.35); margin-bottom: .3rem; }
+.hero .subtitle { font-size: .88rem; color: var(--muted); font-style: italic; font-family: 'Courier New',monospace; }
+.ch-nav { display: flex; justify-content: center; align-items: center; gap: .8rem; padding: .9rem 1.5rem 1.6rem; flex-wrap: wrap; }
+.ch-nav a, .ch-nav .cur { display: inline-flex; align-items: center; padding: .45rem 1.2rem; border-radius: 50px; font-size: .88rem; font-family: 'Courier New',monospace; text-decoration: none; transition: all .2s; }
+.ch-nav a { background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--text); }
+.ch-nav a:hover { background: rgba(255,255,255,.12); color: var(--gold); }
+.ch-nav .cur { background: var(--gold); color: #1a0e00; font-weight: 700; border: none; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 0 1.2rem 6rem; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 2.2rem; margin-bottom: 1.4rem; }
+.section h2 { font-size: 1.15rem; font-weight: 700; color: var(--gold); margin-bottom: .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.section p { margin-bottom: .85rem; }
+.section p:last-child { margin-bottom: 0; }
+.dlg { border-left: 4px solid; border-radius: 0 10px 10px 0; padding: .85rem 1.1rem; margin: .7rem 0; font-style: italic; line-height: 1.65; }
+.dlg.sterni { border-color: var(--gold); background: rgba(245,200,66,.07); color: var(--gold); }
+.dlg.erklaerus { border-color: var(--blue); background: rgba(91,164,207,.07); color: var(--blue); }
+.dlg.lektion { border-color: var(--cyan); background: rgba(78,205,196,.06); color: #a0e8e4; }
+.dlg .who { font-style: normal; font-weight: 700; font-size: .82rem; letter-spacing: .04em; }
+.svg-wrap { display: flex; justify-content: center; margin: 1.2rem 0; flex-wrap: wrap; gap: 1rem; }
+.regel-box { border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.regel-box.gold { background: rgba(245,200,66,.05); border: 1px solid rgba(245,200,66,.3); }
+.regel-box.cyan { background: rgba(78,205,196,.05); border: 1px solid rgba(78,205,196,.3); }
+.regel-box.purple { background: rgba(155,137,224,.05); border: 1px solid rgba(155,137,224,.3); }
+.regel-box.green { background: rgba(76,175,136,.05); border: 1px solid rgba(76,175,136,.3); }
+.regel-box.orange { background: rgba(232,131,74,.05); border: 1px solid rgba(232,131,74,.3); }
+.rb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: .7rem; font-weight: 700; }
+.regel-box.gold .rb-title { color: var(--gold); }
+.regel-box.cyan .rb-title { color: var(--cyan); }
+.regel-box.purple .rb-title { color: var(--purple); }
+.regel-box.green .rb-title { color: var(--green); }
+.regel-box.orange .rb-title { color: var(--orange); }
+.rb-formel { font-family: 'Courier New',monospace; font-size: 1.1rem; font-weight: 800; text-align: center; padding: .6rem; border-radius: 8px; margin: .6rem 0; }
+.rb-formel.gold { color: var(--gold); background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.rb-formel.cyan { color: var(--cyan); background: rgba(78,205,196,.06); border: 1px solid rgba(78,205,196,.2); }
+.rb-formel.purple { color: var(--purple); background: rgba(155,137,224,.06); border: 1px solid rgba(155,137,224,.2); }
+.rb-formel.orange { color: var(--orange); background: rgba(232,131,74,.06); border: 1px solid rgba(232,131,74,.2); }
+.constr-wrap { background: var(--card3); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin: 1rem 0; }
+.constr-wrap .pw-label { font-family: 'Courier New',monospace; font-size: .72rem; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 1rem; }
+.pc-input { background: var(--card2); border: 1px solid var(--border); border-radius: 7px; padding: .4rem .6rem; color: var(--text); font-family: 'Courier New',monospace; font-size: 1.05rem; width: 75px; text-align: center; }
+.pc-input:focus { outline: none; border-color: var(--gold); }
+.pc-label { font-family: 'Courier New',monospace; font-size: .85rem; color: var(--muted); }
+.pc-info { font-family: 'Courier New',monospace; font-size: .85rem; color: var(--muted); margin-top: .7rem; line-height: 1.9; }
+.pc-info span { color: var(--cyan); font-weight: 700; }
+.pc-warn { color: var(--red); font-weight: 700; }
+.task-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.task-card .tc-head { display: flex; align-items: center; gap: .5rem; padding: .6rem 1.3rem; font-family: 'Courier New',monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--border); }
+.task-card .tc-head.gold { background: rgba(245,200,66,.1); color: var(--gold); }
+.task-card .tc-head.cyan { background: rgba(78,205,196,.1); color: var(--cyan); }
+.task-card .tc-head.purple { background: rgba(155,137,224,.1); color: var(--purple); }
+.task-card .tc-head.green { background: rgba(76,175,136,.12); color: var(--green); }
+.task-card .tc-head.orange { background: rgba(232,131,74,.12); color: var(--orange); }
+.task-card .tc-body { padding: 1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom: .8rem; }
+.q-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.q-btn { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: .55rem 1.1rem; font-size: .93rem; color: var(--text); cursor: pointer; transition: all .18s; font-weight: 600; font-family: 'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.q-btn.ok { background: rgba(76,175,136,.2); border-color: var(--green); color: var(--green); }
+.q-btn.fail { background: rgba(224,90,90,.15); border-color: var(--red); color: var(--red); }
+.q-fb { font-size: .86rem; margin-top: .4rem; min-height: 1.2rem; }
+.q-fb.ok { color: var(--green); }
+.q-fb.fail { color: var(--red); }
+.tri-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .8rem; margin: 1rem 0; }
+.tri-card { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: .9rem .8rem; text-align: center; }
+.tri-card svg { display: block; margin: 0 auto .5rem; }
+.tri-card .tri-name { font-family: 'Courier New',monospace; font-size: .78rem; font-weight: 700; color: var(--gold); }
+.tri-card .tri-desc { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
+.ch-end { text-align: center; margin: 1.4rem 0; }
+.ch-end .big-star { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.ch-end h2 { font-size: 1.5rem; font-weight: 800; color: var(--gold); margin-bottom: .35rem; }
+.ch-end p { color: var(--muted); font-size: .95rem; }
+.bot-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+.bot-nav a { display: inline-flex; align-items: center; gap: .4rem; padding: .6rem 1.4rem; background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.3); border-radius: 50px; color: var(--gold); text-decoration: none; font-size: .9rem; font-family: 'Courier New',monospace; transition: all .2s; }
+.bot-nav a:hover { background: rgba(245,200,66,.16); }
+footer { text-align: center; font-size: .76rem; color: var(--muted); font-family: 'Courier New',monospace; padding: 1.5rem; margin-top: 2rem; border-top: 1px solid var(--border); }
+@media(max-width:600px) { .wrap { padding: 0 .8rem 5rem; } .section { padding: 1.3rem 1.1rem; } }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 25
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🔺</span>
+  <h1>25. Das Dreieck</h1>
+  <p class="subtitle">Drei Seiten, drei Winkel — und ein Satz, der die Mathematik für immer veränderte</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-24-quadrat-rechteck.html">← Kapitel 24</a>
+  <span class="cur">25 – Das Dreieck</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-26-trapez.html">Kapitel 26 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE FÜNFUNDZWANZIGSTE NACHT ═══ -->
+<div class="section">
+  <h2>Die fünfundzwanzigste Nacht — Das Portal der drei Seiten</h2>
+
+  <p>Es war die fünfundzwanzigste Nacht. Die Aufzeichnung lief weiter: Hinter der Kammer der Vierecke hatte sich damals ein schwindelerregend hoher Raum geöffnet. In seiner Mitte schwebte ein leuchtendes Dreieck — so groß wie ein Haus, aus reinem Licht gewoben. Sterni erinnerte sich, wie sie ehrfürchtig stehen geblieben war.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Es leuchtet! Und es ist viel einfacher als das Rechteck — nur drei Seiten. Warum wirkt es trotzdem so ... mächtig?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Weil das Dreieck die stabilste ebene Figur ist, die es gibt. Drei Punkte bestimmen genau eine Ebene. Drei Seiten können nicht wackeln oder verformen, solange ihre Längen festliegen. Brücken, Dächer, Kräne, Türme — sie alle vertrauen dem Dreieck."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und wie viele verschiedene Dreiecke gibt es?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Unendlich viele — aber wir können sie ordnen. Nach ihren Seiten, nach ihren Winkeln. Und mitten unter ihnen thront eine besondere Form, die einen Satz trägt, der über zweitausend Jahre alt ist."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Pythagoras."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau. Aber zuerst lernen wir das Dreieck selbst kennen."
+  </div>
+</div>
+
+<!-- ═══ 2. GRUNDBEGRIFFE ═══ -->
+<div class="section">
+  <h2>Grundbegriffe — Seiten, Ecken, Winkel</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein Dreieck hat drei Ecken — wir nennen sie A, B und C. Die gegenüberliegende Seite heißt immer wie der Kleinbuchstabe der Ecke: Seite a liegt gegenüber Ecke A, Seite b gegenüber Ecke B, Seite c gegenüber Ecke C."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Eine elegante Regel — der Buchstabe bleibt, nur Groß und Klein wechselt."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau. Und die drei Innenwinkel heißen α (Alpha) bei Ecke A, β (Beta) bei Ecke B und γ (Gamma) bei Ecke C. Das sind griechische Buchstaben — Mathematiker lieben sie für Winkel."
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;font-family:'Segoe UI',sans-serif;">
+      <rect x="4" y="4" width="452" height="252" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.2)" stroke-width="1.2"/>
+      <!-- Dreieck ABC: A(70,210), B(390,210), C(230,45) -->
+      <polygon points="70,210 390,210 230,45" fill="rgba(245,200,66,.06)" stroke="#f5c842" stroke-width="2.5"/>
+      <!-- Winkelbögen -->
+      <!-- α bei A(70,210) innen -->
+      <path d="M70,210 L90,210 A20,20 0 0,0 82,197 Z" fill="rgba(245,200,66,0.22)" stroke="#f5c842" stroke-width="1.8"/>
+      <!-- β bei B(390,210) innen -->
+      <path d="M390,210 L370,210 A20,20 0 0,0 378,197 Z" fill="rgba(78,205,196,0.22)" stroke="#4ecdc4" stroke-width="1.8"/>
+      <!-- γ bei C(230,45) innen -->
+      <path d="M230,45 L218,58 A20,20 0 0,0 242,58 Z" fill="rgba(155,137,224,0.22)" stroke="#9b89e0" stroke-width="1.8"/>
+      <!-- Ecken -->
+      <text x="48" y="230" fill="#f5c842" font-size="16" font-weight="800" font-family="'Courier New',monospace">A</text>
+      <text x="396" y="230" fill="#4ecdc4" font-size="16" font-weight="800" font-family="'Courier New',monospace">B</text>
+      <text x="222" y="36" fill="#9b89e0" font-size="16" font-weight="800" font-family="'Courier New',monospace">C</text>
+      <!-- Winkelbezeichnungen -->
+      <text x="80" y="204" fill="#f5c842" font-size="13" font-style="italic" font-family="'Courier New',monospace">α</text>
+      <text x="362" y="204" fill="#4ecdc4" font-size="13" font-style="italic" font-family="'Courier New',monospace">β</text>
+      <text x="224" y="72" fill="#9b89e0" font-size="13" font-style="italic" font-family="'Courier New',monospace">γ</text>
+      <!-- Seiten -->
+      <text x="230" y="238" fill="#4ecdc4" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">a</text>
+      <text x="326" y="138" fill="#9b89e0" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">b</text>
+      <text x="134" y="138" fill="#f5c842" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">c</text>
+    </svg>
+  </div>
+
+  <div class="regel-box gold">
+    <span class="rb-title">Bezeichnungen im Dreieck ABC</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin-top:.4rem;">
+      <div style="background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--gold);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Ecken</div>
+        <div style="font-size:.88rem;margin-top:.2rem;">A, B, C</div>
+      </div>
+      <div style="background:rgba(78,205,196,.06);border:1px solid rgba(78,205,196,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--cyan);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Seiten</div>
+        <div style="font-size:.88rem;margin-top:.2rem;">a (gg. A), b (gg. B), c (gg. C)</div>
+      </div>
+      <div style="background:rgba(155,137,224,.06);border:1px solid rgba(155,137,224,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--purple);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Winkel</div>
+        <div style="font-size:.88rem;margin-top:.2rem;">α (bei A), β (bei B), γ (bei C)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 3. WINKELSUMME ═══ -->
+<div class="section">
+  <h2>Die Winkelsumme — immer 180°</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Es gibt ein erstaunliches Gesetz, das für jedes Dreieck der Welt gilt — egal wie groß, wie spitz oder wie stumpf: Die Summe aller drei Innenwinkel ist immer genau 180°."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Immer? Auch bei einem ganz flachen Dreieck?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Immer. Stell dir vor, du reißt die drei Ecken eines Dreiecks ab und legst sie nebeneinander — sie bilden immer eine gerade Linie. Das ist 180°. Mathematiker beweisen das mit Parallelen: Man zieht durch die oberste Ecke eine Gerade parallel zur Grundlinie, und dann sieht man, dass die drei Winkel genau einen Halbkreis füllen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das ist wie ein Versprechen der Geometrie — egal was passiert, 180° kommen immer heraus."
+  </div>
+
+  <div class="regel-box cyan">
+    <span class="rb-title">Winkelsumme im Dreieck</span>
+    <div class="rb-formel cyan">α + β + γ = 180°</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">Gilt für jedes beliebige Dreieck — ohne Ausnahme.</div>
+  </div>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Diese Regel ist Gold wert: Kennst du zwei Winkel, findest du den dritten durch einfache Subtraktion. Wenn α = 60° und β = 70°, dann ist γ = 180° − 60° − 70° = 50°."
+  </div>
+</div>
+
+<!-- ═══ 4. DREIECKSARTEN NACH WINKELN ═══ -->
+<div class="section">
+  <h2>Dreiecksarten nach den Winkeln</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Wir können Dreiecke nach ihren Winkeln in drei Familien einteilen."
+  </div>
+
+  <div class="tri-grid">
+    <!-- Spitzwinklig -->
+    <div class="tri-card">
+      <svg viewBox="0 0 110 90" width="110" height="90">
+        <polygon points="55,10 100,80 10,80" fill="rgba(78,205,196,.1)" stroke="#4ecdc4" stroke-width="2"/>
+        <path d="M55,10 L46,24 A16,16 0 0,0 64,24 Z" fill="rgba(78,205,196,.22)" stroke="#4ecdc4" stroke-width="1.5"/>
+      </svg>
+      <div class="tri-name">Spitzwinklig</div>
+      <div class="tri-desc">Alle 3 Winkel &lt; 90°</div>
+    </div>
+    <!-- Rechtwinklig -->
+    <div class="tri-card">
+      <svg viewBox="0 0 110 90" width="110" height="90">
+        <polygon points="15,80 15,15 95,80" fill="rgba(245,200,66,.1)" stroke="#f5c842" stroke-width="2"/>
+        <!-- Rechter Winkel innen -->
+        <path d="M15,80 L15,62 A18,18 0 0,1 33,80 Z" fill="rgba(245,200,66,.25)" stroke="#f5c842" stroke-width="1.5"/>
+      </svg>
+      <div class="tri-name">Rechtwinklig</div>
+      <div class="tri-desc">Ein Winkel = 90°</div>
+    </div>
+    <!-- Stumpfwinklig -->
+    <div class="tri-card">
+      <svg viewBox="0 0 110 90" width="110" height="90">
+        <polygon points="5,75 105,75 25,20" fill="rgba(155,137,224,.1)" stroke="#9b89e0" stroke-width="2"/>
+        <path d="M5,75 L25,75 A20,20 0 1,0 12,57 Z" fill="rgba(155,137,224,.22)" stroke="#9b89e0" stroke-width="1.5"/>
+      </svg>
+      <div class="tri-name">Stumpfwinklig</div>
+      <div class="tri-desc">Ein Winkel &gt; 90°</div>
+    </div>
+  </div>
+
+  <div class="regel-box purple">
+    <span class="rb-title">Dreiecke nach Winkeln</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem;margin-top:.4rem;">
+      <div style="background:rgba(78,205,196,.06);border:1px solid rgba(78,205,196,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--cyan);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Spitzwinklig</div>
+        <div style="font-size:.85rem;margin-top:.2rem;">Alle drei Winkel kleiner als 90°</div>
+      </div>
+      <div style="background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--gold);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Rechtwinklig</div>
+        <div style="font-size:.85rem;margin-top:.2rem;">Genau ein Winkel = 90° (rechter Winkel)</div>
+      </div>
+      <div style="background:rgba(155,137,224,.06);border:1px solid rgba(155,137,224,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--purple);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Stumpfwinklig</div>
+        <div style="font-size:.85rem;margin-top:.2rem;">Genau ein Winkel größer als 90°</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. DREIECKSARTEN NACH SEITEN ═══ -->
+<div class="section">
+  <h2>Dreiecksarten nach den Seiten</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Die zweite Einteilung schaut auf die Seiten: Wie viele Seiten sind gleich lang?"
+  </div>
+
+  <div class="tri-grid">
+    <!-- Gleichseitig -->
+    <div class="tri-card">
+      <svg viewBox="0 0 110 95" width="110" height="95">
+        <polygon points="55,8 102,83 8,83" fill="rgba(76,175,136,.1)" stroke="#4caf88" stroke-width="2"/>
+        <!-- Gleichheitsmarkierungen -->
+        <line x1="78" y1="46" x2="84" y2="40" stroke="#4caf88" stroke-width="1.8"/>
+        <line x1="32" y1="46" x2="26" y2="40" stroke="#4caf88" stroke-width="1.8"/>
+        <line x1="55" y1="83" x2="55" y2="74" stroke="#4caf88" stroke-width="1.8"/>
+      </svg>
+      <div class="tri-name">Gleichseitig</div>
+      <div class="tri-desc">Alle 3 Seiten gleich<br>Alle Winkel 60°</div>
+    </div>
+    <!-- Gleichschenklig -->
+    <div class="tri-card">
+      <svg viewBox="0 0 110 95" width="110" height="95">
+        <polygon points="55,8 95,83 15,83" fill="rgba(232,131,74,.1)" stroke="#e8834a" stroke-width="2"/>
+        <line x1="75" y1="46" x2="81" y2="40" stroke="#e8834a" stroke-width="1.8"/>
+        <line x1="35" y1="46" x2="29" y2="40" stroke="#e8834a" stroke-width="1.8"/>
+      </svg>
+      <div class="tri-name">Gleichschenklig</div>
+      <div class="tri-desc">2 Seiten gleich lang<br>2 Basiswinkel gleich</div>
+    </div>
+    <!-- Ungleichseitig -->
+    <div class="tri-card">
+      <svg viewBox="0 0 110 95" width="110" height="95">
+        <polygon points="20,83 100,83 40,18" fill="rgba(91,164,207,.1)" stroke="#5ba4cf" stroke-width="2"/>
+      </svg>
+      <div class="tri-name">Ungleichseitig</div>
+      <div class="tri-desc">Alle 3 Seiten verschieden lang</div>
+    </div>
+  </div>
+
+  <div class="regel-box green">
+    <span class="rb-title">Dreiecke nach Seiten</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem;margin-top:.4rem;">
+      <div style="background:rgba(76,175,136,.06);border:1px solid rgba(76,175,136,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--green);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Gleichseitig</div>
+        <div style="font-size:.85rem;margin-top:.2rem;">a = b = c &nbsp;→&nbsp; alle Winkel 60°</div>
+      </div>
+      <div style="background:rgba(232,131,74,.06);border:1px solid rgba(232,131,74,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--orange);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Gleichschenklig</div>
+        <div style="font-size:.85rem;margin-top:.2rem;">Zwei Seiten gleich &nbsp;→&nbsp; zwei Basiswinkel gleich</div>
+      </div>
+      <div style="background:rgba(91,164,207,.06);border:1px solid rgba(91,164,207,.2);border-radius:8px;padding:.7rem .9rem;">
+        <div style="color:var(--blue);font-family:'Courier New',monospace;font-size:.82rem;font-weight:700;">Ungleichseitig</div>
+        <div style="font-size:.85rem;margin-top:.2rem;">Alle Seiten verschieden — alle Winkel verschieden</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. UMFANG UND FLÄCHE ═══ -->
+<div class="section">
+  <h2>Umfang und Flächeninhalt</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Der Umfang ist einfach: alle drei Seiten addiert. U = a + b + c. Keine Tricks."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und die Fläche? Die ist sicher nicht so einfach wie beim Rechteck."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Schau — jedes Dreieck ist genau die Hälfte eines Parallelogramms, und jedes Parallelogramm lässt sich in ein Rechteck umwandeln. Stell dir ein Rechteck mit Breite g (Grundlinie) und Höhe h vor. Das Dreieck mit derselben Grundlinie und Höhe hat genau die halbe Fläche."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also: Grundlinie mal Höhe geteilt durch zwei!"
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;">
+      <rect x="4" y="4" width="452" height="212" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.2)" stroke-width="1.2"/>
+      <!-- Rechteck (gepunktet) -->
+      <rect x="70" y="40" width="280" height="140" fill="rgba(91,164,207,.04)" stroke="#5ba4cf" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <!-- Dreieck (ausgefüllt) -->
+      <polygon points="70,180 350,180 70,40" fill="rgba(245,200,66,.1)" stroke="#f5c842" stroke-width="2.5"/>
+      <!-- Höhe h -->
+      <line x1="70" y1="40" x2="70" y2="180" stroke="#4ecdc4" stroke-width="1.8" stroke-dasharray="4,4"/>
+      <!-- Rechter Winkel bei Höhenfußpunkt -->
+      <path d="M70,180 L70,164 A16,16 0 0,1 86,180 Z" fill="rgba(78,205,196,0.22)" stroke="#4ecdc4" stroke-width="1.5"/>
+      <!-- Beschriftungen -->
+      <text x="200" y="200" fill="#4ecdc4" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">g (Grundlinie)</text>
+      <text x="46" y="115" fill="#4ecdc4" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">h</text>
+      <text x="165" y="125" fill="#f5c842" font-size="13" font-family="'Courier New',monospace">A = g · h / 2</text>
+      <!-- Rechteck-Label -->
+      <text x="290" y="115" fill="#5ba4cf" font-size="12" font-family="'Courier New',monospace" opacity="0.7">Rechteck:</text>
+      <text x="290" y="130" fill="#5ba4cf" font-size="12" font-family="'Courier New',monospace" opacity="0.7">g · h</text>
+    </svg>
+  </div>
+
+  <div class="regel-box gold">
+    <span class="rb-title">Formeln — Dreieck</span>
+    <div class="rb-formel gold" style="margin-bottom:.5rem;">U = a + b + c</div>
+    <div class="rb-formel gold">A = (g · h) / 2</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">g = Grundlinie &nbsp;|&nbsp; h = Höhe auf g &nbsp;|&nbsp; U = Umfang &nbsp;|&nbsp; A = Flächeninhalt</div>
+  </div>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Wichtig: Die Höhe h steht senkrecht auf der Grundlinie g. Man kann jede der drei Seiten als Grundlinie wählen — die Fläche bleibt immer dieselbe."
+  </div>
+</div>
+
+<!-- ═══ 7. SATZ DES PYTHAGORAS ═══ -->
+<div class="section">
+  <h2>Der Satz des Pythagoras — das Herz des rechtwinkligen Dreiecks</h2>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Erklärus — jetzt bin ich bereit. Erkläre mir Pythagoras."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Gut. Wir haben ein rechtwinkliges Dreieck — eines mit genau einem 90°-Winkel. Die zwei Seiten, die den rechten Winkel einschließen, heißen Katheten: a und b. Die Seite gegenüber dem rechten Winkel — die längste Seite — heißt Hypotenuse: c."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und was sagt Pythagoras?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Er sagt: Das Quadrat der Hypotenuse ist gleich der Summe der Quadrate der beiden Katheten. In Zeichen: c² = a² + b²."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das habe ich schon in Kapitel 24 gehört — bei der Diagonale des Rechtecks!"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Sehr gut, dass du das erkennst. Damals haben wir ihn benutzt, ohne ihn zu beweisen. Heute schauen wir, warum er stimmt — mit einem Bild, das für sich selbst spricht."
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;">
+      <rect x="4" y="4" width="452" height="312" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.2)" stroke-width="1.2"/>
+      <!-- Rechtwinkliges Dreieck: C(90,230), A(90,80), B(290,230) -->
+      <polygon points="90,80 90,230 290,230" fill="rgba(245,200,66,.1)" stroke="#f5c842" stroke-width="2.5"/>
+      <!-- Rechter Winkel bei C(90,230) -->
+      <path d="M90,230 L90,210 A20,20 0 0,1 110,230 Z" fill="rgba(78,205,196,0.22)" stroke="#4ecdc4" stroke-width="1.8"/>
+      <!-- Quadrat auf a (Kathete vertikal: C→A, Länge 150) -->
+      <rect x="20" y="80" width="70" height="150" fill="rgba(78,205,196,.08)" stroke="#4ecdc4" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="55" y="160" fill="#4ecdc4" font-size="13" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">a²</text>
+      <!-- Quadrat auf b (Kathete horizontal: C→B, Länge 200) -->
+      <rect x="90" y="230" width="200" height="70" fill="rgba(155,137,224,.08)" stroke="#9b89e0" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="190" y="275" fill="#9b89e0" font-size="13" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">b²</text>
+      <!-- Ecken -->
+      <text x="72" y="74" fill="#f5c842" font-size="14" font-weight="800" font-family="'Courier New',monospace">A</text>
+      <text x="296" y="248" fill="#f5c842" font-size="14" font-weight="800" font-family="'Courier New',monospace">B</text>
+      <text x="72" y="248" fill="#f5c842" font-size="14" font-weight="800" font-family="'Courier New',monospace">C</text>
+      <!-- Seiten -->
+      <text x="66" y="158" fill="#4ecdc4" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">a</text>
+      <text x="190" y="222" fill="#9b89e0" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">b</text>
+      <text x="205" y="148" fill="#e8834a" font-size="14" font-weight="800" font-family="'Courier New',monospace" text-anchor="middle">c</text>
+      <!-- Formel rechts -->
+      <text x="330" y="130" fill="#e8834a" font-size="15" font-weight="800" font-family="'Courier New',monospace">c² = a² + b²</text>
+      <text x="330" y="155" fill="#muted" font-size="12" font-family="'Courier New',monospace" fill="#7a85b8">Hypotenuse:</text>
+      <text x="330" y="170" fill="#e8834a" font-size="12" font-family="'Courier New',monospace">c = √(a²+b²)</text>
+    </svg>
+  </div>
+
+  <div class="regel-box orange">
+    <span class="rb-title">Satz des Pythagoras</span>
+    <div class="rb-formel orange">c² = a² + b²</div>
+    <div class="rb-formel orange" style="margin-top:.4rem;">c = √(a² + b²)</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.6rem;">
+      a, b = Katheten (schließen den rechten Winkel ein)<br>
+      c = Hypotenuse (liegt dem rechten Winkel gegenüber, längste Seite)
+    </div>
+  </div>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Der Satz gilt auch umgekehrt — das ist der Umkehrsatz: Wenn c² = a² + b², dann ist das Dreieck rechtwinklig. So kann man prüfen, ob drei Seiten ein rechtwinkliges Dreieck bilden."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Zum Beispiel 3, 4, 5 — das 3-4-5-Dreieck! 3² + 4² = 9 + 16 = 25 = 5². Funktioniert!"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Das 3-4-5-Dreieck — die alten Ägypter kannten es. Sie spannten ein Seil mit 12 gleichen Abständen und legten es zu diesem Dreieck, um perfekte rechte Winkel beim Pyramidenbau zu messen."
+  </div>
+</div>
+
+<!-- ═══ 8. INTERAKTIVER RECHNER ═══ -->
+<div class="section">
+  <h2>Sternis Dreieck-Rechner — interaktiv</h2>
+  <p>Gib die drei Seiten ein. Der Rechner zeichnet das Dreieck, berechnet Umfang und Fläche und prüft, ob Pythagoras gilt.</p>
+
+  <div class="constr-wrap">
+    <span class="pw-label">🔺 Dreieck berechnen und zeichnen</span>
+    <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;">
+      <label style="display:flex;align-items:center;gap:.5rem;">
+        <span class="pc-label">Seite a:</span>
+        <input type="number" id="inp-a" class="pc-input" value="3" min="0.1" step="0.1">
+        <span class="pc-label">cm</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:.5rem;">
+        <span class="pc-label">Seite b:</span>
+        <input type="number" id="inp-b" class="pc-input" value="4" min="0.1" step="0.1">
+        <span class="pc-label">cm</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:.5rem;">
+        <span class="pc-label">Seite c:</span>
+        <input type="number" id="inp-c" class="pc-input" value="5" min="0.1" step="0.1">
+        <span class="pc-label">cm</span>
+      </label>
+    </div>
+    <canvas id="tri-canvas" width="420" height="260" style="width:100%;max-width:420px;border-radius:10px;background:rgba(7,13,31,.7);display:block;"></canvas>
+    <div class="pc-info" id="tri-info" style="margin-top:.8rem;"></div>
+  </div>
+</div>
+
+<!-- ═══ 9. QUIZ ═══ -->
+<div class="section">
+  <h2>Sternis Übungen — Das Dreieck</h2>
+
+  <div class="task-card">
+    <div class="tc-head gold">⭐ Aufgabe 1 — Winkelsumme</div>
+    <div class="tc-body">
+      <p>In einem Dreieck sind zwei Winkel bekannt: α = 55° und β = 80°. Wie groß ist γ?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 135° = 55° + 80° — das wäre die Summe der beiden bekannten Winkel, nicht der dritte.')">135°</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 55° wäre falsch — überprüfe: 55° + 80° + 55° = 190° ≠ 180°.')">55°</button>
+        <button class="q-btn" onclick="q(this,true,'q1','Richtig! γ = 180° − 55° − 80° = 45°. Die Winkelsumme im Dreieck beträgt immer 180°.')">45°</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 25° wäre zu wenig: 55° + 80° + 25° = 160° ≠ 180°.')">25°</button>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head cyan">🔵 Aufgabe 2 — Dreiecksart</div>
+    <div class="tc-body">
+      <p>Ein Dreieck hat die Winkel 60°, 60°, 60°. Welche Art ist es?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! Rechtwinklig wäre ein Dreieck mit genau einem 90°-Winkel.')">Rechtwinklig</button>
+        <button class="q-btn" onclick="q(this,true,'q2','Richtig! Alle drei Winkel sind 60° — kleiner als 90°, also spitzwinklig. Und weil alle Winkel gleich sind, sind auch alle Seiten gleich lang: gleichseitiges Dreieck!')">Spitzwinklig und gleichseitig</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! Stumpfwinklig wäre ein Dreieck mit einem Winkel über 90°.')">Stumpfwinklig</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! Gleichschenklig bedeutet, dass genau zwei Seiten gleich lang sind — hier sind aber alle drei gleich.')">Gleichschenklig, aber nicht gleichseitig</button>
+      </div>
+      <div class="q-fb" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head purple">🟣 Aufgabe 3 — Flächeninhalt</div>
+    <div class="tc-body">
+      <p>Ein Dreieck hat eine Grundlinie g = 10 cm und eine Höhe h = 6 cm. Wie groß ist sein Flächeninhalt?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! 60 cm² = 10 · 6 — das wäre der Flächeninhalt eines Rechtecks. Beim Dreieck noch durch 2 teilen!')">60 cm²</button>
+        <button class="q-btn" onclick="q(this,true,'q3','Richtig! A = (g · h) / 2 = (10 · 6) / 2 = 60 / 2 = 30 cm².')">30 cm²</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! 16 cm ist der halbe Umfang — das ist etwas ganz anderes als der Flächeninhalt.')">16 cm²</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! 32 cm² hat keine direkte Beziehung zu diesen Angaben.')">32 cm²</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head green">🟢 Aufgabe 4 — Pythagoras</div>
+    <div class="tc-body">
+      <p>Ein rechtwinkliges Dreieck hat die Katheten a = 5 cm und b = 12 cm. Wie lang ist die Hypotenuse c?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! 17 cm = 5 + 12 — einfaches Addieren der Katheten ergibt nicht die Hypotenuse.')">17 cm</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! 8,5 cm wäre der Mittelwert — das hat mit Pythagoras nichts zu tun.')">8,5 cm</button>
+        <button class="q-btn" onclick="q(this,true,'q4','Richtig! c = √(5² + 12²) = √(25 + 144) = √169 = 13 cm. Das berühmte 5-12-13-Dreieck!')">13 cm</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! 10,9 cm ≈ √(5² + 9²) — du hast b falsch eingesetzt.')">ca. 10,9 cm</button>
+      </div>
+      <div class="q-fb" id="q4-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head orange">🟠 Aufgabe 5 — Umkehrsatz</div>
+    <div class="tc-body">
+      <p>Prüfe: Bilden die Seiten 6 cm, 8 cm und 10 cm ein rechtwinkliges Dreieck?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,true,'q5','Richtig! 6² + 8² = 36 + 64 = 100 = 10². Der Umkehrsatz des Pythagoras bestätigt: Es ist rechtwinklig. Das ist das 3-4-5-Dreieck, verdoppelt!')">Ja — 6² + 8² = 10²</button>
+        <button class="q-btn" onclick="q(this,false,'q5','Nein! Rechne nach: 6² + 8² = 36 + 64 = 100, und 10² = 100. Die Gleichung stimmt — es ist rechtwinklig.')">Nein — die Summe stimmt nicht.</button>
+      </div>
+      <div class="q-fb" id="q5-fb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 10. ABSCHLUSS ═══ -->
+<div class="section">
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das Dreieck ist einfach und tief zugleich. Winkelsumme 180°, Fläche mit Grundlinie und Höhe, und dann dieser mächtige Satz des Pythagoras — alles hängt zusammen."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Und du hast erst die Oberfläche berührt. Das Dreieck verbirgt noch Höhen, Mittelpunkte, Umkreise und Inkreise — eine ganze Welt. Aber das Fundament steht. Bereit für das nächste Abenteuer?"
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Was kommt als nächstes?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Das Trapez — ein Viereck mit nur einem Paar paralleler Seiten. Du wirst sehen, wie viel des Dreiecks darin steckt."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich bin gespannt!"
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Weißt du, dieses leuchtende Dreieck aus Licht — es kommt mir vor, als hätte es fast geschwebt, ohne jede Stütze. Vielleicht war es gar keine feste Konstruktion."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein schwebendes Dreieck aus reinem Licht. Auch das notiere ich — eines der rätselhafteren Bilder auf deiner Karte."
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Fünfundzwanzigste Lektion: </span>„Ein Dreieck hat 3 Ecken (A, B, C), 3 Seiten (a, b, c) und 3 Innenwinkel (α, β, γ). Die Winkelsumme beträgt immer α + β + γ = 180°. Nach Winkeln unterscheidet man spitz-, recht- und stumpfwinklige Dreiecke; nach Seiten gleich-, gleichschenklige und ungleichseitige. Umfang: U = a + b + c. Flächeninhalt: A = (g · h) / 2. Im rechtwinkligen Dreieck gilt der Satz des Pythagoras: c² = a² + b², wobei c die Hypotenuse und a, b die Katheten sind."
+  </div>
+  <p style="font-size:.85rem;color:var(--muted);margin-top:.8rem"><em>Erinnerungs-Karte, Punkt 25: ein riesiges, schwebendes Dreieck aus reinem Licht, ohne erkennbare Stütze — eines der rätselhaftesten Bilder bisher.</em></p>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">🔺</span>
+  <h2>Kapitel 25 abgeschlossen</h2>
+  <p>Das Dreieck — von der Winkelsumme bis zum Satz des Pythagoras.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-24-quadrat-rechteck.html">← Kapitel 24: Quadrat und Rechteck</a>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-26-trapez.html">Kapitel 26: Trapez →</a>
+</div>
+
+<nav class="ch-nav" style="margin-top:1.5rem">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-24-quadrat-rechteck.html">← Kapitel 24</a>
+  <span class="cur">25 – Das Dreieck</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-26-trapez.html">Kapitel 26 →</a>
+</nav>
+
+</main>
+<footer>Erklärus &amp; Sterni · Mathematik für Denker · Kapitel 25</footer>
+</div>
+
+<script>
+/* ── Sternenhimmel ── */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    stars=Array.from({length:220},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.4+.2,o:Math.random()*.7+.1,s:Math.random()*.4+.05
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(Math.random()>.5?1:-1);
+      s.o=Math.max(.05,Math.min(.85,s.o));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,230,255,${s.o})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init();draw();window.addEventListener('resize',init);
+})();
+
+/* ── Dreieck-Rechner ── */
+(function(){
+  const inpA=document.getElementById('inp-a');
+  const inpB=document.getElementById('inp-b');
+  const inpC=document.getElementById('inp-c');
+  const canvas=document.getElementById('tri-canvas');
+  const ctx=canvas.getContext('2d');
+  const info=document.getElementById('tri-info');
+  const W=420,H=260,PAD=55;
+
+  function update(){
+    const a=parseFloat(inpA.value)||1;
+    const b=parseFloat(inpB.value)||1;
+    const c=parseFloat(inpC.value)||1;
+
+    ctx.clearRect(0,0,W,H);
+
+    // Dreiecksungleichung prüfen
+    if(a+b<=c||a+c<=b||b+c<=a){
+      ctx.fillStyle='rgba(224,90,90,.15)';
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#e05a5a';
+      ctx.font='bold 14px "Courier New",monospace';
+      ctx.textAlign='center';
+      ctx.fillText('Kein gültiges Dreieck!',W/2,H/2-10);
+      ctx.font='12px "Courier New",monospace';
+      ctx.fillText('(Dreiecksungleichung verletzt)',W/2,H/2+14);
+      info.innerHTML='<span class="pc-warn">Diese drei Seiten können kein Dreieck bilden.</span>';
+      return;
+    }
+
+    // Koordinaten aus Seiten berechnen (Kosinussatz)
+    // A bei (PAD, H-PAD), B bei (PAD+b, H-PAD) — b als Basis
+    const cosA=(b*b+c*c-a*a)/(2*b*c);
+    const sinA=Math.sqrt(Math.max(0,1-cosA*cosA));
+
+    // Skalierung
+    const maxW=W-2*PAD, maxH=H-2*PAD;
+    const scale=Math.min(maxW/b, maxH/(c*sinA+0.001));
+
+    const ax=PAD, ay=H-PAD;
+    const bx=PAD+b*scale, by=H-PAD;
+    const cx2=PAD+c*cosA*scale, cy2=H-PAD-c*sinA*scale;
+
+    // Füllung
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.lineTo(cx2,cy2);ctx.closePath();
+    ctx.fillStyle='rgba(245,200,66,.1)';ctx.fill();
+    ctx.strokeStyle='#f5c842';ctx.lineWidth=2.5;ctx.stroke();
+
+    // Winkelbögen (innen)
+    const arcR=18;
+    function arcAt(px,py,v1x,v1y,v2x,v2y,col){
+      const a1=Math.atan2(v1y-py,v1x-px);
+      const a2=Math.atan2(v2y-py,v2x-px);
+      ctx.beginPath();ctx.moveTo(px,py);ctx.arc(px,py,arcR,a1,a2,false);ctx.closePath();
+      ctx.fillStyle=col.replace('1)','0.2)');ctx.fill();
+      ctx.beginPath();ctx.arc(px,py,arcR,a1,a2,false);
+      ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.stroke();
+    }
+    arcAt(ax,ay,bx,by,cx2,cy2,'rgba(245,200,66,1)');
+    arcAt(bx,by,cx2,cy2,ax,ay,'rgba(78,205,196,1)');
+    arcAt(cx2,cy2,ax,ay,bx,by,'rgba(155,137,224,1)');
+
+    // Beschriftungen Ecken
+    ctx.font='bold 14px "Courier New",monospace';
+    ctx.fillStyle='#f5c842';
+    ctx.textAlign='center';
+    ctx.fillText('A',ax-14,ay+16);
+    ctx.fillText('B',bx+14,by+16);
+    ctx.fillText('C',cx2,cy2-12);
+
+    // Seiten-Labels (Mittelpunkte)
+    ctx.font='bold 13px "Courier New",monospace';
+    ctx.fillStyle='#4ecdc4';
+    ctx.fillText('a',( bx+cx2)/2+10,(by+cy2)/2);
+    ctx.fillStyle='#9b89e0';
+    ctx.fillText('b',(ax+cx2)/2-10,(ay+cy2)/2);
+    ctx.fillStyle='#e8834a';
+    ctx.fillText('c',(ax+bx)/2,ay+22);
+
+    // Berechnungen
+    // Winkel in Grad
+    const angA=Math.acos(Math.max(-1,Math.min(1,(b*b+c*c-a*a)/(2*b*c))))*180/Math.PI;
+    const angB=Math.acos(Math.max(-1,Math.min(1,(a*a+c*c-b*b)/(2*a*c))))*180/Math.PI;
+    const angC=180-angA-angB;
+
+    // Typ
+    let typ='spitzwinklig';
+    if(Math.abs(angA-90)<0.5||Math.abs(angB-90)<0.5||Math.abs(angC-90)<0.5) typ='rechtwinklig ✓';
+    else if(angA>90||angB>90||angC>90) typ='stumpfwinklig';
+
+    // Fläche (Heron)
+    const s2=(a+b+c)/2;
+    const area=Math.sqrt(Math.max(0,s2*(s2-a)*(s2-b)*(s2-c)));
+    const perim=a+b+c;
+
+    // Pythagoras-Check
+    const sides=[a,b,c].sort((x,y)=>x-y);
+    const pyth=Math.abs(sides[0]**2+sides[1]**2-sides[2]**2)<0.01;
+
+    info.innerHTML=
+      `Umfang: <span>U = ${a} + ${b} + ${c} = ${perim.toFixed(2)} cm</span><br>`+
+      `Flächeninhalt: <span>A ≈ ${area.toFixed(2)} cm²</span><br>`+
+      `Winkel: <span>α ≈ ${angA.toFixed(1)}°, β ≈ ${angB.toFixed(1)}°, γ ≈ ${angC.toFixed(1)}°</span><br>`+
+      `Typ: <span>${typ}</span><br>`+
+      (pyth?`<span style="color:var(--green)">✓ Pythagoras bestätigt: ${sides[0]}² + ${sides[1]}² = ${sides[2]}²</span>`:'');
+  }
+
+  [inpA,inpB,inpC].forEach(i=>i.addEventListener('input',update));
+  update();
+})();
+
+/* ── Quiz ── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
