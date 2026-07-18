@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 28 – Würfel und Quader · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size: 17px; line-height: 1.75; min-height: 100vh; overflow-x: hidden; }
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.above { position: relative; z-index: 1; }
+.site-header { text-align: center; padding: 1.1rem 2rem .9rem; font-family: 'Courier New',monospace; font-size: .78rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); background: rgba(7,13,31,.88); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+.site-header strong { color: var(--gold); }
+.hero { text-align: center; padding: 3.5rem 1.5rem 2rem; background: linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; position: relative; animation: heroBob 3s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(245,200,66,0.6)); }
+@keyframes heroBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.hero h1 { font-size: clamp(1.8rem,4vw,2.6rem); font-weight: 800; color: var(--gold); text-shadow: 0 0 30px rgba(245,200,66,.35); margin-bottom: .3rem; }
+.hero .subtitle { font-size: .88rem; color: var(--muted); font-style: italic; font-family: 'Courier New',monospace; }
+.ch-nav { display: flex; justify-content: center; align-items: center; gap: .8rem; padding: .9rem 1.5rem 1.6rem; flex-wrap: wrap; }
+.ch-nav a, .ch-nav .cur { display: inline-flex; align-items: center; padding: .45rem 1.2rem; border-radius: 50px; font-size: .88rem; font-family: 'Courier New',monospace; text-decoration: none; transition: all .2s; }
+.ch-nav a { background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--text); }
+.ch-nav a:hover { background: rgba(255,255,255,.12); color: var(--gold); }
+.ch-nav .cur { background: var(--gold); color: #1a0e00; font-weight: 700; border: none; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 0 1.2rem 6rem; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 2.2rem; margin-bottom: 1.4rem; }
+.section h2 { font-size: 1.15rem; font-weight: 700; color: var(--gold); margin-bottom: .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.section p { margin-bottom: .85rem; }
+.section p:last-child { margin-bottom: 0; }
+.dlg { border-left: 4px solid; border-radius: 0 10px 10px 0; padding: .85rem 1.1rem; margin: .7rem 0; font-style: italic; line-height: 1.65; }
+.dlg.sterni { border-color: var(--gold); background: rgba(245,200,66,.07); color: var(--gold); }
+.dlg.erklaerus { border-color: var(--blue); background: rgba(91,164,207,.07); color: var(--blue); }
+.dlg.lektion { border-color: var(--cyan); background: rgba(78,205,196,.06); color: #a0e8e4; }
+.dlg .who { font-style: normal; font-weight: 700; font-size: .82rem; letter-spacing: .04em; }
+.svg-wrap { display: flex; justify-content: center; margin: 1.2rem 0; flex-wrap: wrap; gap: 1rem; }
+.regel-box { border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.regel-box.gold  { background: rgba(245,200,66,.05);  border: 1px solid rgba(245,200,66,.3); }
+.regel-box.cyan  { background: rgba(78,205,196,.05);  border: 1px solid rgba(78,205,196,.3); }
+.regel-box.purple{ background: rgba(155,137,224,.05); border: 1px solid rgba(155,137,224,.3); }
+.regel-box.green { background: rgba(76,175,136,.05);  border: 1px solid rgba(76,175,136,.3); }
+.regel-box.orange{ background: rgba(232,131,74,.05);  border: 1px solid rgba(232,131,74,.3); }
+.regel-box.pink  { background: rgba(232,122,171,.05); border: 1px solid rgba(232,122,171,.3); }
+.rb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: .7rem; font-weight: 700; }
+.regel-box.gold   .rb-title { color: var(--gold); }
+.regel-box.cyan   .rb-title { color: var(--cyan); }
+.regel-box.purple .rb-title { color: var(--purple); }
+.regel-box.green  .rb-title { color: var(--green); }
+.regel-box.orange .rb-title { color: var(--orange); }
+.regel-box.pink   .rb-title { color: var(--pink); }
+.rb-formel { font-family: 'Courier New',monospace; font-size: 1.1rem; font-weight: 800; text-align: center; padding: .6rem; border-radius: 8px; margin: .6rem 0; }
+.rb-formel.gold   { color: var(--gold);   background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.rb-formel.cyan   { color: var(--cyan);   background: rgba(78,205,196,.06); border: 1px solid rgba(78,205,196,.2); }
+.rb-formel.purple { color: var(--purple); background: rgba(155,137,224,.06); border: 1px solid rgba(155,137,224,.2); }
+.rb-formel.orange { color: var(--orange); background: rgba(232,131,74,.06); border: 1px solid rgba(232,131,74,.2); }
+.rb-formel.pink   { color: var(--pink);   background: rgba(232,122,171,.06); border: 1px solid rgba(232,122,171,.2); }
+.task-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.task-card .tc-head { display: flex; align-items: center; gap: .5rem; padding: .6rem 1.3rem; font-family: 'Courier New',monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--border); }
+.task-card .tc-head.gold   { background: rgba(245,200,66,.1);  color: var(--gold); }
+.task-card .tc-head.cyan   { background: rgba(78,205,196,.1);  color: var(--cyan); }
+.task-card .tc-head.purple { background: rgba(155,137,224,.1); color: var(--purple); }
+.task-card .tc-head.green  { background: rgba(76,175,136,.12); color: var(--green); }
+.task-card .tc-head.orange { background: rgba(232,131,74,.12); color: var(--orange); }
+.task-card .tc-head.pink   { background: rgba(232,122,171,.12);color: var(--pink); }
+.task-card .tc-body { padding: 1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom: .8rem; }
+.q-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.q-btn { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: .55rem 1.1rem; font-size: .93rem; color: var(--text); cursor: pointer; transition: all .18s; font-weight: 600; font-family: 'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.q-btn.ok   { background: rgba(76,175,136,.2);  border-color: var(--green); color: var(--green); }
+.q-btn.fail { background: rgba(224,90,90,.15); border-color: var(--red);   color: var(--red); }
+.q-fb { font-size: .86rem; margin-top: .4rem; min-height: 1.2rem; }
+.q-fb.ok   { color: var(--green); }
+.q-fb.fail { color: var(--red); }
+.fact-box { background: linear-gradient(135deg,rgba(91,164,207,.08),rgba(155,137,224,.08)); border: 1px solid rgba(91,164,207,.3); border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.fact-box .fb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; color: var(--blue); display: block; margin-bottom: .6rem; font-weight: 700; }
+.ch-end { text-align: center; margin: 1.4rem 0; }
+.ch-end .big-star { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.ch-end h2 { font-size: 1.5rem; font-weight: 800; color: var(--gold); margin-bottom: .35rem; }
+.ch-end p { color: var(--muted); font-size: .95rem; }
+.bot-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+.bot-nav a { display: inline-flex; align-items: center; gap: .4rem; padding: .6rem 1.4rem; background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.3); border-radius: 50px; color: var(--gold); text-decoration: none; font-size: .9rem; font-family: 'Courier New',monospace; transition: all .2s; }
+.bot-nav a:hover { background: rgba(245,200,66,.16); }
+footer { text-align: center; font-size: .76rem; color: var(--muted); font-family: 'Courier New',monospace; padding: 1.5rem; margin-top: 2rem; border-top: 1px solid var(--border); }
+@media(max-width:600px){ .wrap{padding:0 .8rem 5rem;} .section{padding:1.3rem 1.1rem;} }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 28
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🧊</span>
+  <h1>28. Würfel und Quader</h1>
+  <p class="subtitle">Wenn Flächen zu Körpern werden — der erste Schritt in die dritte Dimension</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-27-kreis.html">← Kapitel 27</a>
+  <span class="cur">28 – Würfel und Quader</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-29-prismen.html">Kapitel 29 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE ACHTUNDZWANZIGSTE NACHT ═══ -->
+<div class="section">
+  <h2>Die achtundzwanzigste Nacht — Der Schwarm aus Würfeln</h2>
+
+  <p>Es war die achtundzwanzigste Nacht. In einer weiteren alten Aufzeichnung entdeckte Sterni etwas, das sie noch nie gesehen hatte: einen ganzen Schwarm winziger, glänzender Kästchen, die dicht beieinander durch den Raum trieben. Manche waren perfekte kleine Würfel, andere länglich wie Schuhkartons.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Das sind so viele kleine Kisten! Manche sehen völlig gleich aus — wie Zwillinge nach allen Seiten. Andere sind gestreckt, fast wie ein Ziegelstein."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein scharfes Auge. Die gleichmäßigen nennt man Würfel — alle Kanten gleich lang, alle sechs Flächen gleich große Quadrate. Die gestreckten nennt man Quader — auch sechs rechteckige Flächen, aber nicht alle Kanten gleich lang."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und warum reisen sie im Schwarm?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Weil sich Würfel perfekt stapeln lassen. Setzt man mehrere gleich große Würfel aneinander, entsteht automatisch ein Quader. Das ist kein Zufall — das ist der ganze Trick der dritten Dimension, den wir heute lernen."
+  </div>
+</div>
+
+<!-- ═══ 2. EIGENSCHAFTEN ═══ -->
+<div class="section">
+  <h2>Eigenschaften — was einen Würfel und einen Quader ausmacht</h2>
+
+  <p>Beide Körper gehören zur Familie der <strong>Quader im weiteren Sinn</strong>: Grund- und Deckfläche sind parallel und deckungsgleich, und beide haben genau <strong>8 Ecken</strong>, <strong>12 Kanten</strong> und <strong>6 Begrenzungsflächen</strong>.</p>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;">
+      <rect x="4" y="4" width="452" height="212" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(100,120,200,.2)" stroke-width="1.2"/>
+
+      <!-- Würfel links -->
+      <g stroke="#f5c842" stroke-width="2" fill="none" stroke-linejoin="round">
+        <polygon points="60,150 150,150 150,60 60,60" fill="rgba(245,200,66,.1)"/>
+        <polygon points="60,60 150,60 190,25 100,25" fill="rgba(245,200,66,.18)"/>
+        <polygon points="150,150 150,60 190,25 190,115" fill="rgba(245,200,66,.06)"/>
+        <line x1="60" y1="150" x2="100" y2="115"/>
+        <line x1="100" y1="115" x2="190" y2="115"/>
+        <line x1="100" y1="115" x2="100" y2="25"/>
+      </g>
+      <text x="125" y="185" fill="var(--gold)" font-size="13" font-weight="700" font-family="'Courier New',monospace" text-anchor="middle">Würfel · a=a=a</text>
+
+      <!-- Quader rechts -->
+      <g stroke="#4ecdc4" stroke-width="2" fill="none" stroke-linejoin="round">
+        <polygon points="270,155 410,155 410,75 270,75" fill="rgba(78,205,196,.1)"/>
+        <polygon points="270,75 410,75 440,45 300,45" fill="rgba(78,205,196,.18)"/>
+        <polygon points="410,155 410,75 440,45 440,125" fill="rgba(78,205,196,.06)"/>
+        <line x1="270" y1="155" x2="300" y2="125"/>
+        <line x1="300" y1="125" x2="440" y2="125"/>
+        <line x1="300" y1="125" x2="300" y2="45"/>
+      </g>
+      <text x="355" y="185" fill="var(--cyan)" font-size="13" font-weight="700" font-family="'Courier New',monospace" text-anchor="middle">Quader · a≠b≠c</text>
+    </svg>
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Merksatz: </span>„Ein Würfel ist ein Sonderfall des Quaders — genau wie das Quadrat ein Sonderfall des Rechtecks war. Immer wenn a = b = c gilt, wird aus dem Quader ein Würfel."
+  </div>
+</div>
+
+<!-- ═══ 3. OBERFLÄCHE ═══ -->
+<div class="section">
+  <h2>Die Oberfläche — das Netz sichtbar gemacht</h2>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wenn ich so eine Kiste anmalen wollte, wie viel Farbe bräuchte ich?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau die richtige Frage — das ist die Oberfläche O. Stell dir vor, du schneidest die Kiste an ihren Kanten auf und faltest sie flach. Dann siehst du ihr Netz: sechs Rechtecke."
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:380px;">
+      <!-- Kreuzförmiges Würfelnetz -->
+      <g stroke="#f5c842" stroke-width="1.6" fill="rgba(245,200,66,.14)">
+        <rect x="150" y="10"  width="70" height="70"/>
+        <rect x="80"  y="80"  width="70" height="70"/>
+        <rect x="150" y="80"  width="70" height="70"/>
+        <rect x="220" y="80"  width="70" height="70"/>
+        <rect x="290" y="80"  width="70" height="70"/>
+        <rect x="150" y="150" width="70" height="70"/>
+      </g>
+      <g fill="var(--gold)" font-size="11" font-family="'Courier New',monospace" text-anchor="middle">
+        <text x="185" y="49">a²</text>
+        <text x="115" y="119">a²</text>
+        <text x="185" y="119">a²</text>
+        <text x="255" y="119">a²</text>
+        <text x="325" y="119">a²</text>
+        <text x="185" y="189">a²</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Beim Würfel sind alle sechs Flächen gleich groß — jede ist ein Quadrat mit Fläche a². Beim Quader sind immer zwei gegenüberliegende Flächen gleich groß, aber die drei Flächenpaare unterscheiden sich."
+  </div>
+
+  <div class="regel-box gold">
+    <span class="rb-title">Formel — Oberfläche des Würfels</span>
+    <div class="rb-formel gold">O = 6 · a²</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">a = Kantenlänge</div>
+  </div>
+
+  <div class="regel-box cyan">
+    <span class="rb-title">Formel — Oberfläche des Quaders</span>
+    <div class="rb-formel cyan">O = 2 · (a·b + a·c + b·c)</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">a, b, c = die drei unterschiedlichen Kantenlängen</div>
+  </div>
+</div>
+
+<!-- ═══ 4. MANTELFLÄCHE ═══ -->
+<div class="section">
+  <h2>Die Mantelfläche — alles außer Boden und Deckel</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Manchmal braucht man nicht die ganze Oberfläche, sondern nur die vier Seitenwände — ohne Grund- und Deckfläche. Das nennt man Mantelfläche M."
+  </div>
+
+  <div class="regel-box purple">
+    <span class="rb-title">Formel — Mantelfläche</span>
+    <div class="rb-formel purple">Würfel: M = 4 · a²</div>
+    <div class="rb-formel purple">Quader: M = 2 · a·c + 2 · b·c</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">c ist hier die Höhe — die Fläche, die „stehend" um den Körper läuft</div>
+  </div>
+</div>
+
+<!-- ═══ 5. VOLUMEN ═══ -->
+<div class="section">
+  <h2>Das Volumen — wie viele Einheitswürfel passen hinein?</h2>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und wie viel <em>Platz</em> ist in so einer Kiste? So wie bei der Fläche der Fliese, nur jetzt in drei Richtungen?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Exakt dieselbe Idee! Stell dir vor, wir bauen einen Quader aus lauter kleinen Einheitswürfeln — jeder genau 1 cm auf jeder Seite. Wie viele passen hinein?"
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;">
+      <!-- Top-Fläche -->
+      <polygon points="160,30 232.75,72 184.25,100 111.5,58" fill="rgba(78,205,196,.28)" stroke="#4ecdc4" stroke-width="1.8" stroke-linejoin="round"/>
+      <g stroke="#4ecdc4" stroke-width="1" opacity=".7">
+        <line x1="184.25" y1="44"  x2="135.75" y2="72"/>
+        <line x1="208.5"  y1="58"  x2="160"    y2="86"/>
+        <line x1="135.75" y1="44"  x2="208.5"  y2="86"/>
+      </g>
+
+      <!-- Rechte Vorderfläche (Länge x Höhe) -->
+      <polygon points="111.5,58 184.25,100 184.25,156 111.5,114" fill="rgba(77,150,255,.35)" stroke="#4d96ff" stroke-width="1.8" stroke-linejoin="round"/>
+      <g stroke="#4d96ff" stroke-width="1" opacity=".7">
+        <line x1="135.75" y1="72"  x2="135.75" y2="128"/>
+        <line x1="160"    y1="86"  x2="160"    y2="142"/>
+        <line x1="111.5"  y1="86"  x2="184.25" y2="128"/>
+      </g>
+
+      <!-- Linke Vorderfläche (Breite x Höhe) -->
+      <polygon points="232.75,72 184.25,100 184.25,156 232.75,128" fill="rgba(155,137,224,.32)" stroke="#9b89e0" stroke-width="1.8" stroke-linejoin="round"/>
+      <g stroke="#9b89e0" stroke-width="1" opacity=".7">
+        <line x1="208.5" y1="86"  x2="208.5" y2="142"/>
+        <line x1="232.75" y1="100" x2="184.25" y2="128"/>
+      </g>
+
+      <!-- Vordere Kante hervorgehoben -->
+      <line x1="184.25" y1="100" x2="184.25" y2="156" stroke="var(--gold)" stroke-width="3"/>
+
+      <!-- Maßangaben -->
+      <text x="128" y="188" fill="#4d96ff" font-size="12" font-family="'Courier New',monospace" text-anchor="middle">a = 3</text>
+      <text x="222" y="188" fill="#9b89e0" font-size="12" font-family="'Courier New',monospace" text-anchor="middle">b = 2</text>
+      <text x="198" y="130" fill="var(--gold)" font-size="12" font-family="'Courier New',monospace" text-anchor="start">c = 2</text>
+    </svg>
+    <p style="text-align:center;font-size:.85rem;color:var(--muted);margin-top:.4rem;max-width:320px;">3 Einheitswürfel lang · 2 tief · 2 hoch = 3 · 2 · 2 = 12 Einheitswürfel</p>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Drei nebeneinander, mal eine Reihe tief, mal zwei Schichten übereinander... das ist wieder Länge mal Breite mal Höhe!"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau dasselbe Prinzip wie bei der Fläche — nur jetzt mit einer dritten Richtung. Das Volumen zählt, wie viele Einheitswürfel lückenlos hineinpassen."
+  </div>
+
+  <div class="regel-box orange">
+    <span class="rb-title">Formel — Volumen des Würfels</span>
+    <div class="rb-formel orange">V = a · a · a = a³</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">a = Kantenlänge</div>
+  </div>
+
+  <div class="regel-box orange">
+    <span class="rb-title">Formel — Volumen des Quaders</span>
+    <div class="rb-formel orange">V = a · b · c</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">a = Länge &nbsp;|&nbsp; b = Breite &nbsp;|&nbsp; c = Höhe</div>
+  </div>
+</div>
+
+<!-- ═══ 6. AUFGABEN ═══ -->
+<div class="section">
+  <h2>Übungsaufgaben</h2>
+
+  <div class="task-card">
+    <div class="tc-head gold">🟡 Aufgabe 1 — Würfeloberfläche</div>
+    <div class="tc-body">
+      <p>Ein Würfel hat die Kantenlänge a = 5 cm. Wie groß ist seine Oberfläche?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 25 cm² ist nur eine einzelne Fläche (a²) — aber der Würfel hat 6 davon.')">25 cm²</button>
+        <button class="q-btn" onclick="q(this,true,'q1','Richtig! O = 6 · a² = 6 · 25 = 150 cm².')">150 cm²</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 125 cm³ wäre das Volumen (a³), nicht die Oberfläche.')">125 cm²</button>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head cyan">🔵 Aufgabe 2 — Quadervolumen</div>
+    <div class="tc-body">
+      <p>Ein CubeSat-Container ist 30 cm lang, 20 cm breit und 10 cm hoch. Wie groß ist sein Volumen?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 60 cm wäre nur die Summe der Kanten — das ergibt keinen sinnvollen Wert für Volumen.')">60 cm³</button>
+        <button class="q-btn" onclick="q(this,true,'q2','Richtig! V = a · b · c = 30 · 20 · 10 = 6.000 cm³ — das sind 6 Liter.')">6.000 cm³</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 600 cm³ wäre nur 30 · 20, ohne die Höhe mit einzurechnen.')">600 cm³</button>
+      </div>
+      <div class="q-fb" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head purple">🟣 Aufgabe 3 — Sonderfall erkennen</div>
+    <div class="tc-body">
+      <p>Ein Quader hat die Kanten a = 7 cm, b = 7 cm, c = 7 cm. Was folgt daraus?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,true,'q3','Richtig! Wenn alle drei Kanten gleich lang sind, ist der Quader ein Würfel — ein Sonderfall.')">Es ist ein Würfel</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! Ein Quader mit a=b=c ist immer ein Würfel — das ist per Definition so.')">Das ist unmöglich</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. UNIVERSUM-FAKT ═══ -->
+<div class="section">
+  <div class="fact-box">
+    <span class="fb-title">🛰️ Fakt aus dem echten Universum</span>
+    <p>Die Kästchen aus Sternis Aufzeichnung erinnern an ein reales Konzept der Raumfahrt: <strong>CubeSats</strong>. Das sind kleine, standardisierte Satelliten, die exakt als Würfel mit 10 cm Kantenlänge gebaut werden — genannt „1U" (ein Unit). Mehrere dieser Einheitswürfel lassen sich zu größeren Quadern kombinieren: 2U, 3U oder sogar 6U. Weil die Maße immer gleich sind, passen CubeSats aus aller Welt in dieselben Startraketen — Ingenieure müssen nur wissen, wie viele Einheitswürfel sie stapeln, um Volumen und Gewicht zu berechnen. Genau die Mathematik, die du heute gelernt hast.</p>
+  </div>
+</div>
+
+<!-- ═══ 8. ABSCHLUSS ═══ -->
+<div class="section">
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also ist ein großer Quader eigentlich nur viele kleine Würfel, ordentlich gestapelt?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genauso ist es. Und diese Idee — komplizierte Körper aus einfachen Bausteinen zusammenzusetzen — wird uns die nächsten Kapitel begleiten. Als Nächstes lernst du Prismen kennen: Körper, die nicht nur aus Rechtecken bestehen, sondern aus jeder beliebigen Grundfläche gebaut sein können."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich bin gespannt! Und weißt du, dieser Schwarm aus Würfeln — ich glaube, er hat mir irgendwie den Weg gewiesen, damals. Als wäre er eine Art Wegmarke gewesen."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein Schwarm aus Würfeln als Wegmarke. Eine schöne Ergänzung für deine Karte."
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Achtundzwanzigste Lektion: </span>„Würfel und Quader haben 8 Ecken, 12 Kanten, 6 Flächen. Der Würfel ist ein Sonderfall des Quaders (a=b=c). Oberfläche Würfel: O = 6a². Oberfläche Quader: O = 2·(ab+ac+bc). Mantelfläche Würfel: M = 4a². Mantelfläche Quader: M = 2ac+2bc. Volumen Würfel: V = a³. Volumen Quader: V = a·b·c. Fläche zählt Einheitsquadrate, Volumen zählt Einheitswürfel — dasselbe Prinzip, eine Dimension mehr."
+  </div>
+  <p style="font-size:.85rem;color:var(--muted);margin-top:.8rem"><em>Erinnerungs-Karte, Punkt 28: ein Schwarm glänzender Würfel und Quader im All — vielleicht eine Wegmarke auf Sternis altem Kurs.</em></p>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">🧊</span>
+  <h2>Kapitel 28 abgeschlossen</h2>
+  <p>Würfel und Quader — der erste Schritt von der Fläche zum Körper.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-27-kreis.html">← Kapitel 27: Der Kreis</a>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-29-prismen.html">Kapitel 29: Prismen →</a>
+</div>
+
+<nav class="ch-nav" style="margin-top:1.5rem">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-27-kreis.html">← Kapitel 27</a>
+  <span class="cur">28 – Würfel und Quader</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-29-prismen.html">Kapitel 29 →</a>
+</nav>
+
+</main>
+<footer>Erklärus &amp; Sterni · Mathematik für Denker · Kapitel 28</footer>
+</div><!-- .above -->
+
+<script>
+/* ── Sternenhimmel ── */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    stars=Array.from({length:240},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.4+.2,o:Math.random()*.7+.1,s:Math.random()*.4+.05
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(Math.random()>.5?1:-1);
+      s.o=Math.max(.05,Math.min(.85,s.o));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,230,255,${s.o})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init();draw();window.addEventListener('resize',init);
+})();
+
+/* ── Quiz ── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
