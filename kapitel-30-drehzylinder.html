@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 30 – Drehzylinder · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a; --pink:#e87aab;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size: 17px; line-height: 1.75; min-height: 100vh; overflow-x: hidden; }
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.above { position: relative; z-index: 1; }
+.site-header { text-align: center; padding: 1.1rem 2rem .9rem; font-family: 'Courier New',monospace; font-size: .78rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); background: rgba(7,13,31,.88); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+.site-header strong { color: var(--gold); }
+.hero { text-align: center; padding: 3.5rem 1.5rem 2rem; background: linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; position: relative; animation: heroBob 3s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(245,200,66,0.6)); }
+@keyframes heroBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.hero h1 { font-size: clamp(1.8rem,4vw,2.6rem); font-weight: 800; color: var(--gold); text-shadow: 0 0 30px rgba(245,200,66,.35); margin-bottom: .3rem; }
+.hero .subtitle { font-size: .88rem; color: var(--muted); font-style: italic; font-family: 'Courier New',monospace; }
+.ch-nav { display: flex; justify-content: center; align-items: center; gap: .8rem; padding: .9rem 1.5rem 1.6rem; flex-wrap: wrap; }
+.ch-nav a, .ch-nav .cur { display: inline-flex; align-items: center; padding: .45rem 1.2rem; border-radius: 50px; font-size: .88rem; font-family: 'Courier New',monospace; text-decoration: none; transition: all .2s; }
+.ch-nav a { background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--text); }
+.ch-nav a:hover { background: rgba(255,255,255,.12); color: var(--gold); }
+.ch-nav .cur { background: var(--gold); color: #1a0e00; font-weight: 700; border: none; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 0 1.2rem 6rem; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 2.2rem; margin-bottom: 1.4rem; }
+.section h2 { font-size: 1.15rem; font-weight: 700; color: var(--gold); margin-bottom: .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.section p { margin-bottom: .85rem; }
+.section p:last-child { margin-bottom: 0; }
+.dlg { border-left: 4px solid; border-radius: 0 10px 10px 0; padding: .85rem 1.1rem; margin: .7rem 0; font-style: italic; line-height: 1.65; }
+.dlg.sterni { border-color: var(--gold); background: rgba(245,200,66,.07); color: var(--gold); }
+.dlg.erklaerus { border-color: var(--blue); background: rgba(91,164,207,.07); color: var(--blue); }
+.dlg.lektion { border-color: var(--cyan); background: rgba(78,205,196,.06); color: #a0e8e4; }
+.dlg .who { font-style: normal; font-weight: 700; font-size: .82rem; letter-spacing: .04em; }
+.svg-wrap { display: flex; justify-content: center; margin: 1.2rem 0; flex-wrap: wrap; gap: 1rem; }
+.regel-box { border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.regel-box.gold  { background: rgba(245,200,66,.05);  border: 1px solid rgba(245,200,66,.3); }
+.regel-box.cyan  { background: rgba(78,205,196,.05);  border: 1px solid rgba(78,205,196,.3); }
+.regel-box.purple{ background: rgba(155,137,224,.05); border: 1px solid rgba(155,137,224,.3); }
+.regel-box.green { background: rgba(76,175,136,.05);  border: 1px solid rgba(76,175,136,.3); }
+.regel-box.orange{ background: rgba(232,131,74,.05);  border: 1px solid rgba(232,131,74,.3); }
+.regel-box.pink  { background: rgba(232,122,171,.05); border: 1px solid rgba(232,122,171,.3); }
+.rb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: .7rem; font-weight: 700; }
+.regel-box.gold   .rb-title { color: var(--gold); }
+.regel-box.cyan   .rb-title { color: var(--cyan); }
+.regel-box.purple .rb-title { color: var(--purple); }
+.regel-box.green  .rb-title { color: var(--green); }
+.regel-box.orange .rb-title { color: var(--orange); }
+.regel-box.pink   .rb-title { color: var(--pink); }
+.rb-formel { font-family: 'Courier New',monospace; font-size: 1.1rem; font-weight: 800; text-align: center; padding: .6rem; border-radius: 8px; margin: .6rem 0; }
+.rb-formel.gold   { color: var(--gold);   background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.rb-formel.cyan   { color: var(--cyan);   background: rgba(78,205,196,.06); border: 1px solid rgba(78,205,196,.2); }
+.rb-formel.purple { color: var(--purple); background: rgba(155,137,224,.06); border: 1px solid rgba(155,137,224,.2); }
+.rb-formel.orange { color: var(--orange); background: rgba(232,131,74,.06); border: 1px solid rgba(232,131,74,.2); }
+.rb-formel.pink   { color: var(--pink);   background: rgba(232,122,171,.06); border: 1px solid rgba(232,122,171,.2); }
+.task-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.task-card .tc-head { display: flex; align-items: center; gap: .5rem; padding: .6rem 1.3rem; font-family: 'Courier New',monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--border); }
+.task-card .tc-head.gold   { background: rgba(245,200,66,.1);  color: var(--gold); }
+.task-card .tc-head.cyan   { background: rgba(78,205,196,.1);  color: var(--cyan); }
+.task-card .tc-head.purple { background: rgba(155,137,224,.1); color: var(--purple); }
+.task-card .tc-head.green  { background: rgba(76,175,136,.12); color: var(--green); }
+.task-card .tc-head.orange { background: rgba(232,131,74,.12); color: var(--orange); }
+.task-card .tc-head.pink   { background: rgba(232,122,171,.12);color: var(--pink); }
+.task-card .tc-body { padding: 1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom: .8rem; }
+.q-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.q-btn { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: .55rem 1.1rem; font-size: .93rem; color: var(--text); cursor: pointer; transition: all .18s; font-weight: 600; font-family: 'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.q-btn.ok   { background: rgba(76,175,136,.2);  border-color: var(--green); color: var(--green); }
+.q-btn.fail { background: rgba(224,90,90,.15); border-color: var(--red);   color: var(--red); }
+.q-fb { font-size: .86rem; margin-top: .4rem; min-height: 1.2rem; }
+.q-fb.ok   { color: var(--green); }
+.q-fb.fail { color: var(--red); }
+.fact-box { background: linear-gradient(135deg,rgba(91,164,207,.08),rgba(155,137,224,.08)); border: 1px solid rgba(91,164,207,.3); border-radius: 14px; padding: 1.3rem 1.5rem; margin: 1rem 0; }
+.fact-box .fb-title { font-family: 'Courier New',monospace; font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; color: var(--blue); display: block; margin-bottom: .6rem; font-weight: 700; }
+.ch-end { text-align: center; margin: 1.4rem 0; }
+.ch-end .big-star { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.ch-end h2 { font-size: 1.5rem; font-weight: 800; color: var(--gold); margin-bottom: .35rem; }
+.ch-end p { color: var(--muted); font-size: .95rem; }
+.bot-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+.bot-nav a { display: inline-flex; align-items: center; gap: .4rem; padding: .6rem 1.4rem; background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.3); border-radius: 50px; color: var(--gold); text-decoration: none; font-size: .9rem; font-family: 'Courier New',monospace; transition: all .2s; }
+.bot-nav a:hover { background: rgba(245,200,66,.16); }
+footer { text-align: center; font-size: .76rem; color: var(--muted); font-family: 'Courier New',monospace; padding: 1.5rem; margin-top: 2rem; border-top: 1px solid var(--border); }
+@media(max-width:600px){ .wrap{padding:0 .8rem 5rem;} .section{padding:1.3rem 1.1rem;} }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 30
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🥫</span>
+  <h1>30. Der Drehzylinder</h1>
+  <p class="subtitle">Das runde Geschwister der Prismen</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-29-prismen.html">← Kapitel 29</a>
+  <span class="cur">30 – Drehzylinder</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-31-pyramide.html">Kapitel 31 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE DREISSIGSTE NACHT ═══ -->
+<div class="section">
+  <h2>Die dreißigste Nacht — Die rollende Röhre</h2>
+
+  <p>Es war die dreißigste Nacht. Zwischen den Kristallfeldern der letzten Nacht trieb etwas Neues: eine glatte, glänzende Röhre, oben und unten von zwei exakt runden Scheiben verschlossen. Sie hatte keine Ecken, keine Kanten — und wenn ein sanfter Windstoß aus einer alten Aufzeichnung sie berührte, begann sie leise zu rollen.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Die kann rollen? Meine Kristalle von letzter Nacht standen immer still! Ist das überhaupt noch dieselbe Familie?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein sehr scharfer Vergleich. Das hier ist ein <strong>Drehzylinder</strong> — und du hast recht, er ist tatsächlich ein enger Verwandter deiner Prismen. Stell dir vor, du würdest die Grundfläche eines Prismas immer weiter abrunden: erst ein Sechseck, dann ein Zwölfeck, dann ein Vieleck mit hundert Seiten … irgendwann siehst du keine Ecken mehr. Was übrig bleibt, ist ein Kreis. Genau das ist ein Zylinder: ein rundes, gerades Prisma."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also gelten für ihn dieselben Regeln wie für die Prismen — nur mit einem Kreis als Grundfläche?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Fast alle. Schauen wir es uns an."
+  </div>
+</div>
+
+<!-- ═══ 2. EIGENSCHAFTEN ═══ -->
+<div class="section">
+  <h2>Was ist ein Drehzylinder?</h2>
+
+  <p>Ein Drehzylinder hat eine kreisförmige <strong>Grundfläche G</strong> und eine kreisförmige <strong>Deckfläche D</strong>, die deckungsgleich und parallel zueinander sind. Verbunden werden beide durch eine gekrümmte <strong>Mantelfläche</strong> — statt der ebenen Rechtecke, die ein eckiges Prisma hätte.</p>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;">
+      <!-- verdeckte Grundfläche unten, gestrichelt -->
+      <ellipse cx="130" cy="165" rx="62" ry="20" fill="rgba(245,200,66,.1)" stroke="#f5c842" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <!-- Mantel -->
+      <path d="M 68,165 L 68,65 A 62,20 0 0 0 192,65 L 192,165" fill="rgba(245,200,66,.18)" stroke="#f5c842" stroke-width="2"/>
+      <line x1="68" y1="65" x2="68" y2="165" stroke="#f5c842" stroke-width="2"/>
+      <line x1="192" y1="65" x2="192" y2="165" stroke="#f5c842" stroke-width="2"/>
+      <!-- Deckfläche oben -->
+      <ellipse cx="130" cy="65" rx="62" ry="20" fill="rgba(245,200,66,.34)" stroke="#f5c842" stroke-width="2"/>
+      <!-- Radius -->
+      <line x1="130" y1="65" x2="192" y2="65" stroke="var(--gold)" stroke-width="1.6"/>
+      <text x="160" y="58" fill="var(--gold)" font-size="11" font-family="'Courier New',monospace" text-anchor="middle">r</text>
+      <!-- Höhe -->
+      <line x1="26" y1="165" x2="26" y2="65" stroke="var(--muted)" stroke-width="1.4"/>
+      <line x1="22" y1="165" x2="30" y2="165" stroke="var(--muted)" stroke-width="1.4"/>
+      <line x1="22" y1="65"  x2="30" y2="65"  stroke="var(--muted)" stroke-width="1.4"/>
+      <text x="20" y="119" fill="var(--muted)" font-size="12" font-weight="700" font-family="'Courier New',monospace" text-anchor="end">h</text>
+      <!-- Beschriftungen -->
+      <text x="130" y="42" fill="var(--gold)" font-size="12" font-weight="700" font-family="'Courier New',monospace" text-anchor="middle">Deckfläche D</text>
+      <text x="130" y="118" fill="#1a1200" font-size="11" font-weight="700" font-family="'Courier New',monospace" text-anchor="middle" style="paint-order:stroke;stroke:rgba(245,200,66,.6);stroke-width:5px;">Mantel M</text>
+      <text x="130" y="188" fill="var(--gold)" font-size="12" font-weight="700" font-family="'Courier New',monospace" text-anchor="middle">Grundfläche G</text>
+    </svg>
+  </div>
+  <p style="text-align:center;font-size:.85rem;color:var(--muted);margin-top:-.6rem;">Der Zylinder steht aufrecht auf seiner Grundfläche G (gestrichelt, da verdeckt) — die Deckfläche D oben ist genau gleich groß. Höhe h und Radius r bestimmen den ganzen Körper.</p>
+
+  <div class="dlg lektion">
+    <span class="who">Merksatz: </span>„Grund- und Deckfläche eines Zylinders sind kongruente, parallele Kreise. Die Mantelfläche ist gekrümmt, nicht eben. Ein Zylinder braucht nur zwei Maße: den Radius r der Grundfläche und die Höhe h."
+  </div>
+
+  <p>Da die Grundfläche ein Kreis ist, kennst du ihre Fläche G bereits aus einer früheren Nacht:</p>
+
+  <div class="regel-box gold">
+    <span class="rb-title">Formel — Grundfläche des Zylinders</span>
+    <div class="rb-formel gold">G = π · r²</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">r = Radius der Grundfläche</div>
+  </div>
+</div>
+
+<!-- ═══ 3. DAS NETZ ═══ -->
+<div class="section">
+  <h2>Das Netz — der Mantel als Rechteck</h2>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wenn ich diese runde Röhre aufschneiden würde — bekomme ich dann wieder ein Rechteck wie bei den eckigen Prismen?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau. Schneide den Mantel einmal senkrecht auf und rolle ihn flach — heraus kommt ein Rechteck. Seine Länge ist der Umfang des Kreises, seine Breite die Höhe des Zylinders. Nur die beiden Deckel bleiben Kreise, keine Vielecke."
+  </div>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;">
+      <!-- Deckfläche oben: Kreis, tangential an der oberen Kante des Rechtecks -->
+      <circle cx="150" cy="42" r="32" fill="rgba(245,200,66,.2)" stroke="#f5c842" stroke-width="1.8"/>
+      <text x="150" y="47" fill="var(--gold)" font-size="12" font-family="'Courier New',monospace" text-anchor="middle">G</text>
+      <!-- Mantel: ein einziges großes Rechteck -->
+      <rect x="60" y="74" width="180" height="90" fill="rgba(78,205,196,.12)" stroke="#4ecdc4" stroke-width="1.8"/>
+      <text x="150" y="122" fill="var(--cyan)" font-size="12" font-family="'Courier New',monospace" text-anchor="middle">M = u · h</text>
+      <!-- Grundfläche unten: Kreis, tangential an der unteren Kante -->
+      <circle cx="150" cy="196" r="32" fill="rgba(245,200,66,.2)" stroke="#f5c842" stroke-width="1.8"/>
+      <text x="150" y="201" fill="var(--gold)" font-size="12" font-family="'Courier New',monospace" text-anchor="middle">G</text>
+      <!-- Maße am Rechteck -->
+      <text x="150" y="182" fill="var(--muted)" font-size="10.5" font-family="'Courier New',monospace" text-anchor="middle" style="display:none;"></text>
+      <line x1="60" y1="70" x2="240" y2="70" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="150" y="68" fill="var(--cyan)" font-size="10" font-family="'Courier New',monospace" text-anchor="middle" style="display:none;"></text>
+      <text x="245" y="122" fill="var(--muted)" font-size="10.5" font-family="'Courier New',monospace" text-anchor="start">h</text>
+      <text x="150" y="14" fill="var(--muted)" font-size="10.5" font-family="'Courier New',monospace" text-anchor="middle">Umfang u = 2·π·r</text>
+    </svg>
+  </div>
+
+  <p>Der Kreis berührt das Mantel-Rechteck nur in einem einzigen Punkt — anders als bei einem eckigen Prisma, wo eine ganze gerade Kante anliegt. Das liegt daran, dass ein Kreisrand gekrümmt ist: Er kann sich an eine gerade Linie nur mit einem Punkt anschmiegen, nicht mit einer ganzen Seite.</p>
+
+  <p>Die Länge des Mantel-Rechtecks ist der <strong>Umfang des Kreises</strong>, u = 2 · π · r. Seine Breite ist die <strong>Höhe h</strong> des Zylinders.</p>
+
+  <div class="regel-box cyan">
+    <span class="rb-title">Formel — Mantelfläche des Zylinders</span>
+    <div class="rb-formel cyan">M = u · h = 2 · π · r · h</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">r = Radius der Grundfläche &nbsp;|&nbsp; h = Höhe des Zylinders</div>
+  </div>
+</div>
+
+<!-- ═══ 4. OBERFLÄCHE ═══ -->
+<div class="section">
+  <h2>Die Oberfläche — genau wie beim Prisma</h2>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Und jetzt kommt die schöne Nachricht: Die Formel für die Oberfläche ändert sich überhaupt nicht gegenüber den eckigen Prismen. Nur G und M werden jetzt mit den Kreisformeln berechnet."
+  </div>
+
+  <div class="regel-box purple">
+    <span class="rb-title">Formel — Oberfläche des Zylinders</span>
+    <div class="rb-formel purple">O = 2 · G + M = 2 · π · r² + 2 · π · r · h</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">Zwei Kreisflächen (Grund- und Deckfläche) plus die aufgerollte Mantelfläche</div>
+  </div>
+</div>
+
+<!-- ═══ 5. VOLUMEN ═══ -->
+<div class="section">
+  <h2>Das Volumen — wieder Grundfläche mal Höhe</h2>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Lass mich raten: V = G · h, genau wie bei jedem anderen Prisma?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Du hast es erfasst, Sterni! Ein Zylinder ist ein rundes, gerades Prisma — also gilt für sein Volumen exakt dieselbe Regel wie für jedes andere Prisma. Nur G ist jetzt die Kreisfläche."
+  </div>
+
+  <div class="regel-box orange">
+    <span class="rb-title">Formel — Volumen des Zylinders</span>
+    <div class="rb-formel orange">V = G · h = π · r² · h</div>
+    <div style="color:var(--muted);font-size:.85rem;margin-top:.4rem;">r = Radius der Grundfläche &nbsp;|&nbsp; h = Höhe des Zylinders</div>
+  </div>
+
+  <p>Ein Beispiel: Eine zylindrische Kapsel hat den Radius r = 3 cm und die Höhe h = 10 cm.</p>
+  <p>Zuerst die Grundfläche: G = π · r² = π · 3² ≈ 28,27 cm². Danach das Volumen: V = G · h ≈ 28,27 · 10 ≈ <strong>282,7 cm³</strong>.</p>
+</div>
+
+<!-- ═══ 6. AUFGABEN ═══ -->
+<div class="section">
+  <h2>Übungsaufgaben</h2>
+
+  <div class="task-card">
+    <div class="tc-head gold">🟡 Aufgabe 1 — Grundfläche berechnen</div>
+    <div class="tc-body">
+      <p>Ein Zylinder hat den Radius r = 4 cm. Wie groß ist seine Grundfläche? (Runde auf zwei Nachkommastellen, π ≈ 3,14)</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 12,56 cm² wäre π · r, aber die Formel verlangt r² (r hoch 2), nicht nur r.')">12,56 cm²</button>
+        <button class="q-btn" onclick="q(this,true,'q1','Richtig! G = π · r² = 3,14 · 16 = 50,24 cm².')">50,24 cm²</button>
+        <button class="q-btn" onclick="q(this,false,'q1','Nein! 25,12 cm² wäre nur der Umfang, nicht die Fläche.')">25,12 cm²</button>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head cyan">🔵 Aufgabe 2 — Mantelfläche berechnen</div>
+    <div class="tc-body">
+      <p>Ein Zylinder hat den Radius r = 2 cm und die Höhe h = 5 cm. Wie groß ist seine Mantelfläche? (π ≈ 3,14)</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 31,4 cm² wäre nur π · r · h ohne die 2 — aber der Umfang ist 2·π·r, nicht π·r.')">31,4 cm²</button>
+        <button class="q-btn" onclick="q(this,true,'q2','Richtig! M = 2 · π · r · h = 2 · 3,14 · 2 · 5 = 62,8 cm².')">62,8 cm²</button>
+        <button class="q-btn" onclick="q(this,false,'q2','Nein! 12,56 cm² wäre nur die Grundfläche π·r², nicht die Mantelfläche.')">12,56 cm²</button>
+      </div>
+      <div class="q-fb" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head purple">🟣 Aufgabe 3 — Volumen berechnen</div>
+    <div class="tc-body">
+      <p>Ein Zylinder hat die Grundfläche G = 20 cm² und die Höhe h = 6 cm. Wie groß ist sein Volumen?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! 26 cm³ wäre G + h — aber beim Volumen wird multipliziert.')">26 cm³</button>
+        <button class="q-btn" onclick="q(this,true,'q3','Richtig! V = G · h = 20 · 6 = 120 cm³.')">120 cm³</button>
+        <button class="q-btn" onclick="q(this,false,'q3','Nein! 40 cm³ wäre nur 2 · G, ohne die Höhe einzurechnen.')">40 cm³</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+    </div>
+  </div>
+
+  <div class="task-card">
+    <div class="tc-head green">🟢 Aufgabe 4 — Zylinder verstehen</div>
+    <div class="tc-body">
+      <p>Warum berührt der Kreis im Netz eines Zylinders das Mantel-Rechteck nur an einem einzigen Punkt, statt mit einer ganzen Kante anzuliegen?</p>
+      <div class="q-opts">
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Der Radius spielt dabei keine direkte Rolle, sondern die Form des Randes.')">Weil der Radius zu klein ist</button>
+        <button class="q-btn" onclick="q(this,true,'q4','Richtig! Ein Kreisrand ist gekrümmt und hat keine geraden Kanten — er kann sich einer geraden Linie nur in einem Punkt anschmiegen.')">Weil der Kreisrand gekrümmt ist, nicht gerade</button>
+        <button class="q-btn" onclick="q(this,false,'q4','Nein! Das gilt für jeden Zylinder, unabhängig von der Höhe.')">Weil der Zylinder zu hoch ist</button>
+      </div>
+      <div class="q-fb" id="q4-fb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. UNIVERSUM-FAKT ═══ -->
+<div class="section">
+  <div class="fact-box">
+    <span class="fb-title">🛰️ Fakt aus dem echten Universum</span>
+    <p>Der Name „Drehzylinder" passt zufällig perfekt zu einer echten Idee aus der Raumfahrt: dem <strong>O'Neill-Zylinder</strong>. Das ist der Entwurf einer riesigen, rotierenden zylindrischen Raumstation, benannt nach dem Physiker Gerard O'Neill. Ein solcher Zylinder könnte kilometerlang sein und sich langsam um seine eigene Längsachse drehen. Durch diese Drehung entsteht eine Fliehkraft, die sich an der Innenwand wie künstliche Schwerkraft anfühlt — Menschen könnten darin so laufen, als stünden sie auf dem Boden, obwohl sie tief im schwerelosen All schweben. Bis heute wurde kein O'Neill-Zylinder gebaut, aber Raumfahrtorganisationen und private Unternehmen untersuchen die Idee bis heute als möglichen Lebensraum für zukünftige Generationen im All.</p>
+  </div>
+</div>
+
+<!-- ═══ 8. ABSCHLUSS ═══ -->
+<div class="section">
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ein Zylinder, der sich dreht und dabei so etwas wie Schwerkraft erzeugt … das fühlt sich fast an, als könnte man darin zu Hause sein."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein schöner Gedanke, Sterni. Vielleicht ist dein Zuhause ja auch nur eine Drehung entfernt. Du hast jetzt gesehen: eckige Prismen und runde Zylinder folgen demselben Bauplan — nur die Form der Grundfläche unterscheidet sie. Als Nächstes zeige ich dir einen Körper, der sich nicht nach oben durchzieht, sondern zu einer einzigen Spitze zusammenläuft: die Pyramide."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Eine Spitze, die alles zusammenführt … das klingt fast so, als käme ich meinem Ziel damit näher."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Wer weiß, Sterni. Schauen wir es uns in der nächsten Nacht an."
+  </div>
+
+  <div class="dlg lektion">
+    <span class="who">Dreißigste Lektion: </span>„Ein Drehzylinder ist ein rundes, gerades Prisma: Grund- und Deckfläche sind kongruente, parallele Kreise, verbunden durch eine gekrümmte Mantelfläche. Grundfläche: G = π·r². Mantelfläche: M = 2·π·r·h. Oberfläche: O = 2·G + M. Volumen: V = G·h = π·r²·h — dieselbe Formel wie bei jedem Prisma, nur mit der Kreisfläche als G."
+  </div>
+  <p style="font-size:.85rem;color:var(--muted);margin-top:.8rem"><em>Erinnerungs-Karte, Punkt 30: eine glatte, rollende Röhre zwischen den Kristallfeldern — das runde Geschwister der Prismen.</em></p>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">🥫</span>
+  <h2>Kapitel 30 abgeschlossen</h2>
+  <p>Der Drehzylinder — ein Prisma ohne Ecken, aber mit demselben Bauplan.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-29-prismen.html">← Kapitel 29: Prismen</a>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-31-pyramide.html">Kapitel 31: Pyramide →</a>
+</div>
+
+<nav class="ch-nav" style="margin-top:1.5rem">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-29-prismen.html">← Kapitel 29</a>
+  <span class="cur">30 – Drehzylinder</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-31-pyramide.html">Kapitel 31 →</a>
+</nav>
+
+</main>
+<footer>Erklärus &amp; Sterni · Mathematik für Denker · Kapitel 30</footer>
+</div><!-- .above -->
+
+<script>
+/* ── Sternenhimmel ── */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let W,H,stars=[];
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    stars=Array.from({length:240},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.4+.2,o:Math.random()*.7+.1,s:Math.random()*.4+.05
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.o+=s.s*(Math.random()>.5?1:-1);
+      s.o=Math.max(.05,Math.min(.85,s.o));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,230,255,${s.o})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init();draw();window.addEventListener('resize',init);
+})();
+
+/* ── Quiz ── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
