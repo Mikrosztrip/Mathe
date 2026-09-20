@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 10 – Positive und negative Zahlen · Erklärus &amp; Sterni</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#070d1f; --bg2:#0d1530; --card:#111c3a; --card2:#162040; --card3:#0e1830;
+  --border:rgba(100,120,200,.25); --text:#dde5ff; --muted:#7a85b8;
+  --gold:#f5c842; --blue:#5ba4cf; --cyan:#4ecdc4; --purple:#9b89e0;
+  --green:#4caf88; --red:#e05a5a; --orange:#e8834a;
+  --pink:#e87aab;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif; font-size:17px; line-height:1.75; min-height:100vh; overflow-x:hidden; }
+#starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.above { position:relative; z-index:1; }
+
+.site-header { text-align:center; padding:1.1rem 2rem .9rem; font-family:'Courier New',monospace; font-size:.78rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; border-bottom:1px solid var(--border); background:rgba(7,13,31,.88); backdrop-filter:blur(10px); position:sticky; top:0; z-index:100; }
+.site-header strong { color:var(--gold); }
+
+.hero { text-align:center; padding:3.5rem 1.5rem 2rem; background:linear-gradient(180deg,rgba(13,21,48,.95) 0%,rgba(7,13,31,0) 100%); }
+.hero .hero-icon { font-size: 3.6rem; display: block; margin-bottom: .5rem; position: relative; animation: heroBob 3s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(245,200,66,0.6)); }
+@keyframes heroBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.hero h1 { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; color:var(--gold); text-shadow:0 0 30px rgba(245,200,66,.35); margin-bottom:.3rem; }
+.hero .subtitle { font-size:.88rem; color:var(--muted); font-style:italic; font-family:'Courier New',monospace; }
+
+.ch-nav { display:flex; justify-content:center; align-items:center; gap:.8rem; padding:.9rem 1.5rem 1.6rem; flex-wrap:wrap; }
+.ch-nav a, .ch-nav .cur { display:inline-flex; align-items:center; padding:.45rem 1.2rem; border-radius:50px; font-size:.88rem; font-family:'Courier New',monospace; text-decoration:none; transition:all .2s; }
+.ch-nav a { background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text); }
+.ch-nav a:hover { background:rgba(255,255,255,.12); color:var(--gold); }
+.ch-nav .cur { background:var(--gold); color:#1a0e00; font-weight:700; border:none; }
+
+.wrap { max-width:780px; margin:0 auto; padding:0 1.2rem 6rem; }
+
+.section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem 2.2rem; margin-bottom:1.4rem; }
+.section h2 { font-size:1.15rem; font-weight:700; color:var(--gold); margin-bottom:.9rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+.section p { margin-bottom:.85rem; }
+.section p:last-child { margin-bottom:0; }
+
+.dlg { border-left:4px solid; border-radius:0 10px 10px 0; padding:.85rem 1.1rem; margin:.7rem 0; font-style:italic; font-size:1rem; line-height:1.6; }
+.dlg.sterni    { border-color:var(--gold);  background:rgba(245,200,66,.07); color:var(--gold); }
+.dlg.erklaerus { border-color:var(--blue);  background:rgba(91,164,207,.07); color:var(--blue); }
+.dlg.lektion   { border-color:var(--cyan);  background:rgba(78,205,196,.06); color:#a0e8e4; }
+.dlg .who { font-style:normal; font-weight:700; font-size:.82rem; letter-spacing:.04em; display:inline; }
+
+/* ── ZAHLENSTRAHL ── */
+.numline-wrap { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.6rem 1.5rem 1.3rem; margin:1rem 0; overflow-x:auto; }
+.numline-wrap .nl-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1.4rem; }
+.numline { position:relative; height:60px; min-width:520px; margin:0 auto; }
+.nl-line { position:absolute; top:28px; left:0; right:0; height:2px; background:linear-gradient(90deg, rgba(232,122,171,.4) 0%, rgba(100,120,200,.3) 48%, rgba(78,205,196,.4) 100%); }
+.nl-arrow-l { position:absolute; top:22px; left:-2px; width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:14px solid rgba(232,122,171,.6); }
+.nl-arrow-r { position:absolute; top:22px; right:-2px; width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:14px solid rgba(78,205,196,.6); }
+.nl-tick { position:absolute; top:20px; width:2px; height:18px; background:rgba(100,120,200,.4); transform:translateX(-50%); }
+.nl-tick.zero { background:rgba(255,255,255,.7); height:22px; top:18px; }
+.nl-tick.pos  { background:rgba(78,205,196,.6); }
+.nl-tick.neg  { background:rgba(232,122,171,.6); }
+.nl-num { position:absolute; top:46px; font-family:'Courier New',monospace; font-size:.82rem; transform:translateX(-50%); }
+.nl-num.zero { color:#fff; font-weight:700; }
+.nl-num.pos  { color:var(--cyan); }
+.nl-num.neg  { color:var(--pink); }
+.nl-dot { position:absolute; top:22px; width:12px; height:12px; border-radius:50%; transform:translate(-50%,-50%); border:2px solid; transition:all .4s; cursor:pointer; }
+.nl-dot.pos-dot { background:rgba(78,205,196,.3); border-color:var(--cyan); }
+.nl-dot.neg-dot { background:rgba(232,122,171,.3); border-color:var(--pink); }
+.nl-dot:hover { transform:translate(-50%,-50%) scale(1.4); }
+.nl-note { font-size:.82rem; color:var(--muted); margin-top:.7rem; font-style:italic; text-align:center; }
+.nl-note strong { color:var(--gold); }
+
+/* ── INTERAKTIVER ZAHLENSTRAHL ── */
+.isl-wrap { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; margin:1rem 0; }
+.isl-wrap .isl-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:1rem; }
+.isl-controls { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center; }
+.isl-btn { padding:.4rem .9rem; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:.88rem; font-family:'Courier New',monospace; cursor:pointer; transition:all .18s; font-weight:600; }
+.isl-btn:hover { border-color:var(--gold); color:var(--gold); }
+.isl-input { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:.4rem .7rem; color:var(--text); font-family:'Courier New',monospace; font-size:.95rem; width:80px; text-align:center; }
+.isl-input:focus { outline:none; border-color:var(--gold); }
+.isl-display { font-family:'Courier New',monospace; font-size:1.8rem; font-weight:800; text-align:center; padding:.8rem; min-height:3rem; }
+.isl-display .pos { color:var(--cyan); }
+.isl-display .neg { color:var(--pink); }
+.isl-display .op  { color:var(--purple); margin:0 .3rem; }
+.isl-explain { font-size:.88rem; color:var(--muted); text-align:center; min-height:1.5rem; }
+.isl-explain strong { color:var(--gold); }
+
+/* ── VORZEICHENTABELLE ── */
+.sign-table-wrap { overflow-x:auto; margin:1rem 0; }
+.sign-table { border-collapse:collapse; font-family:'Courier New',monospace; font-size:.92rem; width:100%; }
+.sign-table th { background:rgba(245,200,66,.1); color:var(--gold); font-weight:700; padding:.55rem .8rem; text-align:center; border:1px solid rgba(100,120,200,.2); }
+.sign-table td { padding:.55rem .8rem; text-align:center; border:1px solid rgba(100,120,200,.15); color:var(--text); }
+.sign-table tr:nth-child(even) td { background:rgba(255,255,255,.02); }
+.sign-table .td-pos { color:var(--cyan); font-weight:700; }
+.sign-table .td-neg { color:var(--pink); font-weight:700; }
+.sign-table .td-op  { color:var(--purple); font-weight:700; }
+.sign-table .td-res { color:var(--green); font-weight:700; background:rgba(76,175,136,.07) !important; }
+
+/* ── MENGEN-DIAGRAMM ── */
+.mengen-box { background:var(--card3); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin:1rem 0; display:flex; justify-content:center; }
+.mengen-svg-wrap { width:100%; max-width:420px; }
+
+/* ── ANTIMATERIE-BOX ── */
+.anti-box { background:radial-gradient(ellipse at top left, rgba(232,122,171,.12) 0%, rgba(7,13,31,.95) 60%); border:1px solid rgba(232,122,171,.3); border-radius:16px; padding:1.6rem 1.8rem; margin:1rem 0; }
+.anti-box .ab-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--pink); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.8rem; }
+.anti-box p { font-size:.95rem; color:#f0cce0; margin-bottom:.55rem; }
+.anti-box p:last-child { margin-bottom:0; }
+.anti-box strong { color:var(--pink); }
+
+/* ── FORMEL-BOX ── */
+.formula-box { background:var(--card3); border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin:1rem 0; }
+.formula-box .f-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.8rem; }
+.formula-box .f-pair { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+.formula-box .fp { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:10px; padding:.8rem 1.2rem; font-size:.9rem; text-align:center; }
+.formula-box .fp .fp-head { font-weight:700; margin-bottom:.4rem; font-family:'Courier New',monospace; }
+.formula-box .fp .fp-row { font-family:'Courier New',monospace; font-size:.88rem; margin:.2rem 0; }
+.formula-box .fp.plus-plus .fp-head { color:var(--cyan); }
+.formula-box .fp.plus-minus .fp-head { color:var(--pink); }
+.formula-box .fp.mult-pos .fp-head { color:var(--green); }
+.formula-box .fp.mult-neg .fp-head { color:var(--orange); }
+
+/* ── AUFGABEN ── */
+.task-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:1rem; }
+.task-card .tc-head { display:flex; align-items:center; gap:.5rem; padding:.6rem 1.3rem; font-family:'Courier New',monospace; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); }
+.task-card .tc-head.green  { background:rgba(76,175,136,.12);  color:var(--green); }
+.task-card .tc-head.blue   { background:rgba(91,164,207,.12);  color:var(--blue); }
+.task-card .tc-head.gold   { background:rgba(245,200,66,.1);   color:var(--gold); }
+.task-card .tc-head.cyan   { background:rgba(78,205,196,.1);   color:var(--cyan); }
+.task-card .tc-head.pink   { background:rgba(232,122,171,.1);  color:var(--pink); }
+.task-card .tc-head.purple { background:rgba(155,137,224,.1);  color:var(--purple); }
+.task-card .tc-body { padding:1.1rem 1.3rem; }
+.task-card .tc-body p { margin-bottom:.8rem; }
+.q-opts { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+.q-btn { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:.55rem 1.1rem; font-size:.95rem; color:var(--text); cursor:pointer; transition:all .18s; font-weight:600; font-family:'Courier New',monospace; }
+.q-btn:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.q-btn.ok   { background:rgba(76,175,136,.2);  border-color:var(--green); color:var(--green); }
+.q-btn.fail { background:rgba(224,90,90,.15);  border-color:var(--red);   color:var(--red); }
+.q-fb { font-size:.86rem; margin-top:.4rem; min-height:1.2rem; }
+.q-fb.ok   { color:var(--green); }
+.q-fb.fail { color:var(--red); }
+
+/* ── INFO-KARTEN ── */
+.info-card { border-radius:12px; padding:1.2rem 1.4rem; margin:1rem 0; }
+.info-card .ic-title { font-size:.78rem; font-family:'Courier New',monospace; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.65rem; }
+.info-card p { font-size:.95rem; margin-bottom:.55rem; }
+.info-card p:last-child { margin-bottom:0; }
+.info-card.uni  { background:rgba(245,200,66,.07);  border:1px solid rgba(245,200,66,.25); }
+.info-card.uni  .ic-title { color:var(--gold); }
+.info-card.uni  p         { color:#e8dfa0; }
+.info-card.tip  { background:rgba(155,137,224,.1);  border:1px solid rgba(155,137,224,.3); }
+.info-card.tip  .ic-title { color:var(--purple); }
+.info-card.tip  p         { color:#ccc8f0; }
+.info-card.warn { background:rgba(224,90,90,.08);   border:1px solid rgba(224,90,90,.25); }
+.info-card.warn .ic-title { color:var(--red); }
+.info-card.warn p         { color:#ecc; }
+.info-card.nb   { background:rgba(91,164,207,.08);  border:1px solid rgba(91,164,207,.25); }
+.info-card.nb   .ic-title { color:var(--blue); }
+.info-card.nb   p         { color:#b8d8ec; }
+
+/* ── ZUSAMMENFASSUNG ── */
+.summary-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; margin:1.4rem 0; }
+.summary-box .sb-label { font-family:'Courier New',monospace; font-size:.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:.14em; display:block; margin-bottom:1rem; }
+.summary-box .sb-formula { font-family:'Courier New',monospace; font-size:1rem; font-weight:800; color:#fff; margin-bottom:.8rem; line-height:2.4; }
+.summary-box .sb-formula .sg { color:var(--gold); }
+.summary-box .sb-formula .sc { color:var(--cyan); }
+.summary-box .sb-formula .sp { color:var(--pink); }
+.summary-box .sb-sub { font-size:.88rem; color:var(--muted); line-height:1.7; }
+
+/* ── ABSCHLUSS ── */
+.ch-end { text-align:center; margin:1.4rem 0; }
+.ch-end .big-star { font-size:3rem; display:block; margin-bottom:.5rem; }
+.ch-end h2 { font-size:1.5rem; font-weight:800; color:var(--gold); margin-bottom:.35rem; }
+.ch-end p { color:var(--muted); font-size:.95rem; }
+.bot-nav { display:flex; justify-content:center; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
+.bot-nav a { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.4rem; background:rgba(245,200,66,.08); border:1px solid rgba(245,200,66,.3); border-radius:50px; color:var(--gold); text-decoration:none; font-size:.9rem; font-family:'Courier New',monospace; transition:all .2s; }
+.bot-nav a:hover { background:rgba(245,200,66,.16); }
+footer { text-align:center; font-size:.76rem; color:var(--muted); font-family:'Courier New',monospace; padding:1.5rem; margin-top:2rem; border-top:1px solid var(--border); }
+@media(max-width:600px){ .wrap { padding:0 .8rem 5rem; } .section { padding:1.3rem 1.1rem; } }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="above">
+
+<header class="site-header">
+  <strong>Erklärus &amp; Sterni</strong> · Kapitel 10
+</header>
+
+<div class="hero">
+  <span class="hero-icon">⚛️</span>
+  <h1>10. Positive &amp; negative Zahlen</h1>
+  <p class="subtitle">Materie und Antimaterie – zwei Seiten derselben Zahlengeraden</p>
+</div>
+
+<nav class="ch-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-09-rechenregeln.html">← Kapitel 9</a>
+  <span class="cur">10 – ± Zahlen</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-11-bruchrechnen.html">Kapitel 11 →</a>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══ 1. DIE ZEHNTE NACHT ═══ -->
+<div class="section">
+  <h2>Die zehnte Nacht – Materie und ihr Spiegelbild</h2>
+
+  <p>Das Schwarze Loch lag hinter ihnen. Sterni atmete durch, als die Sonde in ruhigeres Gebiet glitt. Doch Erklärus schaute bereits auf den nächsten Sektor der Sternenkarte – und runzelte die Stirn.</p>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Sterni, der Energiezähler zeigt −47. Was bedeutet das?"
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ein Minus vor der Zahl? Ist das... weniger als nichts?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Genau das. Wir haben 47 Energieeinheiten mehr verbraucht als wir hatten. Wir sind im Minus."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Wie ein Konto, das überzogen ist."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Ein gutes Bild. Aber im Universum gibt es etwas noch Faszinierenderes: Antimaterie. Für jedes Teilchen existiert ein Gegenstück mit umgekehrter Ladung. Positives Elektron, negatives Positron. Plus und Minus – seit dem Urknall eingebaut in das Fundament der Wirklichkeit."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Und die Mathematik hat das von Anfang an gewusst?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Die Mathematik hat es beschrieben. Der Zahlenstrahl reicht in beide Richtungen – nach rechts ins Positive, nach links ins Negative. Die Null ist die Grenze dazwischen."
+  </div>
+</div>
+
+<!-- ═══ 2. DIE MENGEN ═══ -->
+<div class="section">
+  <h2>Natürliche Zahlen N und ganze Zahlen Z</h2>
+
+  <p>Du kennst bereits die <strong style="color:var(--gold)">natürlichen Zahlen (N)</strong>: 1, 2, 3, 4 … Sie sind immer positiv. Jetzt erweiterst du deinen Blick auf die <strong style="color:var(--cyan)">ganzen Zahlen (Z)</strong> – sie umfassen auch die negativen Zahlen und die Null.</p>
+
+  <!-- SVG Mengen-Diagramm -->
+  <div class="mengen-box">
+    <div class="mengen-svg-wrap">
+      <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Courier New',monospace;">
+        <!-- Äußerer Kreis: Z -->
+        <ellipse cx="210" cy="115" rx="195" ry="98" fill="rgba(78,205,196,.06)" stroke="rgba(78,205,196,.4)" stroke-width="1.5"/>
+        <text x="30" y="48" fill="#4ecdc4" font-size="13" font-weight="700">ℤ – Ganze Zahlen</text>
+        <!-- Negative Zahlen links -->
+        <text x="28" y="118" fill="#e87aab" font-size="13">…−3, −2, −1</text>
+        <!-- Innerer Kreis: N -->
+        <ellipse cx="268" cy="115" rx="128" ry="72" fill="rgba(245,200,66,.06)" stroke="rgba(245,200,66,.35)" stroke-width="1.5"/>
+        <text x="190" y="72" fill="#f5c842" font-size="12" font-weight="700">ℕ – Natürliche</text>
+        <text x="208" y="88" fill="#f5c842" font-size="12" font-weight="700">Zahlen</text>
+        <!-- Null -->
+        <circle cx="168" cy="115" r="13" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+        <text x="168" y="120" fill="white" font-size="13" font-weight="700" text-anchor="middle">0</text>
+        <!-- Positive Zahlen -->
+        <text x="195" y="122" fill="#f5c842" font-size="13">1, 2, 3, 4 …</text>
+        <!-- Legende -->
+        <rect x="10" y="188" width="12" height="12" rx="3" fill="rgba(232,122,171,.4)" stroke="rgba(232,122,171,.6)" stroke-width="1"/>
+        <text x="26" y="199" fill="#e87aab" font-size="11">nur in ℤ</text>
+        <rect x="100" y="188" width="12" height="12" rx="3" fill="rgba(255,255,255,.3)" stroke="rgba(255,255,255,.5)" stroke-width="1"/>
+        <text x="116" y="199" fill="white" font-size="11">in ℤ und ℕ</text>
+        <rect x="210" y="188" width="12" height="12" rx="3" fill="rgba(245,200,66,.3)" stroke="rgba(245,200,66,.6)" stroke-width="1"/>
+        <text x="226" y="199" fill="#f5c842" font-size="11">nur in ℕ (außer 0)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Die natürlichen Zahlen sind eine Teilmenge der ganzen Zahlen. Jede natürliche Zahl ist auch eine ganze Zahl – aber nicht umgekehrt. −5 ist eine ganze Zahl, aber keine natürliche."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Also ist ℕ wie ein kleineres Raumschiff, das innerhalb von ℤ fliegt?"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Perfektes Bild. Und die Null? Sie gehört zu beiden – sie ist die Grenzstation."
+  </div>
+</div>
+
+<!-- ═══ 3. DER ZAHLENSTRAHL ═══ -->
+<div class="section">
+  <h2>Der Zahlenstrahl – unendlich in beide Richtungen</h2>
+
+  <p>Ein Zahlenstrahl hat keinen Anfang und kein Ende. Die Null liegt in der Mitte, positive Zahlen wachsen nach rechts, negative nach links. Wie das Universum selbst – es dehnt sich in alle Richtungen aus.</p>
+
+  <div class="numline-wrap">
+    <span class="nl-label">📏 Der Zahlenstrahl von −5 bis +5</span>
+    <div class="numline" id="numline">
+      <div class="nl-line"></div>
+      <div class="nl-arrow-l"></div>
+      <div class="nl-arrow-r"></div>
+      <!-- Ticks und Zahlen werden per JS gesetzt -->
+    </div>
+    <p class="nl-note">
+      <span style="color:var(--pink)">●</span> Negative Zahlen (links von Null) &nbsp;·&nbsp;
+      <span style="color:white">●</span> Null &nbsp;·&nbsp;
+      <span style="color:var(--cyan)">●</span> Positive Zahlen (rechts von Null)
+    </p>
+  </div>
+
+  <div class="info-card tip">
+    <span class="ic-title">💡 Merkhilfe – Richtung auf dem Zahlenstrahl</span>
+    <p>Beim <strong>Addieren</strong> gehst du nach <strong style="color:var(--cyan)">rechts</strong> (Zahl wird größer). Beim <strong>Subtrahieren</strong> gehst du nach <strong style="color:var(--pink)">links</strong> (Zahl wird kleiner). Das gilt auch, wenn du in den negativen Bereich gleitest.</p>
+    <p>Beispiel: 2 − 5 = ? Starte bei 2, gehe 5 Schritte nach links → du landest bei <strong>−3</strong>.</p>
+  </div>
+</div>
+
+<!-- ═══ 4. VORZEICHEN UND RECHENZEICHEN ═══ -->
+<div class="section">
+  <h2>Vorzeichen und Rechenzeichen – ein wichtiger Unterschied</h2>
+
+  <p>Das <strong style="color:var(--gold)">Rechenzeichen</strong> sagt, was du tust (addieren, subtrahieren…). Das <strong style="color:var(--pink)">Vorzeichen</strong> sagt, was die Zahl ist (positiv oder negativ). Wenn zwei Zeichen nebeneinander stehen, werden sie vereinigt:</p>
+
+  <div class="formula-box">
+    <span class="f-label">➕➖ Zeichenregel für Addition &amp; Subtraktion</span>
+    <div class="f-pair">
+      <div class="fp plus-plus">
+        <div class="fp-head" style="color:var(--cyan)">Gleiche Zeichen → Plus</div>
+        <div class="fp-row">+(+3) → <span style="color:var(--cyan)">+3</span></div>
+        <div class="fp-row">−(−3) → <span style="color:var(--cyan)">+3</span></div>
+        <div class="fp-row" style="margin-top:.4rem;color:var(--muted);font-size:.8rem;">„Minus mal Minus = Plus"</div>
+      </div>
+      <div class="fp plus-minus">
+        <div class="fp-head" style="color:var(--pink)">Verschiedene Zeichen → Minus</div>
+        <div class="fp-row">+(−3) → <span style="color:var(--pink)">−3</span></div>
+        <div class="fp-row">−(+3) → <span style="color:var(--pink)">−3</span></div>
+        <div class="fp-row" style="margin-top:.4rem;color:var(--muted);font-size:.8rem;">„Plus mal Minus = Minus"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="anti-box">
+    <span class="ab-label">⚛️ Antimaterie-Verbindung</span>
+    <p>Wenn ein Elektron (Materie, <strong>negativ geladen</strong>) auf ein Positron (Antimaterie, <strong>positiv geladen</strong>) trifft, löschen sie sich gegenseitig aus – das Ergebnis ist Null, reine Energie. In der Mathematik: <strong>(−3) + (+3) = 0</strong>. Gleiche Beträge, entgegengesetzte Vorzeichen → Auslöschung.</p>
+    <p>Das ist kein Zufall. Die Mathematik der Vorzeichen spiegelt die Physik der Ladungen direkt wider. Erklärus sagt: „Negative Zahlen wurden nicht erfunden – sie wurden entdeckt, weil das Universum sie bereits benutzte."</p>
+  </div>
+</div>
+
+<!-- ═══ 5. MULTIPLIKATION & DIVISION ═══ -->
+<div class="section">
+  <h2>Multiplikation und Division mit negativen Zahlen</h2>
+
+  <p>Auch bei Multiplikation und Division gilt: <strong>Gleiche Vorzeichen → positives Ergebnis. Verschiedene Vorzeichen → negatives Ergebnis.</strong></p>
+
+  <div class="formula-box">
+    <span class="f-label">✖️ ÷ Vorzeichenregel für · und ÷</span>
+    <div class="f-pair">
+      <div class="fp mult-pos">
+        <div class="fp-head" style="color:var(--green)">Gleich → Positiv</div>
+        <div class="fp-row">(+4) · (+3) = <span style="color:var(--green)">+12</span></div>
+        <div class="fp-row">(−4) · (−3) = <span style="color:var(--green)">+12</span></div>
+        <div class="fp-row">(+12) ÷ (+3) = <span style="color:var(--green)">+4</span></div>
+        <div class="fp-row">(−12) ÷ (−3) = <span style="color:var(--green)">+4</span></div>
+      </div>
+      <div class="fp mult-neg">
+        <div class="fp-head" style="color:var(--pink)">Verschieden → Negativ</div>
+        <div class="fp-row">(+4) · (−3) = <span style="color:var(--pink)">−12</span></div>
+        <div class="fp-row">(−4) · (+3) = <span style="color:var(--pink)">−12</span></div>
+        <div class="fp-row">(+12) ÷ (−3) = <span style="color:var(--pink)">−4</span></div>
+        <div class="fp-row">(−12) ÷ (+3) = <span style="color:var(--pink)">−4</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sign-table-wrap">
+    <table class="sign-table">
+      <thead>
+        <tr>
+          <th>Vorzeichen A</th>
+          <th>Operation</th>
+          <th>Vorzeichen B</th>
+          <th>Ergebnis-Vorzeichen</th>
+          <th>Beispiel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-pos">+</td>
+          <td class="td-op">· oder ÷</td>
+          <td class="td-pos">+</td>
+          <td class="td-res">+</td>
+          <td>3 · 4 = 12</td>
+        </tr>
+        <tr>
+          <td class="td-neg">−</td>
+          <td class="td-op">· oder ÷</td>
+          <td class="td-neg">−</td>
+          <td class="td-res">+</td>
+          <td>(−3) · (−4) = 12</td>
+        </tr>
+        <tr>
+          <td class="td-pos">+</td>
+          <td class="td-op">· oder ÷</td>
+          <td class="td-neg">−</td>
+          <td class="td-neg">−</td>
+          <td>3 · (−4) = −12</td>
+        </tr>
+        <tr>
+          <td class="td-neg">−</td>
+          <td class="td-op">· oder ÷</td>
+          <td class="td-pos">+</td>
+          <td class="td-neg">−</td>
+          <td>(−3) · 4 = −12</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Minus mal Minus ist Plus – das klingt zuerst seltsam. Aber wenn Antimaterie auf Antimaterie trifft, doppelte Verneinung ergibt Wirklichkeit... das ergibt Sinn!"
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Exakt. Zwei negative Ladungen, die sich gegenseitig umkehren – das Ergebnis ist positiv. Mathematik und Physik sprechen dieselbe Sprache."
+  </div>
+</div>
+
+<!-- ═══ 6. INTERAKTIVER ZAHLENSTRAHL ═══ -->
+<div class="section">
+  <h2>Interaktiv – Rechnen auf dem Zahlenstrahl</h2>
+  <p>Gib eine Zahl ein und wähle eine Operation. Beobachte, wie das Ergebnis auf dem Zahlenstrahl wandert:</p>
+
+  <div class="isl-wrap">
+    <span class="isl-label">🎮 Zahlenstrahl-Rechner</span>
+    <div class="isl-controls">
+      <input type="number" id="isl-a" class="isl-input" value="3" min="-20" max="20">
+      <button class="isl-btn" onclick="islOp('+')" id="btn-add">+ Addieren</button>
+      <button class="isl-btn" onclick="islOp('-')" id="btn-sub">− Subtrahieren</button>
+      <input type="number" id="isl-b" class="isl-input" value="5" min="-20" max="20">
+    </div>
+    <div class="isl-display" id="isl-display">
+      <span class="pos">3</span> <span class="op">+</span> <span class="pos">5</span> <span class="op">=</span> <span class="pos">8</span>
+    </div>
+    <div class="isl-explain" id="isl-explain">Starte bei <strong>3</strong>, gehe <strong>5 Schritte nach rechts</strong> → Ergebnis: <strong>8</strong></div>
+    <!-- Mini-Zahlenstrahl -->
+    <canvas id="isl-canvas" height="60" style="width:100%;margin-top:.8rem;border-radius:8px;background:rgba(0,0,0,.2);"></canvas>
+  </div>
+</div>
+
+<!-- ═══ 7. UNIVERSUM ═══ -->
+<div class="section">
+  <div class="info-card uni">
+    <span class="ic-title">🌌 Im Universum – negative Zahlen überall</span>
+    <p>Die Temperatur im tiefen Weltall beträgt etwa <strong>−270 °C</strong> (nahe dem absoluten Nullpunkt −273,15 °C). Die Oberflächentemperatur der Sonne: +5.500 °C. Die Differenz? 5.500 − (−270) = <strong>5.770 °C</strong>. Minus mal Minus beim Subtrahieren.</p>
+    <p>Sternis Energiebilanz: Sie startet mit +120 Einheiten, verbraucht 47 beim Schwarzen Loch und gewinnt −15 durch einen kosmischen Ionensturm (der Energie entzieht): 120 − 47 + (−15) = 120 − 47 − 15 = <strong>58 Einheiten</strong>. Noch genug für Kapitel 11.</p>
+  </div>
+</div>
+
+<!-- ═══ 8. AUFGABEN ═══ -->
+<div class="task-card">
+  <div class="tc-head pink">⚛️ Aufgabe 1 – Materie trifft Antimaterie</div>
+  <div class="tc-body">
+    <p>Sterni berechnet: <strong>(+8) + (−8)</strong>. Was ist das Ergebnis?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – +8 und −8 haben gleichen Betrag aber entgegengesetzte Vorzeichen.')">16</button>
+      <button class="q-btn" onclick="q(this,true, 'q1','Richtig! Materie und Antimaterie löschen sich aus: (+8)+(−8)=0 ✓')">0</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – das wäre (+8)+(+8). Hier ist das zweite negativ!')">−16</button>
+      <button class="q-btn" onclick="q(this,false,'q1','Nein – (+8)+(−8)=0, nicht 1.')">1</button>
+    </div>
+    <div class="q-fb" id="q1-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head gold">🌡️ Aufgabe 2 – Temperatur im All</div>
+  <div class="tc-body">
+    <p>Die Sonde misst −12 °C. Dann steigt die Temperatur um 20 Grad. Was zeigt das Thermometer?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q2','Fast! Aber −12 + 20 = +8, nicht −8. Wir starten im Minus und bewegen uns nach rechts.')">−8</button>
+      <button class="q-btn" onclick="q(this,true, 'q2','Richtig! −12 + 20 = +8. Vom Minus nach rechts über die Null hinaus ✓')">+8</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – 12+20=32, aber wir starten bei −12, nicht bei 12.')">32</button>
+      <button class="q-btn" onclick="q(this,false,'q2','Nein – das wäre −12 − 20. Hier steigt die Temperatur!')">−32</button>
+    </div>
+    <div class="q-fb" id="q2-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head cyan">✖️ Aufgabe 3 – Minus mal Minus</div>
+  <div class="tc-body">
+    <p>Was ergibt <strong>(−5) · (−4)</strong>?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – gleiche Vorzeichen ergeben ein positives Ergebnis!')">−20</button>
+      <button class="q-btn" onclick="q(this,true, 'q3','Richtig! Zwei Minuszeichen → positives Ergebnis: (−5)·(−4)=+20 ✓')">+20</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – 5·4=20, aber das Vorzeichen: minus·minus = plus.')">−9</button>
+      <button class="q-btn" onclick="q(this,false,'q3','Nein – (−5)+(−4)=−9 wäre Addition. Hier multiplizieren wir.')">+9</button>
+    </div>
+    <div class="q-fb" id="q3-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head purple">➗ Aufgabe 4 – Division mit Vorzeichen</div>
+  <div class="tc-body">
+    <p>Erklärus teilt: <strong>(−18) ÷ (+3)</strong>. Was ergibt das?</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – verschiedene Vorzeichen ergeben ein negatives Ergebnis.')">+6</button>
+      <button class="q-btn" onclick="q(this,true, 'q4','Richtig! Verschiedene Vorzeichen → negatives Ergebnis: (−18)÷(+3)=−6 ✓')">−6</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – 18÷3=6, nicht 5.')">−5</button>
+      <button class="q-btn" onclick="q(this,false,'q4','Nein – das wäre 18÷3 ohne Vorzeichen.')">+3</button>
+    </div>
+    <div class="q-fb" id="q4-fb"></div>
+  </div>
+</div>
+
+<div class="task-card">
+  <div class="tc-head blue">🚀 Aufgabe 5 – Sternis Energiebilanz</div>
+  <div class="tc-body">
+    <p>Sterni hat <strong>+50</strong> Energieeinheiten. Sie verliert <strong>−30</strong> (Ionensturm zieht ab) und gewinnt dann <strong>+10</strong> (Solarwind). Was ist ihre Bilanz? Tipp: −(−30) = +30!</p>
+    <div class="q-opts">
+      <button class="q-btn" onclick="q(this,false,'q5','Fast! 50−(−30)+10 = 50+30+10 = 90, nicht 70.')">70</button>
+      <button class="q-btn" onclick="q(this,true, 'q5','Richtig! 50−(−30)+10 = 50+30+10 = 90 Einheiten ✓')">90</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – nicht vergessen: −(−30)=+30, das Minus dreht das Vorzeichen um.')">30</button>
+      <button class="q-btn" onclick="q(this,false,'q5','Nein – du hast das Minus vor −30 nicht umgedreht.')">10</button>
+    </div>
+    <div class="q-fb" id="q5-fb"></div>
+  </div>
+</div>
+
+<!-- ═══ 9. ENDE DIESER NACHT ═══ -->
+<div class="section">
+  <h2>Das Ende dieser Nacht</h2>
+
+  <p>Die Energiebilanz war gesichert. Sterni hatte gelernt, dass das Minus kein Feind ist – es ist eine Richtung, eine Information, ein Teil des vollständigen Bildes. Wie Antimaterie: Sie existiert, sie hat ihren Platz, und ohne sie wäre das Universum unvollständig.</p>
+
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Gleiche Zeichen → Plus. Verschiedene Zeichen → Minus. Das gilt für Addition, Subtraktion, Multiplikation, Division."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Und auf dem Zahlenstrahl: Addition geht nach rechts, Subtraktion nach links. Auch wenn du schon im Minus bist."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Negative Zahlen sind keine halben Zahlen – sie sind vollständige Zahlen mit einer anderen Richtung."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Sehr gut. Und das Universum? Es kennt schon seit dem Urknall beide Richtungen."
+  </div>
+  <div class="dlg sterni">
+    <span class="who">Sterni: </span>„Ich erinnere mich an eine unsichtbare Linie, die ich einmal überflogen habe – die galaktische Ebene. Auf der einen Seite war ich „oben", auf der anderen „unten". Ich wusste nur nicht, auf welcher Seite mein Zuhause liegt."
+  </div>
+  <div class="dlg erklaerus">
+    <span class="who">Erklärus: </span>„Oben oder unten, Plus oder Minus – erst mit genug Punkten auf deiner Karte werden wir wissen, in welche Richtung wir zählen müssen."
+  </div>
+
+  <p>Sterni schaute aus dem Fenster der Sonde. Irgendwo da draußen, in einem Nebel aus Antimaterie, spiegelten sich die Sterne wie negative Versionen ihrer selbst. Die Zahlengrade reichte in beide Richtungen – unendlich, wie der Raum.</p>
+
+  <div class="dlg lektion">
+    „Zehnte Lektion: Negative Zahlen gehören zur Menge ℤ (ganze Zahlen). Auf dem Zahlenstrahl: links=negativ, rechts=positiv, Mitte=Null. Gleiche Vorzeichen → Plus. Verschiedene Vorzeichen → Minus. Das gilt für alle vier Grundrechenarten. Minus mal Minus ist Plus – wie Antimaterie trifft Antimaterie."
+  </div>
+</div>
+
+<!-- ZUSAMMENFASSUNG -->
+<div class="summary-box">
+  <span class="sb-label">Was du heute gelernt hast</span>
+  <div class="sb-formula">
+    <span class="sp">−</span> · <span class="sp">−</span> = <span class="sc">+</span> &nbsp;·&nbsp;
+    <span class="sp">−</span> · <span class="sc">+</span> = <span class="sp">−</span><br>
+    <span class="sc">+(−a)</span> = <span class="sp">−a</span> &nbsp;·&nbsp;
+    <span class="sp">−(−a)</span> = <span class="sc">+a</span><br>
+    <span class="sg">ℕ ⊂ ℤ</span> &nbsp;·&nbsp; Addition → rechts · Subtraktion → links
+  </div>
+  <div class="sb-sub">
+    Gleiche Vorzeichen → positives Ergebnis bei · und ÷<br>
+    Verschiedene Vorzeichen → negatives Ergebnis bei · und ÷<br>
+    Zwei Zeichen nebeneinander: gleich → Plus, verschieden → Minus
+  </div>
+</div>
+
+<!-- NOTIZBUCH -->
+<div class="section">
+  <div class="info-card nb">
+    <span class="ic-title">📓 Erklärus' Notizbuch – Seite 10</span>
+    <p>„Negative Zahlen: existieren, sind vollständig, haben eine Richtung. Materie und Antimaterie – beide real. Der Zahlenstrahl hat kein Ende in beide Richtungen. Gleiche Vorzeichen Plus, verschiedene Minus. Sterni hat heute die Energiebilanz gerettet. −(−30) = +30. Das schreibe ich mir extra groß auf.<br><br><em>Erinnerungs-Karte, Punkt 10: eine unsichtbare Grenze, die galaktische Ebene – Sterni weiß nicht, ob ihr Zuhause darüber oder darunter liegt.</em>"</p>
+  </div>
+</div>
+
+<div class="ch-end">
+  <span class="big-star">✨</span>
+  <h2>Kapitel 10 gemeistert!</h2>
+  <p>Materie und Antimaterie, Plus und Minus – das Universum hat beide Seiten.<br>
+     Kapitel 11 wartet: Bruchrechnen.</p>
+</div>
+
+<div class="bot-nav">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-09-rechenregeln.html">← Kapitel 9</a>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-11-bruchrechnen.html">Kapitel 11 – Bruchrechnen →</a>
+</div>
+
+<nav class="ch-nav" style="margin-top:1.5rem">
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-09-rechenregeln.html">← Kapitel 9</a>
+  <span class="cur">10 – ± Zahlen</span>
+  <a href="https://mikrosztrip.github.io/Mathe/kapitel-11-bruchrechnen.html">Kapitel 11 →</a>
+</nav>
+
+</main>
+
+<footer>
+  © 2025 Timea Tóth · toth.services · Erklärus &amp; Sterni · Kapitel 10
+</footer>
+
+</div><!-- /above -->
+
+<script>
+/* ─── Sternenhimmel ─── */
+(function(){
+  const cv=document.getElementById('starfield'), cx=cv.getContext('2d');
+  let stars=[],meteors=[];
+  function resize(){ cv.width=window.innerWidth; cv.height=window.innerHeight; }
+  function initStars(){
+    stars=[];
+    const n=Math.floor(cv.width*cv.height/2800);
+    for(let i=0;i<n;i++){
+      const big=Math.random()<0.08, med=Math.random()<0.18;
+      stars.push({ x:Math.random()*cv.width, y:Math.random()*cv.height,
+        r:big?(2.2+Math.random()*1.8):med?(1.2+Math.random()*1.0):(0.2+Math.random()*0.8),
+        o:big?0.95:med?(0.6+Math.random()*0.35):(0.25+Math.random()*0.5),
+        sp:big?(0.003+Math.random()*0.004):(0.004+Math.random()*0.012),
+        ph:Math.random()*Math.PI*2, big, med });
+    }
+  }
+  function spawnMeteor(){
+    meteors.push({ x:Math.random()*cv.width*1.5, y:-10,
+      vx:-3.5-Math.random()*3, vy:2.5+Math.random()*2.5,
+      len:80+Math.random()*120, alpha:1, fade:0.012+Math.random()*0.008 });
+  }
+  function draw(t){
+    cx.clearRect(0,0,cv.width,cv.height);
+    for(const s of stars){
+      const a=s.o*(0.45+0.55*Math.sin(t*s.sp+s.ph));
+      cx.beginPath(); cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,240,180,${a})`; cx.fill();
+      if(s.big&&a>0.5){
+        const g=s.r*4.5*a;
+        cx.strokeStyle=`rgba(255,240,180,${a*0.5})`; cx.lineWidth=0.7;
+        cx.beginPath(); cx.moveTo(s.x-g,s.y); cx.lineTo(s.x+g,s.y); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x,s.y-g); cx.lineTo(s.x,s.y+g); cx.stroke();
+        const g2=g*0.6; cx.strokeStyle=`rgba(255,240,180,${a*0.25})`;
+        cx.beginPath(); cx.moveTo(s.x-g2,s.y-g2); cx.lineTo(s.x+g2,s.y+g2); cx.stroke();
+        cx.beginPath(); cx.moveTo(s.x+g2,s.y-g2); cx.lineTo(s.x-g2,s.y+g2); cx.stroke();
+      }
+    }
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      const len=Math.hypot(m.vx,m.vy);
+      const grd=cx.createLinearGradient(m.x,m.y,m.x-m.vx/len*m.len,m.y-m.vy/len*m.len);
+      grd.addColorStop(0,`rgba(255,255,200,${m.alpha})`);
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      cx.beginPath(); cx.moveTo(m.x,m.y);
+      cx.lineTo(m.x-m.vx/len*m.len,m.y-m.vy/len*m.len);
+      cx.strokeStyle=grd; cx.lineWidth=1.8; cx.stroke();
+      m.x+=m.vx; m.y+=m.vy; m.alpha-=m.fade;
+      if(m.alpha<=0||m.y>cv.height+20) meteors.splice(i,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  resize(); initStars();
+  window.addEventListener('resize',()=>{ resize(); initStars(); });
+  requestAnimationFrame(draw);
+  function sched(){ spawnMeteor(); setTimeout(sched,4000+Math.random()*5000); }
+  setTimeout(sched,1500);
+})();
+
+/* ─── Statischer Zahlenstrahl ─── */
+(function(){
+  const nl = document.getElementById('numline');
+  if(!nl) return;
+  const W = nl.offsetWidth || 520;
+  const vals = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
+  const pad = 24;
+  const step = (W - pad*2) / (vals.length - 1);
+  vals.forEach((v, i) => {
+    const x = pad + i * step;
+    const tick = document.createElement('div');
+    tick.className = 'nl-tick' + (v===0?' zero':v>0?' pos':' neg');
+    tick.style.left = x + 'px';
+    nl.appendChild(tick);
+    const num = document.createElement('div');
+    num.className = 'nl-num' + (v===0?' zero':v>0?' pos':' neg');
+    num.style.left = x + 'px';
+    num.textContent = v;
+    nl.appendChild(num);
+    if(v !== 0){
+      const dot = document.createElement('div');
+      dot.className = 'nl-dot ' + (v>0?'pos-dot':'neg-dot');
+      dot.style.left = x + 'px';
+      dot.title = v > 0 ? `+${v}` : `${v}`;
+      nl.appendChild(dot);
+    }
+  });
+})();
+
+/* ─── Interaktiver Zahlenstrahl-Rechner ─── */
+let islCurOp = '+';
+
+function islOp(op) {
+  islCurOp = op;
+  islUpdate();
+}
+
+function islUpdate() {
+  const a = parseFloat(document.getElementById('isl-a').value) || 0;
+  const b = parseFloat(document.getElementById('isl-b').value) || 0;
+  const result = islCurOp === '+' ? a + b : a - b;
+
+  const colorA = a >= 0 ? 'pos' : 'neg';
+  const colorR = result >= 0 ? 'pos' : 'neg';
+  const colorB = b >= 0 ? 'pos' : 'neg';
+  const signB = b >= 0 ? `+${b}` : `${b}`;
+
+  document.getElementById('isl-display').innerHTML =
+    `<span class="${colorA}">${a}</span> <span class="op">${islCurOp}</span> <span class="${colorB}">${b}</span> <span class="op">=</span> <span class="${colorR}">${result}</span>`;
+
+  const dir = (islCurOp === '+' && b >= 0) || (islCurOp === '-' && b < 0) ? 'rechts' : 'links';
+  const steps = Math.abs(b);
+  document.getElementById('isl-explain').innerHTML =
+    `Starte bei <strong>${a}</strong>, gehe <strong>${steps} Schritte nach ${dir}</strong> → Ergebnis: <strong>${result}</strong>`;
+
+  islDrawCanvas(a, b, result, islCurOp);
+}
+
+function islDrawCanvas(a, b, result, op) {
+  const canvas = document.getElementById('isl-canvas');
+  if(!canvas) return;
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 600;
+  canvas.height = 60 * window.devicePixelRatio;
+  const ctx = canvas.getContext('2d');
+  const scale = window.devicePixelRatio;
+  ctx.scale(scale, scale);
+  const W = canvas.offsetWidth || 600;
+  const H = 60;
+  ctx.clearRect(0,0,W,H);
+
+  const min = Math.min(a, result) - 3;
+  const max = Math.max(a, result) + 3;
+  const range = max - min || 10;
+  const toX = v => 20 + ((v - min) / range) * (W - 40);
+
+  // Linie
+  ctx.strokeStyle = 'rgba(100,120,200,.35)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(10, H/2); ctx.lineTo(W-10, H/2); ctx.stroke();
+
+  // Nulllinie
+  if(min < 0 && max > 0){
+    const zx = toX(0);
+    ctx.strokeStyle = 'rgba(255,255,255,.5)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(zx, H/2-10); ctx.lineTo(zx, H/2+10); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.7)';
+    ctx.font = `10px 'Courier New'`;
+    ctx.textAlign = 'center';
+    ctx.fillText('0', zx, H/2+22);
+  }
+
+  // Pfeil von a nach result
+  const ax = toX(a), rx = toX(result);
+  const isPos = result >= a;
+  const arrowColor = isPos ? '#4ecdc4' : '#e87aab';
+  ctx.strokeStyle = arrowColor;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(ax, H/2 - 8); ctx.lineTo(rx, H/2 - 8); ctx.stroke();
+  // Pfeilspitze
+  ctx.fillStyle = arrowColor;
+  ctx.beginPath();
+  if(isPos){
+    ctx.moveTo(rx, H/2-8); ctx.lineTo(rx-7, H/2-14); ctx.lineTo(rx-7, H/2-2);
+  } else {
+    ctx.moveTo(rx, H/2-8); ctx.lineTo(rx+7, H/2-14); ctx.lineTo(rx+7, H/2-2);
+  }
+  ctx.fill();
+
+  // Punkte
+  ctx.fillStyle = '#f5c842';
+  ctx.beginPath(); ctx.arc(ax, H/2, 7, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = arrowColor;
+  ctx.beginPath(); ctx.arc(rx, H/2, 7, 0, Math.PI*2); ctx.fill();
+
+  // Labels
+  ctx.fillStyle = '#f5c842';
+  ctx.font = `bold 11px 'Courier New'`;
+  ctx.textAlign = 'center';
+  ctx.fillText(a, ax, H/2+20);
+  ctx.fillStyle = arrowColor;
+  ctx.fillText(result, rx, H/2+20);
+}
+
+// Inputs überwachen
+document.getElementById('isl-a').addEventListener('input', islUpdate);
+document.getElementById('isl-b').addEventListener('input', islUpdate);
+window.addEventListener('resize', islUpdate);
+islUpdate();
+
+/* ─── Quiz ─── */
+function q(btn,ok,id,msg){
+  btn.closest('.q-opts').querySelectorAll('.q-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  btn.classList.add(ok?'ok':'fail');
+  fb.innerHTML=(ok?'✓ ':'✗ ')+msg;
+  fb.className='q-fb '+(ok?'ok':'fail');
+}
+</script>
+</body>
+</html>
